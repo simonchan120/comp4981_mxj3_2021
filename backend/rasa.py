@@ -5,6 +5,11 @@ import json
 from data.dialogue import Sentence,Dialogue
 import yaml
 
+from mongoengine import *
+
+from dataclass import *
+
+import logging
 #socket.getaddrinfo('localhost',5005)
 conversation_id = 1
 
@@ -15,6 +20,8 @@ conversation_id = 1
 # r1 = conn.getresponse()
 # print(r1.status,r1.reason)
 
+#mongodb 
+connect(host='mongodb://localhost:27017/fyp')
 
 class Rasa_Client():
     def __init__(self):
