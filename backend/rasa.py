@@ -1,18 +1,17 @@
 import json
-from pathlib import Path
 import socket
 import http.client
 import json
 from data.dialogue import Sentence,Dialogue
 import yaml
 import datetime
-from mongoengine import *
+
 
 from dataclass import *
 
 import logging
 #socket.getaddrinfo('localhost',5005)
-conversation_id = 1
+#conversation_id = 1
 
 # conn = http.client.HTTPConnection("localhost",5005)
 # #link_send = '/conversations/{conversation_id}/messages'
@@ -21,16 +20,7 @@ conversation_id = 1
 # r1 = conn.getresponse()
 # print(r1.status,r1.reason)
 
-#mongodb 
-connect(host='mongodb://localhost:27017/fyp')
 
-Path("./logs").mkdir(parents=True, exist_ok=True)
-
-logging.basicConfig(
-    filename=f"{datetime.datetime.now().strftime('./logs/%Y%m%d-%H%M%S')}.log",
-    format='%(asctime)s %(name)s %(levelname)-8s %(message)s',
-    level=logging.INFO,
-    datefmt='%Y-%m-%d %H:%M:%S')
 logger = logging.getLogger(__name__)
 
 class Rasa_Client():

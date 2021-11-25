@@ -4,11 +4,23 @@ from data.dialogue import Sentence, Dialogue
 import logging
 import json
 import jwt
+from pathlib import Path
 from hashlib import sha256
 from datetime import datetime, timedelta
+from mongoengine import *
 from dataclass import *
 rasa_client = Rasa_Client()
 # rasa_client.send_message("Hello!","admin")
+#mongodb mongoengine 
+connect(host='mongodb://localhost:27017/fyp')
+
+Path("./logs").mkdir(parents=True, exist_ok=True)
+
+logging.basicConfig(
+    filename=f"{datetime.now().strftime('./logs/%Y%m%d-%H%M%S')}.log",
+    format='%(asctime)s %(name)s %(levelname)-8s %(message)s',
+    level=logging.INFO,
+    datefmt='%Y-%m-%d %H:%M:%S')
 
 app = Flask(__name__)
 # TODO: change this secret key before deployment
@@ -18,7 +30,7 @@ auth_token_header_name = 'rasa-access-token'
 logger = logging.getLogger(__name__)
 def token_required(f):
     
-    def decorated(*args, **kwargs):
+    def wrapper(*args, **kwargs):
         token = None
         # jwt is passed in the request header
         if auth_token_header_name in request.headers:
@@ -39,8 +51,8 @@ def token_required(f):
             }), 401
         # returns the current logged in users contex to the routes
         return f(current_user, *args, **kwargs)
-
-    return decorated
+    wrapper.__name__ = f.__name__
+    return wrapper
 # route for logging user in
 
 
@@ -154,9 +166,24 @@ def add_training_data():
 
 # Request:
 # {
-#   "
+#   "media_name": "bird1",
+#   "score": 0.5
 # }
-
+@app.route("/add_preference",methods=['POST'])
+@token_required
+def add_preference_to_user(current_user):
+    data = request.json
+    media_name=data.get('media_name')
+    score = data.get('score')
+    media = MultiMediaData.objects(name=media_name).first()
+    if media is None:
+        return Response(
+        json.dumps({"message": 'Media not found'}),
+        404,
+        mimetype='application/json'
+    )
+    current_user.preferences.append(Preference(media,score))
+    return Response('',204)
 
 @app.route("/train", methods=['POST'])
 def train_data():
