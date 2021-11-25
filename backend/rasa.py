@@ -1,10 +1,11 @@
 import json
+from pathlib import Path
 import socket
 import http.client
 import json
 from data.dialogue import Sentence,Dialogue
 import yaml
-
+import datetime
 from mongoengine import *
 
 from dataclass import *
@@ -23,15 +24,24 @@ conversation_id = 1
 #mongodb 
 connect(host='mongodb://localhost:27017/fyp')
 
+Path("./logs").mkdir(parents=True, exist_ok=True)
+
+logging.basicConfig(
+    filename=f"{datetime.datetime.now().strftime('./logs/%Y%m%d-%H%M%S')}.log",
+    format='%(asctime)s %(name)s %(levelname)-8s %(message)s',
+    level=logging.INFO,
+    datefmt='%Y-%m-%d %H:%M:%S')
+logger = logging.getLogger(__name__)
+
 class Rasa_Client():
     def __init__(self):
         
         pass
-    def send_message(self,msg):
+    def send_message(self,msg,username):
             self.conn = http.client.HTTPConnection("localhost",5005)
             send_msg_link = "/webhooks/rest/webhook"
             package = {}
-            package['sender'] = "test_user"
+            package['sender'] = username
             package['message'] = msg
             json_package = json.dumps(package)
             print(package['message'])

@@ -4,19 +4,20 @@ from data.dialogue import Sentence, Dialogue
 import logging
 import json
 import jwt
+from hashlib import sha256
 from datetime import datetime, timedelta
 from dataclass import *
 rasa_client = Rasa_Client()
-# rasa_client.send_message("Hello!")
+# rasa_client.send_message("Hello!","admin")
 
 app = Flask(__name__)
 # TODO: change this secret key before deployment
 app.config.from_file("config.json", load=json.load)
 auth_token_header_name = 'rasa-access-token'
 
-
+logger = logging.getLogger(__name__)
 def token_required(f):
-    # @wraps(f)
+    
     def decorated(*args, **kwargs):
         token = None
         # jwt is passed in the request header
@@ -28,7 +29,7 @@ def token_required(f):
 
         
             # decoding the payload to fetch the stored details
-        data = jwt.decode(token, app.config['SECRET_KEY'])
+        data = jwt.decode(token, app.config['SECRET_KEY'],algorithms=["HS256"])
         current_user = User.objects(username=data['username'])\
             .first()
         
@@ -48,7 +49,7 @@ def login():
     # creates dictionary of form data
     auth = request.form
 
-    if not auth or not auth.get('email') or not auth.get('password'):
+    if not auth or not auth.get('password'):
         # returns 401 if any email or / and password is missing
         return Response(
             json.dumps({"message": 'Could not verify'}),
@@ -68,14 +69,16 @@ def login():
         )
 
     # generates auth token
-    if user.password == hash(auth.get('password')):
+    #logger.info(user.password)
+    #logger.info(hash(auth.get('password')))
+    if user.password == sha256(auth.get('password').encode('utf-8')).hexdigest():
         # generates the JWT Token
         token = jwt.encode({
             'username': user.username,
             'exp': datetime.utcnow() + timedelta(minutes=30)
-        }, app.config['SECRET_KEY'])
+        }, app.config['SECRET_KEY'],algorithm="HS256")
 
-        return Response(json.dumps({auth_token_header_name: token.decode('UTF-8')}), 201)
+        return Response(json.dumps({auth_token_header_name: token}), 201)
     # wrong password
     return Response(
         json.dumps({"message": 'Could not verify'}),
@@ -100,7 +103,7 @@ def signup():
         user = User(
             username=username,
             email=email,
-            password=hash(password)
+            password=sha256(password.encode('utf-8')).hexdigest()
         )
         # insert user
         user.save()
@@ -109,6 +112,12 @@ def signup():
     else:
         # returns 202 if user already exists
         return Response(json.dumps({"message": 'User already exists. Please Log in.'}), 202, mimetype='application/json')
+
+
+
+@app.route("/", methods=['GET'])
+def connection_ok():
+    return Response(json.dumps({"message": "hi"}), status=200, mimetype='application/json')
 
 # Request:
 # {
@@ -123,16 +132,12 @@ def signup():
 # ]
 
 
-@app.route("/", methods=['GET'])
-def connection_ok():
-    return Response(json.dumps({"message": "hi"}), status=200, mimetype='application/json')
-
-
 @app.route("/", methods=['POST'])
-def send_message():
+@token_required
+def send_message(user):
     content = request.json
     # print(content['message'])
-    json_string, status = rasa_client.send_message(content['message'])
+    json_string, status = rasa_client.send_message(content['message'],user.username)
     return Response(json_string, status=status, mimetype='application/json')
 
 
