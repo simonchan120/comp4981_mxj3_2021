@@ -40,6 +40,7 @@ class User(Document):
     is_ust = BinaryField()
     surveys = EmbeddedDocumentListField('Survey')
     preferences = SortedListField(EmbeddedDocumentField('Preference'),ordering="score",reverse = True)
+    pred_preferences = SortedListField(EmbeddedDocumentField('Preference'),ordering="score",reverse = True)
 
 class Conversation(Document):
     time_started = DateTimeField()

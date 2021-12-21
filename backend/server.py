@@ -9,6 +9,7 @@ from hashlib import sha256
 from datetime import datetime, timedelta
 from mongoengine import *
 from dataclass import *
+from random import randrange,randint,uniform
 rasa_client = Rasa_Client()
 app = Flask(__name__)
 
@@ -90,7 +91,7 @@ def login():
             'exp': datetime.utcnow() + timedelta(minutes=30)
         }, app.config['SECRET_KEY'],algorithm="HS256")
 
-        return Response(json.dumps({auth_token_header_name: token}), 201)
+        return Response(json.dumps({auth_token_header_name: token}), 200)
     # wrong password
     return Response(
         json.dumps({"message": 'Could not verify'}),
@@ -188,3 +189,26 @@ def add_preference_to_user(current_user):
 @app.route("/train", methods=['POST'])
 def train_data():
     return rasa_client.train()
+
+#bad method?
+@app.route("/arbitrary_code", methods = ['POST'])
+def _do_stuff():
+    # for x in range(10):
+    #     user = User(username=f"{x}")
+    #     multimedia=MultiMediaData(name=f"{x}")
+    #     user.save()
+    #     multimedia.save()
+    # contentx = MultiMediaData(name="x")
+    # contentx.save()
+    # userx = User(username= "x",preferences=[Preference(content=contentx,score=1.0)])
+    # userx.save()
+    for user in User.objects():
+        user.preferences = []
+        for x in range(10):
+            if randint(0,2) == 0:
+                pref = Preference(content=MultiMediaData.objects(name=f"{x}").first(),score=uniform(0,1))
+                user.preferences.append(pref)
+        user.save()
+
+    # multimedia.save()
+    return Response()
