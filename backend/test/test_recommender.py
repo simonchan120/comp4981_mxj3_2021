@@ -6,6 +6,8 @@ import recommender
 import logging
 from pathlib import Path
 from datetime import datetime
+
+#change mongo database for testing
 connect(host='mongodb://localhost:27017/test')
 logger = logging.getLogger(__name__)
 Path("./logs").mkdir(parents=True, exist_ok=True)

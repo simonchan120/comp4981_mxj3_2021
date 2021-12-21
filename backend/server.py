@@ -193,11 +193,11 @@ def train_data():
 #bad method?
 @app.route("/arbitrary_code", methods = ['POST'])
 def _do_stuff():
-    # for x in range(10):
-    #     user = User(username=f"{x}")
-    #     multimedia=MultiMediaData(name=f"{x}")
-    #     user.save()
-    #     multimedia.save()
+    for x in range(10):
+        user = User(username=f"{x}")
+        multimedia=MultiMediaData(name=f"{x}")
+        user.save()
+        multimedia.save()
     # contentx = MultiMediaData(name="x")
     # contentx.save()
     # userx = User(username= "x",preferences=[Preference(content=contentx,score=1.0)])
