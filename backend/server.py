@@ -10,9 +10,10 @@ from datetime import datetime, timedelta
 from mongoengine import *
 from dataclass import *
 rasa_client = Rasa_Client()
-# rasa_client.send_message("Hello!","admin")
-#mongodb mongoengine 
-connect(host='mongodb://localhost:27017/fyp')
+app = Flask(__name__)
+
+# TODO: change this secret key before deployment
+app.config.from_file("config.json", load=json.load)
 
 Path("./logs").mkdir(parents=True, exist_ok=True)
 
@@ -22,9 +23,8 @@ logging.basicConfig(
     level=logging.INFO,
     datefmt='%Y-%m-%d %H:%M:%S')
 
-app = Flask(__name__)
-# TODO: change this secret key before deployment
-app.config.from_file("config.json", load=json.load)
+#mongodb mongoengine 
+connect(host=app.config["MONGO_CONNECTION_STRING"])
 auth_token_header_name = 'rasa-access-token'
 
 logger = logging.getLogger(__name__)
