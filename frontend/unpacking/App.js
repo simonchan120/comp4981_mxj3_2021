@@ -73,22 +73,12 @@ function App() {
     <NavigationContainer>
       <Tab.Navigator
         initialRouteName="Feed"
-        tabBarOptions={{
-          activeTintColor: '#42f44b',
+        screenOptions={{
+          "tabBarActiveTintColor": '#42f44b',
+          "tabBarStyle": [
+            {"display": 'flex'},
+          ]
         }}>
-        <Tab.Screen
-          name="HomeStack"
-          component={HomeStack}
-          options={{
-            tabBarLabel: 'Home',
-            tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons
-                name="home"
-                color={color}
-                size={size}
-              />
-            ),
-          }}  />
         <Tab.Screen
           name="SettingsStack"
           component={SettingsStack}
@@ -102,6 +92,20 @@ function App() {
               />
             ),
           }} />
+        <Tab.Screen
+          name="HomeStack"
+          component={HomeStack}
+          options={{
+            tabBarLabel: 'Home',
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons
+                name="home"
+                color={color}
+                size={size}
+              />
+            ),
+          }}  />
+        
       </Tab.Navigator>
     </NavigationContainer>
   );
