@@ -2,34 +2,32 @@ import json
 import socket
 import http.client
 import json
-from data.dialogue import Sentence,Dialogue
+from .data.dialogue import Sentence,Dialogue
 import yaml
-import datetime
 
 
-from dataclass import *
-
+from .dataclass import *
+from backend import app
 import logging
-
 logger = logging.getLogger(__name__)
-
 class Rasa_Client():
     def __init__(self):
         
+
         pass
-    def send_message(self,msg,username):
+    def send_message(self,msg,session_uuid):
             self.conn = http.client.HTTPConnection("localhost",5005)
             send_msg_link = "/webhooks/rest/webhook"
             package = {}
-            package['sender'] = username
+            package['sender'] = session_uuid
             package['message'] = msg
             json_package = json.dumps(package)
-            print(package['message'])
+            
             self.conn.request("POST", send_msg_link,json_package)
 
             #responses are byte strings
             response = self.conn.getresponse()
-            print(response.status, response.reason)
+            
             data = response.read()
             # assuming plain json
             data = data.decode('utf-8')
