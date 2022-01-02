@@ -19,6 +19,9 @@ services:
     build: .
     hostname: worker_1
     command: sh -c "celery -A backend.celery_config.celery_app worker --loglevel=info"
+    deploy:
+      restart_policy:
+        condition: on-failure
     volumes:  
       - .:/app
     links:
@@ -29,6 +32,9 @@ services:
     build: .
     hostname: worker_2
     command: sh -c "celery -A backend.celery_config.celery_app worker --loglevel=info"
+    deploy:
+      restart_policy:
+        condition: on-failure
     volumes:
       - .:/app
     links:

@@ -139,7 +139,6 @@ def _sendVerificationEmail(address, otp):
 
 @main_bp.route('/signup', methods=['POST'])
 def signup():
-    _sendVerificationEmail.delay("ccysimon476@gmail.com","celery")
     # creates a dictionary of the form data
     data = request.form
 
