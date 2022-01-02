@@ -1,6 +1,6 @@
 import 'react-native-gesture-handler';
 
-//import * as React from 'react';
+import * as React from 'react';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -21,30 +21,6 @@ import SettingsScreen from './SettingsScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
-
-function AccStack() {
-  return (
-      <Stack.Navigator
-        initialRouteName="Acc"
-        screenOptions={{
-          headerShown: false,
-          headerStyle: { backgroundColor: '#42f44b' },
-          headerTintColor: '#fff',
-          headerTitleStyle: { fontWeight: 'bold' }
-
-        }}>
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ title: 'Login Page' }}/>
-          <Stack.Screen
-          name="Details"
-          component={DetailsScreen}
-          options={{ title: 'Details Page' }} />
-
-      </Stack.Navigator>
-  );
-}
 
 function HomeStack() {
   return (
@@ -106,19 +82,6 @@ function App() {
           ]
         }}>
         <Tab.Screen
-          name="AccStack"
-          component={AccStack}
-          options={{
-            tabBarLabel: 'Acc',
-            tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons
-                name="wrench"
-                color={color}
-                size={size}
-              />
-            ),
-          }} />
-        <Tab.Screen
           name="SettingsStack"
           component={SettingsStack}
           options={{
@@ -151,126 +114,80 @@ function App() {
 }
 export default App;
 
+// Example of Splash, Login and Sign Up in React Native
+// https://aboutreact.com/react-native-login-and-signup/
+/*import 'react-native-gesture-handler';
 
+// Import React and Component
+import React from 'react';
 
+// Import Navigators from React Navigation
+import {NavigationContainer} from '@react-navigation/native';
+import {createStackNavigator} from '@react-navigation/stack';
 
+// Import Screens
+import SplashScreen from './Screen/SplashScreen';
+import LoginScreen from './Screen/LoginScreen';
+import RegisterScreen from './Screen/RegisterScreen';
+import DrawerNavigatorRoutes from './Screen/DrawerNavigatorRoutes';
 
+const Stack = createStackNavigator();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TextInput,
-  Button,
-  TouchableOpacity,
-} from "react-native";
- 
-const LoginScreen = ({ navigation }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
- 
+const Auth = () => {
+  // Stack Navigator for Login and Sign up Screen
   return (
-    <View style={styles.container}>
-
- 
-      <StatusBar style="auto" />
-      <View style={styles.inputView}>
-        <TextInput
-          style={styles.TextInput}
-          placeholder="Email"
-          placeholderTextColor="#003f5c"
-          onChangeText={(email) => setEmail(email)}
-        />
-      </View>
- 
-      <View style={styles.inputView}>
-        <TextInput
-          style={styles.TextInput}
-          placeholder="Password"
-          placeholderTextColor="#003f5c"
-          secureTextEntry={true}
-          onChangeText={(password) => setPassword(password)}
-        />
-      </View>
- 
-      <TouchableOpacity>
-        <Text style={styles.forgot_button}>Forgot Password?</Text>
-      </TouchableOpacity>
- 
-      <TouchableOpacity 
-        style={styles.loginBtn}
-        onPress={
-          () => navigation.navigate('Details')
-        }
-      >
-        <Text style={styles.loginText}>LOGIN</Text>
-      </TouchableOpacity>
-    </View>
+    <Stack.Navigator initialRouteName="LoginScreen">
+      <Stack.Screen
+        name="LoginScreen"
+        component={LoginScreen}
+        options={{headerShown: false}}
+      />
+      <Stack.Screen
+        name="RegisterScreen"
+        component={RegisterScreen}
+        options={{
+          title: 'Register', //Set Header Title
+          headerStyle: {
+            backgroundColor: '#307ecc', //Set Header color
+          },
+          headerTintColor: '#fff', //Set Header text color
+          headerTitleStyle: {
+            fontWeight: 'bold', //Set Header text style
+          },
+        }}
+      />
+    </Stack.Navigator>
   );
-}
- 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
- 
-  image: {
-    marginBottom: 40,
-  },
- 
-  inputView: {
-    backgroundColor: "#FFA500",
-    borderRadius: 30,
-    width: "70%",
-    height: 45,
-    marginBottom: 20,
- 
-    alignItems: "center",
-  },
- 
-  TextInput: {
-    height: 50,
-    flex: 1,
-    padding: 10,
-    marginLeft: 20,
-  },
- 
-  forgot_button: {
-    height: 30,
-    marginBottom: 30,
-  },
- 
-  loginBtn: {
-    width: "80%",
-    borderRadius: 25,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 40,
-    backgroundColor: "#FFA500",
-  },
-});
+};
+
+const App = () => {
+  return (
+    <NavigationContainer>
+      <Stack.Navigator initialRouteName="SplashScreen">
+        {/* SplashScreen which will come once for 5 Seconds */
+        //}
+        /*<Stack.Screen
+          name="SplashScreen"
+          component={SplashScreen}
+          // Hiding header for Splash Screen
+          options={{headerShown: false}}
+        />
+        {/* Auth Navigator: Include Login and Signup *///}
+        /*<Stack.Screen
+          name="Auth"
+          component={Auth}
+          options={{headerShown: false}}
+        />
+        {/* Navigation Drawer as a landing page *///}
+        /*<Stack.Screen
+          name="DrawerNavigatorRoutes"
+          component={DrawerNavigatorRoutes}
+          // Hiding header for Navigation Drawer
+          options={{headerShown: false}}
+        />
+      </Stack.Navigator>
+    </NavigationContainer>
+  );
+};
+
+export default App;*/
