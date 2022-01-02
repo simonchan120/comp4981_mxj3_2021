@@ -1,9 +1,9 @@
 {
     "SECRET_KEY": "QgTxcqCuCLOPaMUpY4hBbQ",
-    "MONGO_CONNECTION_STRING":"mongodb://localhost:27017/test",
+    "MONGO_CONNECTION_STRING":"mongodb+srv://admin:FYd9%40e^_@serverlessinstance0.dlwpr.mongodb.net/test?retryWrites=true&w=majority",
     "OTP_SECRET_KEY": "WAKEB7XSXB2YOAU4D4QHW6ILRC6DFNRT",
     "EMAIL_VERIFICATION_SENDER_ADDRESS": "noreply.chatbot.chris@gmail.com",
     "EMAIL_PASSWORD":"fyp2021mxj3!",
-    "CELERY_RESULT_BACKEND":"mongodb://localhost:27017/test",
-    "CELERY_BROKER_URL":"amqp://localhost:5672//"
+    "CELERY_RESULT_BACKEND":"mongodb+srv://admin:FYd9%40e^_@serverlessinstance0.dlwpr.mongodb.net/test?retryWrites=true&w=majority",
+    "CELERY_BROKER_URL":"amqp://rabbitmq:rabbitmq@rabbit:5672//"
 }

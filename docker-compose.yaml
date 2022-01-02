@@ -4,3 +4,40 @@ services:
     build: .
     ports:
       - "5000:5000"
+    volumes:  
+      - .:/app
+  rabbit:
+    hostname: rabbit
+    image: rabbitmq:3.9
+    environment:
+      - RABBITMQ_DEFAULT_USER=rabbitmq
+      - RABBITMQ_DEFAULT_PASS=rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+  worker_1:
+    build: .
+    hostname: worker_1
+    command: sh -c "celery -A backend.celery_config.celery_app worker --loglevel=info"
+    deploy:
+      restart_policy:
+        condition: on-failure
+    volumes:  
+      - .:/app
+    links:
+      - rabbit
+    depends_on:
+      - rabbit
+  worker_2:
+    build: .
+    hostname: worker_2
+    command: sh -c "celery -A backend.celery_config.celery_app worker --loglevel=info"
+    deploy:
+      restart_policy:
+        condition: on-failure
+    volumes:
+      - .:/app
+    links:
+      - rabbit
+    depends_on:
+      - rabbit

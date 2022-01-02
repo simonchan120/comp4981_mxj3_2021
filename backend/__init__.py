@@ -1,4 +1,3 @@
-
 from flask_mail import Mail
 from logging.config import dictConfig
 from pathlib import Path
@@ -7,7 +6,7 @@ from datetime import datetime
 import json
 from mongoengine import connect
 import pyotp
-LOGGING_FOLDER="backend/logs"
+LOGGING_FOLDER = "backend/logs"
 Path(f"{LOGGING_FOLDER}").mkdir(parents=True, exist_ok=True)
 dictConfig({
     'version': 1,
@@ -17,11 +16,18 @@ dictConfig({
     'handlers': {'file': {
         'class': 'logging.handlers.RotatingFileHandler',
         'filename': f"{datetime.now().strftime(f'{LOGGING_FOLDER}/%Y%m%d-%H%M%S')}.log",
-        'formatter': 'default'
-    }},
+        'formatter': 'default',
+    },
+    'default':{
+            'level': 'INFO',
+            'formatter': 'default',
+            'class': 'logging.StreamHandler',
+            'stream': 'ext://sys.stdout',  # Default is stderr
+    }
+    },
     'root': {
         'level': 'INFO',
-        'handlers': ['file']
+        'handlers': ['default']
     }
 })
 app = Flask(__name__)
@@ -29,10 +35,8 @@ app = Flask(__name__)
 app.config.from_file("config.json", load=json.load)
 
 
-
 # mongodb mongoengine
 connect(host=app.config["MONGO_CONNECTION_STRING"])
-
 app.config.update(dict(
     DEBUG=True,
     MAIL_SERVER='smtp.gmail.com',
@@ -47,11 +51,10 @@ mail.init_app(app)
 totp = pyotp.TOTP(app.config["OTP_SECRET_KEY"])
 from . import rasa
 rasa_client = rasa.Rasa_Client()
-
 from .celery_config import celery_app
 celery_app = celery_app
 from . import server
 app.register_blueprint(server.main_bp)
 app.register_blueprint(server.internal_bp)
 
-__all__= ['rasa','server','dataclass','recommender']
+__all__ = ['rasa', 'server', 'dataclass', 'recommender']
