@@ -1,45 +1,54 @@
+import { StatusBar } from "expo-status-bar";
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TextInput,
+  Button,
+  TouchableOpacity,
+} from "react-native";
+
 import 'react-native-gesture-handler';
 
 //import * as React from 'react';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import {
-  NavigationContainer
-} from '@react-navigation/native';
-import {
-  createStackNavigator
-} from '@react-navigation/stack';
-import {
-  createBottomTabNavigator
-} from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
+import { Button as Button_Paper, TextInput as TextInput_Paper} from 'react-native-paper' ;
+
+import Constants from 'expo-constants';
 
 import HomeScreen from './HomeScreen';
-import DetailsScreen from './DetailsScreen';
+import ChatScreen from './ChatScreen';
 import ProfileScreen from './ProfileScreen';
 import SettingsScreen from './SettingsScreen';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-function AccStack() {
+/*Stack.Navigator.defaultProps = {
+  headerMode: 'none',
+};*/
+
+function ChatStack() {
   return (
       <Stack.Navigator
-        initialRouteName="Acc"
+        initialRouteName="Chat"
         screenOptions={{
-          headerShown: false,
+          headerShown: false/*,
           headerStyle: { backgroundColor: '#42f44b' },
           headerTintColor: '#fff',
-          headerTitleStyle: { fontWeight: 'bold' }
-
+          headerTitleStyle: { fontWeight: 'bold' }*/
         }}>
-        <Stack.Screen
-          name="Login"
-          component={LoginScreen}
-          options={{ title: 'Login Page' }}/>
           <Stack.Screen
-          name="Details"
-          component={DetailsScreen}
+          name="Chatting"
+          component={ChatScreen}
           options={{ title: 'Details Page' }} />
 
       </Stack.Navigator>
@@ -51,10 +60,10 @@ function HomeStack() {
       <Stack.Navigator
         initialRouteName="Home"
         screenOptions={{
-          headerShown: false,
+          headerShown: false/*,
           headerStyle: { backgroundColor: '#42f44b' },
           headerTintColor: '#fff',
-          headerTitleStyle: { fontWeight: 'bold' }
+          headerTitleStyle: { fontWeight: 'bold' }*/
 
         }}>
         <Stack.Screen
@@ -63,7 +72,7 @@ function HomeStack() {
           options={{ title: 'Home Page' }}/>
         <Stack.Screen
           name="Details"
-          component={DetailsScreen}
+          component={ChatScreen}
           options={{ title: 'Details Page' }} />
       </Stack.Navigator>
   );
@@ -74,17 +83,18 @@ function SettingsStack() {
     <Stack.Navigator
       initialRouteName="Settings"
       screenOptions={{
+        headerShown: false/*,
         headerStyle: { backgroundColor: '#42f44b' },
         headerTintColor: '#fff',
-        headerTitleStyle: { fontWeight: 'bold' }
+        headerTitleStyle: { fontWeight: 'bold' }*/
       }}>
       <Stack.Screen
         name="Settings"
         component={SettingsScreen}
         options={{ title: 'Setting Page' }}/>
       <Stack.Screen
-        name="Details"
-        component={DetailsScreen}
+        name="Chat"
+        component={ChatScreen}
         options={{ title: 'Details Page' }}/>
       <Stack.Screen
         name="Profile"
@@ -94,9 +104,9 @@ function SettingsStack() {
   );
 }
 
-function App() {
+export function Start() {
   return (
-    <NavigationContainer>
+    <NavigationContainer independent={true}>
       <Tab.Navigator
         initialRouteName="Feed"
         screenOptions={{
@@ -106,18 +116,20 @@ function App() {
           ]
         }}>
         <Tab.Screen
-          name="AccStack"
-          component={AccStack}
+          name="ChatStack"
+          component={ChatStack}
           options={{
-            tabBarLabel: 'Acc',
+            tabBarLabel: 'Chat',
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons
-                name="wrench"
+                name="chat-processing-outline"
                 color={color}
                 size={size}
               />
             ),
-          }} />
+            headerShown: false,
+          }
+          } />
         <Tab.Screen
           name="SettingsStack"
           component={SettingsStack}
@@ -130,40 +142,106 @@ function App() {
                 size={size}
               />
             ),
+            headerShown: false,
           }} />
         <Tab.Screen
           name="HomeStack"
           component={HomeStack}
           options={{
-            tabBarLabel: 'Home',
+            tabBarLabel: 'Activities',
             tabBarIcon: ({ color, size }) => (
               <MaterialCommunityIcons
-                name="home"
+                name="human-greeting"
                 color={color}
                 size={size}
               />
             ),
+            headerShown: false,
           }}  />
         
       </Tab.Navigator>
     </NavigationContainer>
   );
 }
-export default App;
+//export default App;
 
 
 
-import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
-import {
-  StyleSheet,
-  Text,
-  View,
-  Image,
-  TextInput,
-  Button,
-  TouchableOpacity,
-} from "react-native";
+
+const Auth = React.createContext(null);
+
+export function Login() {
+  const [email, setEmail] = React.useState('');
+  const [pass, setPass] = React.useState('');
+  
+  const { setToken } = React.useContext(Auth)
+
+  return (
+    <View style={styles_login.container}>
+      <TextInput_Paper
+        label="Email"
+        value={email}
+        style={styles_login.input}
+        onChangeText={(t) => setEmail(t)}
+      />
+
+      <TextInput_Paper
+        label="Password"
+        value={pass}
+        style={styles_login.input}
+        onChangeText={(t) => setPass(t)}
+      />
+
+      <Button_Paper mode="contained" onPress={() => setToken('Get the token and save!')}>Submit</Button_Paper>
+    </View>
+  );
+}
+
+export function Home() {
+const { setToken } = React.useContext(Auth)
+
+  return (
+    <View>
+      <Text>Home</Text>
+      <Button_Paper mode="contained" onPress={() => setToken(null)}>Signout</Button_Paper>
+    </View>
+  );
+}
+
+export default function App() {
+  const [token, setToken] = React.useState(null);
+
+  return (
+    <Auth.Provider value={{token, setToken}}>
+      <NavigationContainer>
+        <Stack.Navigator
+        screenOptions={{
+          headerShown: false
+        }}
+        >
+          {!token ? (
+            <Stack.Screen name="Login" component={Login} />
+          ) : (
+            <Stack.Screen name="Start" component={Start} />
+          )}
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Auth.Provider>
+  );
+}
+
+const styles_login = StyleSheet.create({
+  container: {
+    paddingTop: Constants.statusBarHeight + 20,
+    padding: 20,
+  },
+  input: {
+    marginBottom: 20,
+  },
+});
+
+
+
  
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");

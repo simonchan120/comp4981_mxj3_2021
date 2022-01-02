@@ -45,7 +45,7 @@ import { View, Text, SafeAreaView } from 'react-native';
 import React, { useState, useCallback, useEffect } from 'react'
 import { GiftedChat, Bubble } from 'react-native-gifted-chat'
 
-const DetailsScreen = () => {
+const ChatScreen = () => {
   const [messages, setMessages] = useState([]);
   /*interface Reply {
     title: string
@@ -201,4 +201,4 @@ const DetailsScreen = () => {
 }
 
 
-export default DetailsScreen;
+export default ChatScreen;
