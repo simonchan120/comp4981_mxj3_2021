@@ -38,19 +38,18 @@ def _decode_jwt(token):
         token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
 
 
-@main_bp.errorhandler(HTTPException)
+@main_bp.errorhandler(Exception)
 def handle_exception(e):
+    current_app.logger.exception('An error occured')
     """Return JSON instead of HTML for HTTP errors."""
     # start with the correct headers and status code from the error
-    response = e.get_response()
+    response = Response(status=500)
     # replace the body with JSON
     response.data = json.dumps({
-        "code": e.code,
-        "name": e.name,
-        "description": e.description,
+        "code": 500,
         "message": 'An error occured'
     })
-    response.content_type = "application/json"
+    response.content_type = "application/json" 
     return response
 
 
@@ -63,7 +62,7 @@ def token_required(f):
             token = request.headers[AUTH_TOKEN_HEADER_NAME]
         # return 401 if token is not passed
         if not token:
-            return json.dumps({'message': 'Token is missing !!'}), 401
+            return Response(json.dumps({'message': 'Token is missing !!'}), 401)
 
             # decoding the payload to fetch the stored details
         data = _decode_jwt(
@@ -72,9 +71,9 @@ def token_required(f):
             .first()
 
         if current_user is None:
-            return json.dumps({
+            return Response(json.dumps({
                 'message': 'Token is invalid !!'
-            }), 401
+            }), 401)
         # returns the current logged in users contex to the routes
         return f(current_user, data, *args, **kwargs)
     wrapper.__name__ = f.__name__
@@ -139,33 +138,33 @@ def _sendVerificationEmail(address, otp):
 
 @main_bp.route('/signup', methods=['POST'])
 def signup():
-    # creates a dictionary of the form data
-    data = request.form
+        # creates a dictionary of the form data
+        data = request.form
 
-    # gets name, email and password
-    username, email = data.get('username'), data.get('email')
-    password = data.get('password')
+        # gets name, email and password
+        username, email = data.get('username'), data.get('email')
+        password = data.get('password')
 
-    # checking for existing user
-    user = User.objects(username=username).count()
-    if not user:
-        # database ORM object
-        otp = totp.now()
-        user = User(
-            username=username,
-            email=email,
-            password=_hash_password(password),
-            otp=_hash_password(otp)
-        )
+        # checking for existing user
+        user = User.objects(username=username).count()
+        if not user:
+            # database ORM object
+            otp = totp.now()
+            user = User(
+                username=username,
+                email=email,
+                password=_hash_password(password),
+                otp=_hash_password(otp)
+            )
 
-        _sendVerificationEmail.delay(email, otp)
-        # insert user
-        user.save()
+            _sendVerificationEmail.delay(email, otp)
+            # insert user
+            user.save()
 
-        return Response(json.dumps({"message": 'Successfully registered. Please verify your email.'}), 201, mimetype='application/json')
-    else:
-        # returns 202 if user already exists
-        return Response(json.dumps({"message": 'User already exists. Please Log in.'}), 202, mimetype='application/json')
+            return Response(json.dumps({"message": 'Successfully registered. Please verify your email.'}), 201, mimetype='application/json')
+        else:
+            # returns 202 if user already exists
+            return Response(json.dumps({"message": 'User already exists. Please Log in.'}), 202, mimetype='application/json')
 
 
 # {   
