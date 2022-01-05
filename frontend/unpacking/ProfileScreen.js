@@ -23,22 +23,6 @@ const ProfileScreen = () => {
             You are on Profile Screen
           </Text>
         </View>
-        <Text
-          style={{
-            fontSize: 18,
-            textAlign: 'center',
-            color: 'grey'
-          }}>
-          React Native Bottom Navigation
-        </Text>
-        <Text
-          style={{
-            fontSize: 16,
-            textAlign: 'center',
-            color: 'grey'
-          }}>
-          www.aboutreact.com
-        </Text>
       </View>
     </SafeAreaView>
   );

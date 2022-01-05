@@ -27,6 +27,7 @@ import Constants from 'expo-constants';
 import HomeScreen from './HomeScreen';
 import ChatScreen from './ChatScreen';
 import ProfileScreen from './ProfileScreen';
+import ActivitiesScreen from "./ActivitiesScreen";
 import SettingsScreen from './SettingsScreen';
 
 const Stack = createStackNavigator();
@@ -55,10 +56,10 @@ function ChatStack() {
   );
 }
 
-function HomeStack() {
+function ActivitiesStack() {
   return (
       <Stack.Navigator
-        initialRouteName="Home"
+        initialRouteName="Activities"
         screenOptions={{
           headerShown: false/*,
           headerStyle: { backgroundColor: '#42f44b' },
@@ -67,13 +68,9 @@ function HomeStack() {
 
         }}>
         <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ title: 'Home Page' }}/>
-        <Stack.Screen
           name="Details"
-          component={ChatScreen}
-          options={{ title: 'Details Page' }} />
+          component={ActivitiesScreen}
+          options={{ title: 'Activities Page' }} />
       </Stack.Navigator>
   );
 }
@@ -130,6 +127,21 @@ export function Start() {
             headerShown: false,
           }
           } />
+        
+        <Tab.Screen
+          name="ActivitiesStack"
+          component={ActivitiesStack}
+          options={{
+            tabBarLabel: 'Activities',
+            tabBarIcon: ({ color, size }) => (
+              <MaterialCommunityIcons
+                name="human-greeting"
+                color={color}
+                size={size}
+              />
+            ),
+            headerShown: false,
+          }}  />
         <Tab.Screen
           name="SettingsStack"
           component={SettingsStack}
@@ -144,20 +156,6 @@ export function Start() {
             ),
             headerShown: false,
           }} />
-        <Tab.Screen
-          name="HomeStack"
-          component={HomeStack}
-          options={{
-            tabBarLabel: 'Activities',
-            tabBarIcon: ({ color, size }) => (
-              <MaterialCommunityIcons
-                name="human-greeting"
-                color={color}
-                size={size}
-              />
-            ),
-            headerShown: false,
-          }}  />
         
       </Tab.Navigator>
     </NavigationContainer>

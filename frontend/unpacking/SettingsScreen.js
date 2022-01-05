@@ -30,41 +30,11 @@ const SettingsScreen = ({ route, navigation }) => {
           <TouchableOpacity
             style={styles.button}
             onPress={
-              () => navigation.navigate('Home')
-            }>
-            <Text>Go to Home Tab</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={
-              () => navigation.navigate('Details')
-            }>
-            <Text>Open Detail Screen</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={
               () => navigation.navigate('Profile')
             }>
             <Text>Open Profile Screen</Text>
           </TouchableOpacity>
         </View>
-        <Text
-          style={{
-            fontSize: 18,
-            textAlign: 'center',
-            color: 'grey'
-          }}>
-          React Native Bottom Navigation
-        </Text>
-        <Text
-          style={{
-            fontSize: 16,
-            textAlign: 'center',
-            color: 'grey'
-          }}>
-          www.aboutreact.com
-        </Text>
       </View>
     </SafeAreaView>
   );
