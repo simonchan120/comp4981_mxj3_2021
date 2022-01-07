@@ -4,3 +4,4 @@ frontend/unpacking/node_modules
 playground
 frontend/unpacking/.expo/web/cache
 nginx
+backend/rasa/.rasa/cache

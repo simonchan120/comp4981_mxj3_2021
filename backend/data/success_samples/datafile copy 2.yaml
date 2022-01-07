@@ -1,0 +1,6 @@
+version: '3.0'
+stories:
+- story: Escalating disagreements between mother and wife
+  steps:
+  - user: This dialogue flow should be working...
+  - bot: Yes! end-to-end training models indeed works like this
