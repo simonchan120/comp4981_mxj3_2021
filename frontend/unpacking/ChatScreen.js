@@ -166,37 +166,39 @@ const ChatScreen = () => {
 
 
   return (
-    <GiftedChat
-      messages={messages}
-      renderBubble={props => {
-        return (
-          <Bubble
-            {...props}
-            textStyle={{
-              left: {
-                color: 'white',
-              },
-              right: {
-                color: 'white',
-              },
-            }}
-            wrapperStyle={{
-              left: {
-                backgroundColor: 'green',
-              },
-              right: {
-                backgroundColor: 'orange',
-              },
-            }}
-          />
-        );
-      }}
-      onSend={messages => onSend(messages)}
-      onQuickReply={quickReply => onQuickReply(quickReply)}
-      user={{
-        _id: 1,
-      }}
-    />
+    <SafeAreaView style={{ flex: 1 }}>
+      <GiftedChat
+        messages={messages}
+        renderBubble={props => {
+          return (
+            <Bubble
+              {...props}
+              textStyle={{
+                left: {
+                  color: 'white',
+                },
+                right: {
+                  color: 'white',
+                },
+              }}
+              wrapperStyle={{
+                left: {
+                  backgroundColor: 'green',
+                },
+                right: {
+                  backgroundColor: 'orange',
+                },
+              }}
+            />
+          );
+        }}
+        onSend={messages => onSend(messages)}
+        onQuickReply={quickReply => onQuickReply(quickReply)}
+        user={{
+          _id: 1,
+        }}
+      />
+    </SafeAreaView>
   )
 }
 

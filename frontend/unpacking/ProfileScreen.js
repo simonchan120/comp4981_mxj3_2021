@@ -3,6 +3,7 @@
 
 import * as React from 'react';
 import { View, Text, SafeAreaView } from 'react-native';
+import { Avatar } from 'react-native-paper';
 
 const ProfileScreen = () => {
   return (
@@ -14,6 +15,7 @@ const ProfileScreen = () => {
             alignItems: 'center',
             justifyContent: 'center',
           }}>
+          <Avatar.Image size={240} source={ {uri:'https://picsum.photos/seed/picsum5/1200/600' }} />
           <Text
             style={{
               fontSize: 25,

@@ -1,18 +1,16 @@
 import React from 'react';
 import { StyleSheet, Text, View, FlatList } from 'react-native';
 //import VegaScrollList from 'react-native-vega-scroll-list';
-import { Card, Title, Paragraph } from 'react-native-paper' ;
+import { Card, Title, Paragraph, TouchableRipple, Button } from 'react-native-paper' ;
+import { SafeAreaView } from 'react-navigation';
 
 const ActivitiesScreen = () => {
     const languages = [
-        { name: 'Pascal' , key: '1' },
-        { name: 'C' , key: '2' },
-        { name: 'C++' , key: '3' },
-        { name: 'Java' , key: '4' },
-        { name: 'JavaScript' , key: '5' },
-        { name: 'Go' , key: '6' },
-        { name: 'Kotlin' , key: '7' },
-        { name: 'Swift' , key: '8' },
+        { name: 'Activities A' , cover: 'https://picsum.photos/seed/picsum1/1200/600', key: '1' },
+        { name: 'Activities B' , cover: 'https://picsum.photos/seed/picsum2/1200/600', key: '2' },
+        { name: 'Activities C' , cover: 'https://picsum.photos/seed/picsum3/1200/600', key: '3' },
+        { name: 'Activities ABC' , cover: 'https://picsum.photos/seed/picsum4/1200/600', key: '4' },
+        { name: 'Activities DEF' , cover: 'https://picsum.photos/seed/picsum5/1200/600', key: '5' },
       ]
 
       const styles = StyleSheet.create({
@@ -31,19 +29,28 @@ const ActivitiesScreen = () => {
         });
 
     return (
-        <View /*style={StyleSheet.container}*/>
-            <FlatList
-                //distanceBetweenItem={12}
-                data = {languages}
-                renderItem={({ item }) => 
-                    <Card>
-                        <Card.Content>
-                            <Title>{item.name}</Title>
-                            <Paragraph>{item.name}</Paragraph>
-                        </Card.Content>
-                    </Card>}
-            />
-        </View>
+        <SafeAreaView style={{ flex: 1 }}>
+            <View /*style={StyleSheet.container}*/>
+                <FlatList
+                    //distanceBetweenItem={12}
+                    data = {languages}
+                    renderItem={({ item }) => 
+                        <TouchableRipple>
+                            <Card>
+                                <Card.Cover source={{ uri: item.cover }} />
+                                <Card.Content>
+                                    <Title>{item.name}</Title>
+                                    <Paragraph>{item.name}</Paragraph>
+                                </Card.Content>
+                                <Card.Actions>
+                                    <Button>Cancel</Button>
+                                    <Button>Ok</Button>
+                                </Card.Actions>
+                            </Card>
+                        </TouchableRipple>}
+                />
+            </View>
+        </SafeAreaView>
     );
 }
 
