@@ -16,7 +16,7 @@ class Rasa_Client():
 
         pass
     def send_message(self,msg,session_uuid):
-            self.conn = http.client.HTTPConnection("localhost",5005)
+            self.conn = http.client.HTTPConnection("rasa",5005)
             send_msg_link = "/webhooks/rest/webhook"
             package = {}
             package['sender'] = session_uuid

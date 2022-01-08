@@ -35,3 +35,10 @@ services:
       - rabbit
     depends_on:
       - rabbit
+  rasa:
+    image: rasa/rasa:3.0.4-full
+    ports:
+      - 5005:5005
+    volumes:
+      - ./:/app
+    command: run -m backend/rasa/models -p 5005 --enable-api
