@@ -32,9 +32,6 @@ class Rasa_Client():
             # assuming plain json
             data = data.decode('utf-8')
 
-            data = json.loads(data)
-            text_response = print(data[0]['text'])
-            data = json.dumps(data)
             return data,response.status
 
     def add_training_data(self,dialogue):
