@@ -1,7 +1,7 @@
 // React Native Bottom Navigation
 // https://aboutreact.com/react-native-bottom-navigation/
 //import * as React from 'react';
-import { View, Text, SafeAreaView } from 'react-native';
+import { View, Text, SafeAreaView, Dimensions } from 'react-native';
 
 /*const DetailsScreen = () => {
   return (
@@ -44,6 +44,8 @@ import { View, Text, SafeAreaView } from 'react-native';
 }*/
 import React, { useState, useCallback, useEffect } from 'react'
 import { GiftedChat, Bubble } from 'react-native-gifted-chat'
+
+import ActivitiesScreen from "./ActivitiesScreen";
 
 const ChatScreen = () => {
   const [messages, setMessages] = useState([]);
@@ -198,6 +200,9 @@ const ChatScreen = () => {
           _id: 1,
         }}
       />
+      
+      <ActivitiesScreen/>
+        
     </SafeAreaView>
   )
 }

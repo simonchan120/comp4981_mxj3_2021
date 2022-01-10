@@ -1,8 +1,38 @@
 import React from 'react';
-import { StyleSheet, Text, View, FlatList } from 'react-native';
+import { StyleSheet, Text, View, FlatList, Dimensions } from 'react-native';
 //import VegaScrollList from 'react-native-vega-scroll-list';
 import { Card, Title, Paragraph, TouchableRipple, Button } from 'react-native-paper' ;
 import { SafeAreaView } from 'react-navigation';
+
+
+const window = Dimensions.get("window");
+
+
+const width_proportion = '80%';
+const height_proportion = '60%';
+
+const styles = StyleSheet.create({
+  screen: {
+    /*flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#5A9BD4',*/
+    height: height_proportion,
+  },
+  box: {
+    width: width_proportion,
+    height: height_proportion,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#B8D2EC',
+  },
+  text: {
+    fontSize: 18,
+  },
+});
+
+
+
 
 const ActivitiesScreen = () => {
     const languages = [
@@ -28,11 +58,23 @@ const ActivitiesScreen = () => {
         }
         });
 
+    /*const [dimensions, setDimensions] = useState({ window, screen });
+    useEffect(() => {
+        const subscription = Dimensions.addEventListener(
+          "change",
+          ({ window, screen }) => {
+            setDimensions({ window, screen });
+          }
+        );
+        return () => subscription?.remove();
+      });*/
+
     return (
         <SafeAreaView style={{ flex: 1 }}>
-            <View /*style={StyleSheet.container}*/>
+            <View style={StyleSheet.screen}>
                 <FlatList
                     //distanceBetweenItem={12}
+                    horizontal = { true }
                     data = {languages}
                     renderItem={({ item }) => 
                         <TouchableRipple>
