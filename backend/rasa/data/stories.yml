@@ -1,11 +1,16 @@
+version: "3.0"
+
 stories:
-- steps:
+
+- story: happy path
+  steps:
   - intent: greet
   - action: utter_greet
   - intent: mood_great
   - action: utter_happy
-  story: happy path
-- steps:
+
+- story: sad path 1
+  steps:
   - intent: greet
   - action: utter_greet
   - intent: mood_unhappy
@@ -13,8 +18,9 @@ stories:
   - action: utter_did_that_help
   - intent: affirm
   - action: utter_happy
-  story: sad path 1
-- steps:
+
+- story: sad path 2
+  steps:
   - intent: greet
   - action: utter_greet
   - intent: mood_unhappy
@@ -22,30 +28,3 @@ stories:
   - action: utter_did_that_help
   - intent: deny
   - action: utter_goodbye
-  story: sad path 2
-- steps:
-  - intent: greet
-  - action: utter_greet
-  - intent: pof_1
-  - action: utter_pof_1
-  - action: utter_goodbye
-  story: pof story 1
-- steps:
-  - intent: greet
-  - action: utter_greet
-  - intent: pof_2
-  - action: utter_pof_2
-  story: generated
-- steps:
-  - intent: greet
-  - action: utter_greet
-  - intent: pof_2
-  - action: utter_pof_2
-  story: generated
-- steps:
-  - intent: greet
-  - action: utter_greet
-  - intent: pof_2
-  - action: utter_pof_2
-  story: generated
-version: '2.0'

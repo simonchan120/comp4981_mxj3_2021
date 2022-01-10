@@ -3,9 +3,7 @@ services:
   web:
     build: .
     ports:
-      - "5000:5000"
-    volumes:  
-      - .:/app
+      - "5000:8000"
   rabbit:
     hostname: rabbit
     image: rabbitmq:3.9
@@ -22,8 +20,6 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
-    volumes:  
-      - .:/app
     links:
       - rabbit
     depends_on:
@@ -35,9 +31,17 @@ services:
     deploy:
       restart_policy:
         condition: on-failure
-    volumes:
-      - .:/app
     links:
       - rabbit
     depends_on:
       - rabbit
+  rasa:
+    build: ./backend/rasa
+    #image:  
+    #image: rasa/rasa
+    ports:
+      - 5005:5005
+    volumes:
+      - ./:/app
+    #command: run -m backend/rasa/models -p 5005 --endpoints backend/rasa/endpoints.yml --enable-api
+    command: run -p 5005 --enable-api 

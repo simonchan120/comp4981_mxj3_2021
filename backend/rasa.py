@@ -16,7 +16,7 @@ class Rasa_Client():
 
         pass
     def send_message(self,msg,session_uuid):
-            self.conn = http.client.HTTPConnection("localhost",5005)
+            self.conn = http.client.HTTPConnection("rasa",5005)
             send_msg_link = "/webhooks/rest/webhook"
             package = {}
             package['sender'] = session_uuid
@@ -32,9 +32,6 @@ class Rasa_Client():
             # assuming plain json
             data = data.decode('utf-8')
 
-            data = json.loads(data)
-            text_response = print(data[0]['text'])
-            data = json.dumps(data)
             return data,response.status
 
     def add_training_data(self,dialogue):

@@ -1,0 +1,26 @@
+version: '3.0'
+stories:
+- story: Keeping secrets from my family
+  steps:
+  - user: I have secrets in my mind, and I don't know what to do with them. I don't
+      want to tell my wife and mom because I don't want to hurt them. But I'm not
+      sure how long that I can keep the secret to myself. What should I do? It's becoming
+      annoying and making me anxious. Help me out
+  - bot: It sounds like keeping the secrets has become a problem for you now. There
+      are several things to consider before you make a decision.
+  - bot: '- You mentioned that you don''t want your wife and mom to know because you
+      don''t want to hurt them – why would it hurt them?'
+  - bot: '- Is it necessary for them to know this information?'
+  - bot: '- What are the consequences of either telling them the truth or not telling
+      them? (for you and for your wife and mom).'
+  - bot: '- Once you have considered these, think of what you would tell your friend
+      if they were in your exact situation?'
+  - bot: '- Also, if your wife or mom were in your situation right now, what do you
+      think they would do themselves?'
+  - bot: '- If your wife and mom were in this situation, how would you feel? Would
+      you want to know the secrets?'
+  - bot: '- How has keeping these secrets affected your own mental and physical health?'
+  - bot: Once you have looked at the problem from all angles, you will be able to
+      better make a decision on whether it is right to tell them or not.
+  - user: thanks
+  - bot: talking to you was nice

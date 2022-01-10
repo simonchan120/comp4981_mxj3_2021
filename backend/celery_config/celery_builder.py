@@ -6,8 +6,4 @@ celery_app = Celery(
         backend=app.config["CELERY_RESULT_BACKEND"],
         broker=app.config["CELERY_BROKER_URL"],
     )
-@celery_app.task
-def debug_task():
-    print("e")
-    return 1
 celery_app.autodiscover_tasks()

@@ -38,19 +38,18 @@ def _decode_jwt(token):
         token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
 
 
-@main_bp.errorhandler(HTTPException)
+@main_bp.errorhandler(Exception)
 def handle_exception(e):
+    current_app.logger.exception('An error occured')
     """Return JSON instead of HTML for HTTP errors."""
     # start with the correct headers and status code from the error
-    response = e.get_response()
+    response = Response(status=500)
     # replace the body with JSON
     response.data = json.dumps({
-        "code": e.code,
-        "name": e.name,
-        "description": e.description,
+        "code": 500,
         "message": 'An error occured'
     })
-    response.content_type = "application/json"
+    response.content_type = "application/json" 
     return response
 
 
@@ -63,7 +62,7 @@ def token_required(f):
             token = request.headers[AUTH_TOKEN_HEADER_NAME]
         # return 401 if token is not passed
         if not token:
-            return json.dumps({'message': 'Token is missing !!'}), 401
+            return Response(json.dumps({'message': 'Token is missing !!'}), 401)
 
             # decoding the payload to fetch the stored details
         data = _decode_jwt(
@@ -72,9 +71,9 @@ def token_required(f):
             .first()
 
         if current_user is None:
-            return json.dumps({
+            return Response(json.dumps({
                 'message': 'Token is invalid !!'
-            }), 401
+            }), 401)
         # returns the current logged in users contex to the routes
         return f(current_user, data, *args, **kwargs)
     wrapper.__name__ = f.__name__
@@ -131,41 +130,41 @@ def login():
     )
 
 @celery_app.task
-def _sendVerificationEmail(address, otp):
+def _sendVerificationEmail(address, text_body):
     with app.app_context():
-        msg = FlaskMessage(
-            f"Verification code for registration: {otp}", sender=app.config["EMAIL_VERIFICATION_SENDER_ADDRESS"], recipients=[address])
+        msg = FlaskMessage(text_body, sender=app.config["EMAIL_VERIFICATION_SENDER_ADDRESS"], recipients=[address])
         mail.send(msg)
 
 @main_bp.route('/signup', methods=['POST'])
 def signup():
-    # creates a dictionary of the form data
-    data = request.form
+        # creates a dictionary of the form data
+        data = request.form
 
-    # gets name, email and password
-    username, email = data.get('username'), data.get('email')
-    password = data.get('password')
+        # gets name, email and password
+        username, email = data.get('username'), data.get('email')
+        password = data.get('password')
 
-    # checking for existing user
-    user = User.objects(username=username).count()
-    if not user:
-        # database ORM object
-        otp = totp.now()
-        user = User(
-            username=username,
-            email=email,
-            password=_hash_password(password),
-            otp=_hash_password(otp)
-        )
+        # checking for existing user
+        is_user_exist = User.objects(username=username).count()
+        is_email_exist = User.objects(email=email).count()
+        if not is_user_exist and not is_email_exist:
+            # database ORM object
+            otp = totp.now()
+            user = User(
+                username=username,
+                email=email,
+                password=_hash_password(password),
+                otp=_hash_password(otp)
+            )
 
-        _sendVerificationEmail.delay(email, otp)
-        # insert user
-        user.save()
+            _sendVerificationEmail.delay(email, f"Verification code for registration: {otp}")
+            # insert user
+            user.save()
 
-        return Response(json.dumps({"message": 'Successfully registered. Please verify your email.'}), 201, mimetype='application/json')
-    else:
-        # returns 202 if user already exists
-        return Response(json.dumps({"message": 'User already exists. Please Log in.'}), 202, mimetype='application/json')
+            return Response(json.dumps({"message": 'Successfully registered. Please verify your email.'}), 201, mimetype='application/json')
+        else:
+            # returns 202 if user already exists
+            return Response(json.dumps({"message": 'Username or email already exists. Please Log in.'}), 202, mimetype='application/json')
 
 
 # {   
@@ -199,7 +198,7 @@ def resendEmail():
     try:
         otp = totp.now()
         user.otp = _hash_password(otp)
-        _sendVerificationEmail.delay(user.email, otp)
+        _sendVerificationEmail.delay(user.email, f"Verification code for registration: {otp}")
         user.save()
         return Response(json.dumps({"message": "Email resent"}), status=200, mimetype='application/json')
     except:
@@ -227,9 +226,8 @@ def connection_ok():
 @token_required
 def send_message(user, token_body):
     content = request.form
-    # print(content['message'])
     json_string, status = rasa_client.send_message(
-        content.get('message'), token_body[CHAT_SESSION_IDENTIFIER_NAME])
+        str(content.get('message')), str(token_body[CHAT_SESSION_IDENTIFIER_NAME]))
     return Response(json_string, status=status, mimetype='application/json')
 
 
@@ -275,7 +273,55 @@ def new_chat_session(user, token_body):
         dict(token_body, **{CHAT_SESSION_IDENTIFIER_NAME: str(uuid.uuid4())}))
     return Response(json.dumps({AUTH_TOKEN_HEADER_NAME: new_token}), status=200, mimetype='application/json')
 
+@main_bp.route("/delete-profile", methods=['DELETE'])
+@token_required
+def delete_user(user, token_body):
+    user.delete()
+    return Response('',204)
 
+@main_bp.route("/show-profile", methods=['GET'])
+@token_required
+def get_user_profile(user, token_body):
+    user._id = None
+    user.email = None
+    user.password = None
+    user.otp = None
+    return Response(user.to_json(),200, mimetype='application/json')
+
+@main_bp.route("/signup/forget-password", methods=['POST'])
+def reset_pw_sendEmail():
+    data = request.form
+    user = User.objects(email=data.get('email')).first()
+    if not user:
+        return Response(json.dumps({"message": "user not found"}), status=404, mimetype='application/json')
+    try:
+        otp = totp.now()
+        user.otp = _hash_password(otp)
+        _sendVerificationEmail.delay(user.email, f"Code for resetting password: {otp}")
+        user.save()
+        return Response(json.dumps({"message": "Email sent"}), status=200, mimetype='application/json')
+    except:
+        return Response(json.dumps({"message": "An error occured"}), status=404, mimetype='application/json')
+
+@main_bp.route("/signup/reset-password", methods=['POST'])
+def reset_pw():
+    data = request.form
+    email = data.get('email')
+    otp = data.get('otp')
+    new_password = data.get('password')
+    if not otp:
+        return Response(json.dumps({"message": "missing otp"}), status=404, mimetype='application/json')
+    user = User.objects(email=email).first()
+    if not user:
+        return Response(json.dumps({"message": "user not found"}), status=404, mimetype='application/json')
+    
+    if _hash_password(otp) == user.otp:
+        user.is_verified=True
+        user.password=_hash_password(new_password)
+        user.save()
+        return Response(json.dumps({"message":"Resetted password"}), status=200, mimetype='application/json')
+    else:
+        return Response(json.dumps({"message": "Wrong otp"}), status=404, mimetype='application/json')
 @internal_bp.route("/train", methods=['POST'])
 def train_data():
     return rasa_client.train()

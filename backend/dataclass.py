@@ -1,6 +1,6 @@
 from mongoengine import *
 from mongoengine.fields import BooleanField, EmbeddedDocumentField, EmbeddedDocumentListField, IntField, ListField, ReferenceField, SortedListField
-
+from datetime import datetime
 class Survey(EmbeddedDocument):
     time_submitted = DateTimeField()
     name = StringField(default="PMH-Scale")
@@ -15,7 +15,7 @@ class Survey(EmbeddedDocument):
 class Message(EmbeddedDocument):
     content = StringField()
     is_from_user = BooleanField()
-    time_sent = DateTimeField()
+    time_sent = DateTimeField(default=datetime.utcnow)
 
 #https://github.com/MongoEngine/mongoengine/issues/1697
 class MultiMediaData(Document):
@@ -47,6 +47,7 @@ class User(Document):
 class Conversation(Document):
     time_started = DateTimeField()
     time_ended = DateTimeField()
+    uuid = StringField()
     user = ReferenceField('User',reverse_delete_rule=CASCADE)
     content = EmbeddedDocumentListField('Message')
 
