@@ -29,6 +29,7 @@ import ChatScreen from './ChatScreen';
 import ProfileScreen from './ProfileScreen';
 import ActivitiesScreen from "./ActivitiesScreen";
 import SettingsScreen from './SettingsScreen';
+import API_test from './API_test';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -97,6 +98,10 @@ function SettingsStack() {
         name="Profile"
         component={ProfileScreen}
         options={{ title: 'Profile Page' }}/>
+      <Stack.Screen
+        name="API"
+        component={API_test}
+        options={{ title: 'API test Page' }}/>
     </Stack.Navigator>
   );
 }

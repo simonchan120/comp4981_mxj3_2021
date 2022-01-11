@@ -47,6 +47,11 @@ import { GiftedChat, Bubble } from 'react-native-gifted-chat'
 
 import ActivitiesScreen from "./ActivitiesScreen";
 
+/*** For API ***/
+//import React, { useEffect, useState } from 'react';
+//import { ActivityIndicator, FlatList, Text, View } from 'react-native';
+import Constants from "expo-constants";
+
 const ChatScreen = () => {
   const [messages, setMessages] = useState([]);
   /*interface Reply {
@@ -128,12 +133,59 @@ const ChatScreen = () => {
   }, [])
 
 
+  /* This part is for API */
+  const [isLoading, setLoading] = useState(true);
+  const [data, setData] = useState([]);
+  const { manifest } = Constants;
+  const uri = `http://${manifest.debuggerHost.split(':').shift()}:5005/webhooks/rest/webhook/`;
+  var send_text, replied_text;
+  const getReplies = async () => {
+    try {
+      const response = await fetch(uri, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          sender: 'test_user',
+          message: send_text
+        })
+      });
+      const json = await response.json();
+      console.log(typeof json[0].text);
+      replied_text = json[0].text;
+      //console.log(data);
+    } catch (error) {
+      console.error(error);
+    } finally {
+      setLoading(false);
+      console.log("Loading set false");
+      const rasa_replied_msg = [{
+        _id: num_chat + 1,
+        text: replied_text,
+        createdAt: new Date(),
+        user: {
+          _id: 2,
+          name: 'Unpacker',
+        },
+      }]
+      setMessages(previousMessages => GiftedChat.append(previousMessages, rasa_replied_msg[0]));
+      num_chat++;
+    }
+  }
+  /* End */
+
 
   const onSend = useCallback((messages = []) => {
     setMessages(previousMessages => GiftedChat.append(previousMessages, messages));
     num_chat++;
-
+    ///
+    console.log(typeof messages[0].text);
+    send_text = messages[0].text;
+    getReplies();
   }, [])
+
 
   const onQuickReply = useCallback((quickReply) => {
     /*if(quickReply[0].value == "yes") {
