@@ -33,7 +33,7 @@ class User(Document):
     password = StringField()
     is_email_verified = BooleanField(default=False)
     otp = StringField()
-    #conversations = ListField(ReferenceField('Conversation'))
+    conversations = ListField(ReferenceField('Conversation'))
     time_registered = DateTimeField()
     gender = StringField()
     age = IntField()
@@ -43,6 +43,7 @@ class User(Document):
     surveys = EmbeddedDocumentListField('Survey')
     preferences = SortedListField(EmbeddedDocumentField('Preference'),ordering="score",reverse = True)
     pred_preferences = SortedListField(EmbeddedDocumentField('Preference'),ordering="score",reverse = True)
+    latest_conversation_uuid = StringField()
 
 class Conversation(Document):
     time_started = DateTimeField()
