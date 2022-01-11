@@ -22,22 +22,31 @@ main_bp = Blueprint('main', __name__)
 internal_bp = Blueprint('internal', __name__)
 
 AUTH_TOKEN_HEADER_NAME = 'rasa-access-token'
-CHAT_SESSION_IDENTIFIER_NAME = 'chat-session-uuid'
 
 
 def _hash_password(pw):
     return sha256(pw.encode('utf-8')).hexdigest()
 
+def _get_jwt_encode_key(extra = None):
+    if extra:
+        m = sha256()
+        m.update(current_app.config['SECRET_KEY'].encode('utf-8'))
+        m.update(extra.encode('utf-8'))
+        return m.hexdigest() 
+    else:
+        return current_app.config['SECRET_KEY']
 
-def _encode_jwt(obj):
-    return jwt.encode(obj, current_app.config['SECRET_KEY'], algorithm="HS256")
+def _encode_jwt(obj, second_par = None):
+    return jwt.encode(obj, _get_jwt_encode_key(second_par), algorithm="HS256")
 
 
-def _decode_jwt(token):
+def _decode_jwt_without_verifying(token):
     return jwt.decode(
-        token, current_app.config['SECRET_KEY'], algorithms=["HS256"])
+        token, _get_jwt_encode_key(), algorithms=["HS256"], options={"verify_signature": False})
 
-
+def _verify_jwt(token, second_par):
+    return jwt.decode(
+        token, _get_jwt_encode_key(second_par), algorithms=["HS256"])
 @main_bp.errorhandler(Exception)
 def handle_exception(e):
     current_app.logger.exception('An error occured')
@@ -62,25 +71,32 @@ def token_required(f):
             token = request.headers[AUTH_TOKEN_HEADER_NAME]
         # return 401 if token is not passed
         if not token:
-            return Response(json.dumps({'message': 'Token is missing !!'}), 401)
+            return Response(json.dumps({'message': 'Token is missing !!'}), 401, mimetype='application/json')
 
+        try:
             # decoding the payload to fetch the stored details
-        data = _decode_jwt(
-            token)
+            data = _decode_jwt_without_verifying(
+                token)
+        except jwt.exceptions.ExpiredSignatureError:
+            return Response(json.dumps({'message': 'Token has expired'}),401, mimetype='application/json')
         current_user = User.objects(username=data['username'])\
             .first()
-
+            
         if current_user is None:
             return Response(json.dumps({
                 'message': 'Token is invalid !!'
             }), 401)
+        try:
+            _verify_jwt(token,current_user.password)
+        except jwt.exceptions.InvalidSignatureError:
+            return Response(json.dumps({'message': 'Invalid token'}),401, mimetype='application/json')
         # returns the current logged in users contex to the routes
         return f(current_user, data, *args, **kwargs)
     wrapper.__name__ = f.__name__
     return wrapper
+
+
 # route for logging user in
-
-
 @main_bp.route('/login', methods=['POST'])
 def login():
     # creates dictionary of form data
@@ -117,9 +133,8 @@ def login():
         # generates the JWT Token
         token = _encode_jwt({
             'username': user.username,
-            'exp': datetime.utcnow() + timedelta(minutes=30),
-            CHAT_SESSION_IDENTIFIER_NAME: str(uuid.uuid4())
-        })
+            'exp': datetime.utcnow() + timedelta(days=30)
+        },user.password)
 
         return Response(json.dumps({AUTH_TOKEN_HEADER_NAME: token}), 200, mimetype='application/json')
     # wrong password
@@ -158,6 +173,7 @@ def signup():
             )
 
             _sendVerificationEmail.delay(email, f"Verification code for registration: {otp}")
+            user.latest_conversation_uuid = str(uuid.uuid4())
             # insert user
             user.save()
 
@@ -227,7 +243,7 @@ def connection_ok():
 def send_message(user, token_body):
     content = request.form
     json_string, status = rasa_client.send_message(
-        str(content.get('message')), str(token_body[CHAT_SESSION_IDENTIFIER_NAME]))
+        str(content.get('message')), user.latest_conversation_uuid)
     return Response(json_string, status=status, mimetype='application/json')
 
 
@@ -269,9 +285,9 @@ def add_preference_to_user(current_user, token_body):
 @main_bp.route("/new-chat-session", methods=['POST'])
 @token_required
 def new_chat_session(user, token_body):
-    new_token = _encode_jwt(
-        dict(token_body, **{CHAT_SESSION_IDENTIFIER_NAME: str(uuid.uuid4())}))
-    return Response(json.dumps({AUTH_TOKEN_HEADER_NAME: new_token}), status=200, mimetype='application/json')
+    user.latest_conversation_uuid=str(uuid.uuid4())
+    user.save()
+    return Response(json.dumps({'message': 'success'}), status=200, mimetype='application/json')
 
 @main_bp.route("/delete-profile", methods=['DELETE'])
 @token_required
@@ -282,7 +298,6 @@ def delete_user(user, token_body):
 @main_bp.route("/show-profile", methods=['GET'])
 @token_required
 def get_user_profile(user, token_body):
-    user._id = None
     user.email = None
     user.password = None
     user.otp = None
