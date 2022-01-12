@@ -1,10 +1,9 @@
-from .data.dialogue import Dialogue,Sentence
-from .rasa import Rasa_Client
+from .data.dialogue import Dialogue
 from flask import request, Response, Blueprint, current_app
 
 import json
 import jwt
-from flask_mail import Mail, Message as FlaskMessage
+from flask_mail import Message as FlaskMessage
 
 from hashlib import sha256
 from datetime import datetime, timedelta
@@ -12,8 +11,6 @@ from mongoengine import *
 from .dataclass import *
 from random import randint, uniform
 import uuid
-from werkzeug.exceptions import HTTPException
-
 
 # main flask app object for configer dependencies only
 # endpoints are defined using blueprints, global flask app object is accessed by current_app
@@ -47,6 +44,15 @@ def _decode_jwt_without_verifying(token):
 def _verify_jwt(token, second_par):
     return jwt.decode(
         token, _get_jwt_encode_key(second_par), algorithms=["HS256"])
+def _create_new_conversation(user):
+    new_uuid = str(uuid.uuid4())
+    user.latest_conversation_uuid = new_uuid
+    new_conversation = Conversation(uuid=new_uuid, user=user)
+    new_conversation.save()
+    new_conversation_with_id = Conversation.objects(uuid=new_uuid).first()
+    user.conversations.append(new_conversation_with_id)
+    user.save()
+    return user,new_conversation_with_id
 @main_bp.errorhandler(Exception)
 def handle_exception(e):
     current_app.logger.exception('An error occured')
@@ -85,7 +91,7 @@ def token_required(f):
         if current_user is None:
             return Response(json.dumps({
                 'message': 'Token is invalid !!'
-            }), 401)
+            }), 401, mimetype='application/json')
         try:
             _verify_jwt(token,current_user.password)
         except jwt.exceptions.InvalidSignatureError:
@@ -173,10 +179,9 @@ def signup():
             )
 
             _sendVerificationEmail.delay(email, f"Verification code for registration: {otp}")
-            user.latest_conversation_uuid = str(uuid.uuid4())
-            # insert user
             user.save()
-
+            _create_new_conversation(user)
+            
             return Response(json.dumps({"message": 'Successfully registered. Please verify your email.'}), 201, mimetype='application/json')
         else:
             # returns 202 if user already exists
@@ -242,8 +247,17 @@ def connection_ok():
 @token_required
 def send_message(user, token_body):
     content = request.form
+    user_message= content.get('message')
     json_string, status = rasa_client.send_message(
-        str(content.get('message')), user.latest_conversation_uuid)
+        str(user_message), user.latest_conversation_uuid)
+    current_conversation =  Conversation.objects(uuid=user.latest_conversation_uuid).first()
+    bot_reply = json.loads(json_string)[0]['text']
+    user_message_obj = Message(content=user_message,is_from_user=True,time_sent=datetime.utcnow())
+    bot_message_obj = Message(content=bot_reply,is_from_user=False,time_sent=datetime.utcnow())
+    current_conversation.content.append(user_message_obj)
+    current_conversation.content.append(bot_message_obj)
+    current_conversation.save()
+
     return Response(json_string, status=status, mimetype='application/json')
 
 
@@ -279,29 +293,46 @@ def add_preference_to_user(current_user, token_body):
             mimetype='application/json'
         )
     current_user.preferences.append(Preference(media, score))
-    return Response('', 204)
+    return Response(json.dumps({'message': 'Prefence added'}), status=200, mimetype='application/json')
 
 
 @main_bp.route("/new-chat-session", methods=['POST'])
 @token_required
 def new_chat_session(user, token_body):
-    user.latest_conversation_uuid=str(uuid.uuid4())
-    user.save()
-    return Response(json.dumps({'message': 'success'}), status=200, mimetype='application/json')
+    if user.conversations.__len__()==0:
+        _create_new_conversation(user)
+        current_app.logger.warn(f"User: {user.username} does not have an existing conversation, creating a new one")
+        return Response(json.dumps({'message': 'New chat session created'}), status=200, mimetype='application/json')
+    if user.conversations[0].content.__len__() ==0:
+        current_app.logger.info(f"User: {user.username} attempted to start a new conversation without finishing the last one")
+        return Response(json.dumps({'message': 'New chat session created'}), status=200, mimetype='application/json')
+    _create_new_conversation(user)
+    return Response(json.dumps({'message': 'New chat session created'}), status=200, mimetype='application/json')
 
 @main_bp.route("/delete-profile", methods=['DELETE'])
 @token_required
 def delete_user(user, token_body):
     user.delete()
-    return Response('',204)
+    return Response(json.dumps({'message': 'Profile deleted'}), status=200, mimetype='application/json')
+
+class DateTimeEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, datetime):
+            return o.isoformat()
+
+        return json.JSONEncoder.default(self, o) 
 
 @main_bp.route("/show-profile", methods=['GET'])
 @token_required
 def get_user_profile(user, token_body):
-    user.email = None
     user.password = None
     user.otp = None
-    return Response(user.to_json(),200, mimetype='application/json')
+    user_json = json.loads(user.to_json())
+    new_list = []
+    for entry in user.conversations:
+        new_list.append(json.loads(entry.to_json()))
+    user_json["conversations"]=new_list
+    return Response(json.dumps(user_json,cls=DateTimeEncoder),200, mimetype='application/json')
 
 @main_bp.route("/signup/forget-password", methods=['POST'])
 def reset_pw_sendEmail():

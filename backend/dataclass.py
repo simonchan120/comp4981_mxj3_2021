@@ -34,7 +34,7 @@ class User(Document):
     is_email_verified = BooleanField(default=False)
     otp = StringField()
     conversations = ListField(ReferenceField('Conversation'))
-    time_registered = DateTimeField()
+    time_registered = DateTimeField(default=datetime.utcnow)
     gender = StringField()
     age = IntField()
     year_of_school_or_work = IntField()
@@ -46,11 +46,11 @@ class User(Document):
     latest_conversation_uuid = StringField()
 
 class Conversation(Document):
-    time_started = DateTimeField()
+    time_started = DateTimeField(default=datetime.utcnow, required=True)
     time_ended = DateTimeField()
     uuid = StringField()
     user = ReferenceField('User',reverse_delete_rule=CASCADE)
-    content = EmbeddedDocumentListField('Message')
+    content = SortedListField(EmbeddedDocumentField('Message'),ordering="time_sent",reverse = True)
 
 
 
