@@ -1,7 +1,7 @@
 // React Native Bottom Navigation
 // https://aboutreact.com/react-native-bottom-navigation/
 //import * as React from 'react';
-import { View, Text, SafeAreaView, Dimensions } from 'react-native';
+import { StyleSheet, View, Text, SafeAreaView, Dimensions } from 'react-native';
 
 /*const DetailsScreen = () => {
   return (
@@ -217,47 +217,72 @@ const ChatScreen = () => {
     this.sendBotResponse(sendBotResponsetxt);*/
   }, [])
 
-
+  /*const chatHeight = ph(70);
+  const chatWeight = pw(90);
+  const actHeight = ph(20);
+  const actWeight = pw(90);*/
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <GiftedChat
-        messages={messages}
-        renderBubble={props => {
-          return (
-            <Bubble
-              {...props}
-              textStyle={{
-                left: {
-                  color: 'white',
-                },
-                right: {
-                  color: 'white',
-                },
-              }}
-              wrapperStyle={{
-                left: {
-                  backgroundColor: 'green',
-                },
-                right: {
-                  backgroundColor: 'orange',
-                },
-              }}
-            />
-          );
-        }}
-        onSend={messages => onSend(messages)}
-        onQuickReply={quickReply => onQuickReply(quickReply)}
-        user={{
-          _id: 1,
-        }}
-      />
-      
-      <ActivitiesScreen/>
-        
+      <View style={style.chat}>
+        <GiftedChat
+          messages={messages}
+          renderBubble={props => {
+            return (
+              <Bubble
+                {...props}
+                textStyle={{
+                  left: {
+                    color: 'white',
+                  },
+                  right: {
+                    color: 'white',
+                  },
+                }}
+                wrapperStyle={{
+                  left: {
+                    backgroundColor: 'green',
+                  },
+                  right: {
+                    backgroundColor: 'orange',
+                  },
+                }}
+              />
+            );
+          }}
+          onSend={messages => onSend(messages)}
+          onQuickReply={quickReply => onQuickReply(quickReply)}
+          user={{
+            _id: 1,
+          }}
+        />
+      </View>
+      <View style={style.act}>
+        <ActivitiesScreen/>
+      </View>
     </SafeAreaView>
   )
 }
 
+const width_proportion = '100%';
+const height_proportion_chat = '85%';
+const height_proportion_act = '65%';
+const style = StyleSheet.create({
+
+  chat: {
+    width: width_proportion,
+    height: height_proportion_chat,
+    /*alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#B8D2EC',*/
+  },
+  act: {
+    width: width_proportion,
+    height: height_proportion_act,
+    /*alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#B8D2EC',*/
+  },
+});
 
 export default ChatScreen;

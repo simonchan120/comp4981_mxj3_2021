@@ -5809,6 +5809,11 @@
   dependencies:
     "prop-types" "^15.7.x"
 
+"react-native-responsive-dimension@^1.0.0":
+  "integrity" "sha512-Tb0DPgJd/Ec+2qkuAFB3Tur1xW3/7pC0bO2l4zKdbvGpClO5GCVkzo7DudtuTsbgaqqAjk6mPyGQJaX5r/KiTQ=="
+  "resolved" "https://registry.npmjs.org/react-native-responsive-dimension/-/react-native-responsive-dimension-1.0.0.tgz"
+  "version" "1.0.0"
+
 "react-native-safe-area-context@>= 3.0.0":
   "integrity" "sha512-yOwiiPJ1rk+/nfK13eafbpW6sKW0jOnsRem2C1LPJjM3tfTof6hlvV5eWHATye3XOpu2cJ7N+HdkUvUDGwFD2Q=="
   "resolved" "https://registry.npmjs.org/react-native-safe-area-context/-/react-native-safe-area-context-3.3.2.tgz"

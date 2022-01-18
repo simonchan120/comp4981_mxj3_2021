@@ -182,7 +182,7 @@ export function Login() {
   return (
     <View style={styles_login.container}>
       <TextInput_Paper
-        label="Email"
+        label="Username"
         value={email}
         style={styles_login.input}
         onChangeText={(t) => setEmail(t)}
