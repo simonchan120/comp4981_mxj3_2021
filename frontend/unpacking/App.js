@@ -11,6 +11,9 @@ import {
 } from "react-native";
 
 import 'react-native-gesture-handler';
+import Constants from "expo-constants";
+
+
 
 //import * as React from 'react';
 
@@ -21,8 +24,6 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { Button as Button_Paper, TextInput as TextInput_Paper} from 'react-native-paper' ;
-
-import Constants from 'expo-constants';
 
 import HomeScreen from './HomeScreen';
 import ChatScreen from './ChatScreen';
@@ -178,6 +179,36 @@ export function Login() {
   const [pass, setPass] = React.useState('');
   
   const { setToken } = React.useContext(Auth)
+  const { manifest } = Constants;
+
+
+  const uri = `http://${manifest.debuggerHost.split(':').shift()}:5000/login`;
+  const loginAuth = async () => {
+    try {
+     const response = await fetch(uri, {
+       method: 'POST',
+       headers: {
+         'Accept': '*/*',
+         //'Accept': 'application/json',
+         'Content-Type': 'multipart/form-data'
+       },
+       body: JSON.stringify({
+         username: 'admin_don',
+         password: 'admin123'
+       })
+     });
+
+     const json = await response.json();
+     console.log(typeof json);
+     //setData(json);
+     console.log(json);
+   } catch (error) {
+     console.error(error);
+   } finally {
+     //setLoading(false);
+     console.log("Loading set false")
+   }
+  }
 
   return (
     <View style={styles_login.container}>
@@ -185,17 +216,25 @@ export function Login() {
         label="Username"
         value={email}
         style={styles_login.input}
-        onChangeText={(t) => setEmail(t)}
+        onChangeText={(t) => {
+          setEmail(t);
+        }}
       />
 
       <TextInput_Paper
         label="Password"
         value={pass}
         style={styles_login.input}
-        onChangeText={(t) => setPass(t)}
+        secureTextEntry={true}
+        onChangeText={(t) => {setPass(t); console.log(pass);}}
       />
 
-      <Button_Paper mode="contained" onPress={() => setToken('Get the token and save!')}>Submit</Button_Paper>
+      <Button_Paper mode="contained" onPress={() => {
+        setToken('Get the token and save!');
+        loginAuth();
+        }}>Submit</Button_Paper>
+      <Button_Paper mode="text" onPress={() => setToken('Get the token and save!')}>Forget password?</Button_Paper>
+
     </View>
   );
 }
@@ -246,7 +285,7 @@ const styles_login = StyleSheet.create({
 
 
  
-const LoginScreen = ({ navigation }) => {
+/*const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
  
@@ -333,4 +372,4 @@ const styles = StyleSheet.create({
     marginTop: 40,
     backgroundColor: "#FFA500",
   },
-});
+});*/
