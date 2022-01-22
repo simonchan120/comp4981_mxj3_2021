@@ -23,7 +23,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import { Button as Button_Paper, TextInput as TextInput_Paper} from 'react-native-paper' ;
+import { Button as Button_Paper, TextInput as TextInput_Paper, Snackbar} from 'react-native-paper' ;
 
 import HomeScreen from './HomeScreen';
 import ChatScreen from './ChatScreen';
@@ -31,6 +31,7 @@ import ProfileScreen from './ProfileScreen';
 import ActivitiesScreen from "./ActivitiesScreen";
 import SettingsScreen from './SettingsScreen';
 import API_test from './API_test';
+import ForgetPassword from "./ResetPasswordScreen"; 
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -167,16 +168,14 @@ export function Start() {
     </NavigationContainer>
   );
 }
-//export default App;
-
-
-
 
 const Auth = React.createContext(null);
 
 export function Login() {
-  const [email, setEmail] = React.useState('');
+  const [usr, setUsr] = React.useState('');
   const [pass, setPass] = React.useState('');
+  const [err_visible, setErrVisible] = React.useState(false);
+  const onDismissErrSnackBar = () => setErrVisible(false);
   
   const { setToken } = React.useContext(Auth)
   const { manifest } = Constants;
@@ -184,40 +183,46 @@ export function Login() {
 
   const uri = `http://${manifest.debuggerHost.split(':').shift()}:5000/login`;
   const loginAuth = async () => {
+    let json_result;
+    let formData = new FormData();
+    formData.append('username', usr);
+    formData.append('password', pass);
     try {
      const response = await fetch(uri, {
        method: 'POST',
        headers: {
-         'Accept': '*/*',
-         //'Accept': 'application/json',
          'Content-Type': 'multipart/form-data'
        },
-       body: JSON.stringify({
-         username: 'admin_don',
-         password: 'admin123'
-       })
+       body: formData
      });
 
      const json = await response.json();
      console.log(typeof json);
-     //setData(json);
-     console.log(json);
+     json_result = json;
+     console.log(json['rasa-access-token'] == null);
    } catch (error) {
      console.error(error);
    } finally {
      //setLoading(false);
      console.log("Loading set false")
+     if (json_result['rasa-access-token'] == null) {
+      setErrVisible(true);
+     }
+     else {
+       setToken(json_result['rasa-access-token']);
+     }
    }
   }
 
   return (
+    <View style={styles.container}>
     <View style={styles_login.container}>
       <TextInput_Paper
         label="Username"
-        value={email}
+        value={usr}
         style={styles_login.input}
         onChangeText={(t) => {
-          setEmail(t);
+          setUsr(t);
         }}
       />
 
@@ -226,15 +231,25 @@ export function Login() {
         value={pass}
         style={styles_login.input}
         secureTextEntry={true}
-        onChangeText={(t) => {setPass(t); console.log(pass);}}
+        onChangeText={(t) => {
+          setPass(t);
+        }}
       />
 
       <Button_Paper mode="contained" onPress={() => {
-        setToken('Get the token and save!');
         loginAuth();
         }}>Submit</Button_Paper>
-      <Button_Paper mode="text" onPress={() => setToken('Get the token and save!')}>Forget password?</Button_Paper>
+      <Button_Paper mode="text" onPress={() => {
+        setToken('FORGET PASSWORD');
+        }}>Forget password?</Button_Paper>
 
+    </View>
+    <Snackbar
+      visible={err_visible}
+      onDismiss={onDismissErrSnackBar}
+      >
+        An error occur, or your username/password is incorrect.
+    </Snackbar>
     </View>
   );
 }
@@ -263,8 +278,8 @@ export default function App() {
         >
           {!token ? (
             <Stack.Screen name="Login" component={Login} />
-          ) : (
-            <Stack.Screen name="Start" component={Start} />
+          ) : ( token === 'FORGET PASSWORD' ? (<Stack.Screen name="Forget" component={ForgetPassword} />) : (<Stack.Screen name="Start" component={Start} />)
+            
           )}
         </Stack.Navigator>
       </NavigationContainer>
@@ -282,6 +297,12 @@ const styles_login = StyleSheet.create({
   },
 });
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+});
 
 
  
