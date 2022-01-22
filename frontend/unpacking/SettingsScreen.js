@@ -34,6 +34,13 @@ const SettingsScreen = ({ route, navigation }) => {
             }>
             <Text>Open Profile Screen</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={
+              () => navigation.navigate('API')
+            }>
+            <Text>Open API test Screen</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </SafeAreaView>
