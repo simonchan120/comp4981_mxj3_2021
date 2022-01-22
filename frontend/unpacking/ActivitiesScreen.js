@@ -4,36 +4,6 @@ import { StyleSheet, Text, View, FlatList, Dimensions } from 'react-native';
 import { Card, Title, Paragraph, TouchableRipple, Button } from 'react-native-paper' ;
 import { SafeAreaView } from 'react-navigation';
 
-
-const window = Dimensions.get("window");
-
-
-const width_proportion = '80%';
-const height_proportion = '60%';
-
-const styles = StyleSheet.create({
-  screen: {
-    /*flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#5A9BD4',*/
-    height: height_proportion,
-  },
-  box: {
-    width: width_proportion,
-    height: height_proportion,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#B8D2EC',
-  },
-  text: {
-    fontSize: 18,
-  },
-});
-
-
-
-
 const ActivitiesScreen = () => {
     const languages = [
         { name: 'Activities A' , cover: 'https://picsum.photos/seed/picsum1/1200/600', key: '1' },
@@ -43,35 +13,9 @@ const ActivitiesScreen = () => {
         { name: 'Activities DEF' , cover: 'https://picsum.photos/seed/picsum5/1200/600', key: '5' },
       ]
 
-      const styles = StyleSheet.create({
-        container: {
-          flex: 1,
-          backgroundColor: '#fff',
-          paddingTop: 40,
-          paddingHorizontal: 20
-        },
-        item: {
-          marginTop: 20,
-          padding: 30,
-          backgroundColor: '#ffc600',
-          fontSize: 24
-        }
-        });
-
-    /*const [dimensions, setDimensions] = useState({ window, screen });
-    useEffect(() => {
-        const subscription = Dimensions.addEventListener(
-          "change",
-          ({ window, screen }) => {
-            setDimensions({ window, screen });
-          }
-        );
-        return () => subscription?.remove();
-      });*/
-
     return (
         <SafeAreaView style={{ flex: 1 }}>
-            <View style={StyleSheet.screen}>
+            <View>
                 <FlatList
                     //distanceBetweenItem={12}
                     horizontal = { true }
@@ -79,14 +23,14 @@ const ActivitiesScreen = () => {
                     renderItem={({ item }) => 
                         <TouchableRipple>
                             <Card>
-                                <Card.Cover source={{ uri: item.cover }} />
-                                <Card.Content>
-                                    <Title>{item.name}</Title>
-                                    <Paragraph>{item.name}</Paragraph>
+                                <Card.Cover style={styles.card_template} source={{ uri: item.cover }} />
+                                <Card.Content style={styles.text_template}>
+                                    <Title style={styles.title}>{item.name}</Title>
+                                    <Paragraph style={styles.content}>{item.name}</Paragraph>
                                 </Card.Content>
                                 <Card.Actions>
-                                    <Button>Cancel</Button>
-                                    <Button>Ok</Button>
+                                    <Button style={styles.title}>Cancel</Button>
+                                    <Button style={styles.title}>Ok</Button>
                                 </Card.Actions>
                             </Card>
                         </TouchableRipple>}
@@ -95,5 +39,24 @@ const ActivitiesScreen = () => {
         </SafeAreaView>
     );
 }
+
+const styles = StyleSheet.create({
+  card_template:{
+    //width: '30%',
+    height: '30%',
+    //boxShadow: "10px 10px 17px -12px rgba(0,0,0,0.75)"
+  },
+  text_template:{
+    //width: '30%',
+    height: '15%',
+    //boxShadow: "10px 10px 17px -12px rgba(0,0,0,0.75)"
+  },
+  title:{
+    fontSize: 10,
+  },
+  content:{
+    fontSize: 8,
+  },
+});
 
 export default ActivitiesScreen;

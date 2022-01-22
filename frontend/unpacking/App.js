@@ -11,6 +11,9 @@ import {
 } from "react-native";
 
 import 'react-native-gesture-handler';
+import Constants from "expo-constants";
+
+
 
 //import * as React from 'react';
 
@@ -20,15 +23,16 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
-import { Button as Button_Paper, TextInput as TextInput_Paper} from 'react-native-paper' ;
-
-import Constants from 'expo-constants';
+import { Button as Button_Paper, TextInput as TextInput_Paper, Snackbar} from 'react-native-paper' ;
 
 import HomeScreen from './HomeScreen';
 import ChatScreen from './ChatScreen';
 import ProfileScreen from './ProfileScreen';
 import ActivitiesScreen from "./ActivitiesScreen";
 import SettingsScreen from './SettingsScreen';
+import API_test from './API_test';
+import ForgetPassword from "./ResetPasswordScreen";
+import NewUser from "./NewUserScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -97,6 +101,10 @@ function SettingsStack() {
         name="Profile"
         component={ProfileScreen}
         options={{ title: 'Profile Page' }}/>
+      <Stack.Screen
+        name="API"
+        component={API_test}
+        options={{ title: 'API test Page' }}/>
     </Stack.Navigator>
   );
 }
@@ -161,36 +169,91 @@ export function Start() {
     </NavigationContainer>
   );
 }
-//export default App;
-
-
-
 
 const Auth = React.createContext(null);
 
 export function Login() {
-  const [email, setEmail] = React.useState('');
+  const [usr, setUsr] = React.useState('');
   const [pass, setPass] = React.useState('');
+  const [err_visible, setErrVisible] = React.useState(false);
+  const onDismissErrSnackBar = () => setErrVisible(false);
   
   const { setToken } = React.useContext(Auth)
+  const { manifest } = Constants;
+
+
+  const uri = `http://${manifest.debuggerHost.split(':').shift()}:5000/login`;
+  const loginAuth = async () => {
+    let json_result;
+    let formData = new FormData();
+    formData.append('username', usr);
+    formData.append('password', pass);
+    try {
+     const response = await fetch(uri, {
+       method: 'POST',
+       headers: {
+         'Content-Type': 'multipart/form-data'
+       },
+       body: formData
+     });
+
+     const json = await response.json();
+     console.log(typeof json);
+     json_result = json;
+     console.log(json['rasa-access-token'] == null);
+   } catch (error) {
+     console.error(error);
+   } finally {
+     //setLoading(false);
+     console.log("Loading set false")
+     if (json_result['rasa-access-token'] == null) {
+      setErrVisible(true);
+     }
+     else {
+       setToken(json_result['rasa-access-token']);
+     }
+   }
+  }
 
   return (
+    <View style={styles.container}>
     <View style={styles_login.container}>
       <TextInput_Paper
-        label="Email"
-        value={email}
+        label="Username"
+        value={usr}
         style={styles_login.input}
-        onChangeText={(t) => setEmail(t)}
+        onChangeText={(t) => {
+          setUsr(t);
+        }}
       />
 
       <TextInput_Paper
         label="Password"
         value={pass}
         style={styles_login.input}
-        onChangeText={(t) => setPass(t)}
+        secureTextEntry={true}
+        onChangeText={(t) => {
+          setPass(t);
+        }}
       />
 
-      <Button_Paper mode="contained" onPress={() => setToken('Get the token and save!')}>Submit</Button_Paper>
+      <Button_Paper mode="contained" onPress={() => {
+        loginAuth();
+        }}>Submit</Button_Paper>
+      <Button_Paper mode="text" onPress={() => {
+        setToken('FORGET PASSWORD');
+        }}>Forget password?</Button_Paper>
+      <Button_Paper mode="text" onPress={() => {
+        setToken('NEW USER');
+        }}>New to Unpacking Happiness?</Button_Paper>
+
+    </View>
+    <Snackbar
+      visible={err_visible}
+      onDismiss={onDismissErrSnackBar}
+      >
+        An error occur, or your username/password is incorrect.
+    </Snackbar>
     </View>
   );
 }
@@ -219,8 +282,9 @@ export default function App() {
         >
           {!token ? (
             <Stack.Screen name="Login" component={Login} />
-          ) : (
-            <Stack.Screen name="Start" component={Start} />
+          ) : ( token === 'FORGET PASSWORD' ? (<Stack.Screen name="Forget" component={ForgetPassword} />
+          ) : ( token === 'NEW USER' ? (<Stack.Screen name="New" component={NewUser} />
+          ) : (<Stack.Screen name="Start" component={Start} />))
           )}
         </Stack.Navigator>
       </NavigationContainer>
@@ -238,10 +302,16 @@ const styles_login = StyleSheet.create({
   },
 });
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'space-between',
+  },
+});
 
 
  
-const LoginScreen = ({ navigation }) => {
+/*const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
  
@@ -328,4 +398,4 @@ const styles = StyleSheet.create({
     marginTop: 40,
     backgroundColor: "#FFA500",
   },
-});
+});*/
