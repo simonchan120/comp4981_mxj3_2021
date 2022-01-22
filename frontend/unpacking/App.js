@@ -31,7 +31,8 @@ import ProfileScreen from './ProfileScreen';
 import ActivitiesScreen from "./ActivitiesScreen";
 import SettingsScreen from './SettingsScreen';
 import API_test from './API_test';
-import ForgetPassword from "./ResetPasswordScreen"; 
+import ForgetPassword from "./ResetPasswordScreen";
+import NewUser from "./NewUserScreen";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -242,6 +243,9 @@ export function Login() {
       <Button_Paper mode="text" onPress={() => {
         setToken('FORGET PASSWORD');
         }}>Forget password?</Button_Paper>
+      <Button_Paper mode="text" onPress={() => {
+        setToken('NEW USER');
+        }}>New to Unpacking Happiness?</Button_Paper>
 
     </View>
     <Snackbar
@@ -278,8 +282,9 @@ export default function App() {
         >
           {!token ? (
             <Stack.Screen name="Login" component={Login} />
-          ) : ( token === 'FORGET PASSWORD' ? (<Stack.Screen name="Forget" component={ForgetPassword} />) : (<Stack.Screen name="Start" component={Start} />)
-            
+          ) : ( token === 'FORGET PASSWORD' ? (<Stack.Screen name="Forget" component={ForgetPassword} />
+          ) : ( token === 'NEW USER' ? (<Stack.Screen name="New" component={NewUser} />
+          ) : (<Stack.Screen name="Start" component={Start} />))
           )}
         </Stack.Navigator>
       </NavigationContainer>

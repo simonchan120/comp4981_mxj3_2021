@@ -128,7 +128,6 @@ const ResetPassword = ({route, navigation}) => {
     const [err_visible, setErrVisible] = React.useState(false);
     const onDismissErrSnackBar = () => setErrVisible(false);
 
-    const [email, setEmail] = React.useState('');
     const [OTP, setOTP] = React.useState('');
     const [newPassword, setNewPassword] = React.useState('');
     //const { setToken } = React.useContext(Auth)
