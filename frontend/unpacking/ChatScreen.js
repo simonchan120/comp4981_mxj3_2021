@@ -1,56 +1,11 @@
-// React Native Bottom Navigation
-// https://aboutreact.com/react-native-bottom-navigation/
-//import * as React from 'react';
-import { StyleSheet, View, Text, SafeAreaView, Dimensions } from 'react-native';
-
-/*const DetailsScreen = () => {
-  return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <View style={{ flex: 1 , padding: 16}}>
-        <View
-          style={{
-            flex: 1,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}>
-          <Text
-            style={{
-              fontSize: 25,
-              textAlign: 'center',
-              marginBottom: 16
-            }}>
-            You are on Details Screen
-          </Text>
-        </View>
-        <Text
-          style={{
-            fontSize: 18,
-            textAlign: 'center',
-            color: 'grey'
-          }}>
-          React Native Bottom Navigation
-        </Text>
-        <Text
-          style={{
-            fontSize: 16,
-            textAlign: 'center',
-            color: 'grey'
-          }}>
-          www.aboutreact.com
-        </Text>
-      </View>
-    </SafeAreaView>
-  );
-}*/
-import React, { useState, useCallback, useEffect } from 'react'
+import { StyleSheet, View, SafeAreaView } from 'react-native';
+import React, { useState, useCallback, useEffect, useContext } from 'react'
 import { GiftedChat, Bubble } from 'react-native-gifted-chat'
 
 import ActivitiesScreen from "./ActivitiesScreen";
 
-/*** For API ***/
-//import React, { useEffect, useState } from 'react';
-//import { ActivityIndicator, FlatList, Text, View } from 'react-native';
 import Constants from "expo-constants";
+import {Auth} from "./App"
 
 const ChatScreen = () => {
   const [messages, setMessages] = useState([]);
@@ -132,28 +87,32 @@ const ChatScreen = () => {
     setMessages(previousMessages => GiftedChat.append(previousMessages, start_message_list[1]));
   }, [])
 
-
+  const context = useContext(Auth);
   /* This part is for API */
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const { manifest } = Constants;
-  const uri = `http://${manifest.debuggerHost.split(':').shift()}:5005/webhooks/rest/webhook/`;
+  const uri = `http://${manifest.debuggerHost.split(':').shift()}:5000/`;
   var send_text, replied_text;
   const getReplies = async () => {
+    console.log("Context: ",context.token);
+    let formData = new FormData();
+    formData.append('message', send_text);
     try {
       const response = await fetch(uri, {
         method: 'POST',
         headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json'
+          'Content-Type': 'multipart/form-data',
+          'rasa-access-token': context.token
         },
-        body: JSON.stringify({
-          sender: 'test_user',
-          message: send_text
-        })
+        body: formData
       });
       const json = await response.json();
-      console.log(typeof json[0].text);
+      console.log("JSON?", Array.isArray(json));
+      if (!Array.isArray(json)){
+        console.log(replied_text == null);
+        return ;
+      }
       replied_text = json[0].text;
       //console.log(data);
     } catch (error) {
@@ -161,6 +120,9 @@ const ChatScreen = () => {
     } finally {
       setLoading(false);
       console.log("Loading set false");
+      if (replied_text == null) {
+        return ;
+      }
       const rasa_replied_msg = [{
         _id: num_chat + 1,
         text: replied_text,
