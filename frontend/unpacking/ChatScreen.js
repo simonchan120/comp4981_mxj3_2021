@@ -1,4 +1,4 @@
-import { StyleSheet, View, SafeAreaView } from 'react-native';
+import { StyleSheet, View, SafeAreaView, Image } from 'react-native';
 import React, { useState, useCallback, useEffect, useContext } from 'react'
 import { GiftedChat, Bubble } from 'react-native-gifted-chat'
 
@@ -63,6 +63,7 @@ const ChatScreen = () => {
     {
       _id: 4,
       text: 'Great! Now let\'s prepare a piece of paper and a pen, and start drawing a house!',
+      image: 'https://facebook.github.io/react/img/logo_og.png',
       createdAt: new Date(),
       user: {
         _id: 2,
@@ -216,6 +217,28 @@ const ChatScreen = () => {
           onQuickReply={quickReply => onQuickReply(quickReply)}
           user={{
             _id: 1,
+          }}
+          renderMessageImage= {(props) => {
+            return (
+              <View
+                style={{
+                  borderRadius: 15,
+                  padding: 2,
+                }}
+              >
+                <Image
+                  resizeMode="contain"
+                  style={{
+                    width: 200,
+                    height: 200,
+                    padding: 6,
+                    borderRadius: 15,
+                    resizeMode: "cover",
+                  }}
+                  source={require('./Image/giphy.gif')}
+                />
+              </View>
+            );
           }}
         />
       </View>
