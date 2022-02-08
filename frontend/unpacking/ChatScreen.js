@@ -63,7 +63,7 @@ const ChatScreen = () => {
     {
       _id: 4,
       text: 'Great! Now let\'s prepare a piece of paper and a pen, and start drawing a house!',
-      image: 'https://facebook.github.io/react/img/logo_og.png',
+      image: 'https://i.giphy.com/media/YsTs5ltWtEhnq/giphy.gif', //getting GIF from links
       createdAt: new Date(),
       user: {
         _id: 2,
@@ -227,15 +227,19 @@ const ChatScreen = () => {
                 }}
               >
                 <Image
-                  resizeMode="contain"
+                  resizeMode="cover"
                   style={{
-                    width: 200,
+                    //width: 200,
                     height: 200,
-                    padding: 6,
-                    borderRadius: 15,
+                    padding: 10,
+                    borderRadius: 50,
                     resizeMode: "cover",
+                    overflow: 'hidden',
+                    marginLeft: 4,
+                    marginRight: 4,
+                    marginTop: 5,
                   }}
-                  source={require('./Image/giphy.gif')}
+                  source={{ uri: props.currentMessage.image }}
                 />
               </View>
             );
