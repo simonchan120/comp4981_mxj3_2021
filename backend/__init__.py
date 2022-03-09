@@ -66,6 +66,9 @@ app.config.update(dict(
 mail = Mail()
 mail.init_app(app)
 totp = pyotp.TOTP(app.config["OTP_SECRET_KEY"])
+from . import dataclass
+from . import recommender
+from . import giphyUtil
 from . import rasa
 rasa_client = rasa.Rasa_Client()
 from .celery_config import celery_app
@@ -76,4 +79,4 @@ app.register_blueprint(server.main_bp)
 if os.environ['FLASK_ENV']=='development':
     app.register_blueprint(server.internal_bp)
 
-__all__ = ['rasa', 'server', 'dataclass', 'recommender']
+__all__ = ['rasa', 'server', 'dataclass', 'recommender','giphyUtil']

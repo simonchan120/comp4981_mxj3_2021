@@ -1,8 +1,10 @@
-from random import randint
-from dataclass import *
+from random import randint, sample
+from .dataclass import *
 import logging
 logger = logging.getLogger(__name__)
 class Recommender():
+    def check_if_recommend(user):
+        return True
     # 1- avg mean sq diff 
     def _knn_sim(user_a,user_b):
         
@@ -52,13 +54,24 @@ class Recommender():
             if result is not None:
                 neighbors_score_list.append((result,user))
         neighbors_score_list.sort(key = lambda x: int(x[0]),reverse=True)
-        top_k_neighbors_score_list = neighbors_score_list[:num_of_neighbors]
-        
-        
-        preference_list = cls._predict_scores(current_user,top_k_neighbors_score_list)
-        current_user.pred_preferences = current_user.preferences + preference_list
-        current_user.save()
 
+        #fails if knn list is less than num of neighbors
+        
+        top_k_neighbors_score_list = neighbors_score_list[:num_of_neighbors] if len(neighbors_score_list) > num_of_neighbors else neighbors_score_list
+               
+        preference_list = cls._predict_scores(current_user,top_k_neighbors_score_list)
+
+
+        current_user.pred_preferences = current_user.preferences + preference_list
+        
+        remaining_items = num_of_top_items - len(current_user.pred_preferences)
+
+        # add random items if predicted preferences lack members
+        if remaining_items >0:            
+            remaining_multimediadata = MultiMediaData.objects(name__not__in=list(map(lambda x:x.content.name,current_user.pred_preferences))).all()
+            current_user.pred_preferences += [Preference(content=x,score=-1) for x in sample(list(remaining_multimediadata),k=remaining_items)]
+
+        current_user.save()
         current_user = User.objects(username=username).first()
 
         idx = randint(0,num_of_top_items-1) if len(current_user.pred_preferences) >=num_of_top_items else (len(current_user.preferences) -1)

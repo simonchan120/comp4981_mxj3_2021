@@ -2,7 +2,7 @@
 FROM python:3.8-alpine
 
 COPY ["/backend/data","/backend/data"]
-COPY ["/backend/__init__.py","/backend/requirements.txt","/backend/dataclass.py","/backend/rasa.py","/backend/recommender.py","/backend/server.py","/backend/config.json","/backend/"]
+COPY ["/backend/__init__.py","/backend/requirements.txt","/backend/dataclass.py","/backend/rasa.py","/backend/recommender.py","/backend/server.py","/backend/config.json","/backend/giphyUtil.py","/backend/"]
 COPY ["/backend/celery_config","/backend/celery_config"]
 COPY backend/requirements.txt .
 

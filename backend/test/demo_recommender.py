@@ -1,8 +1,8 @@
 import pytest
 from mongoengine import *
 import sys
-sys.path.append("..")
-import recommender
+#sys.path.append("..")
+from backend import recommender
 import logging
 from pathlib import Path
 from datetime import datetime
