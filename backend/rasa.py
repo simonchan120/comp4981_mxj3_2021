@@ -15,7 +15,8 @@ class Rasa_Client():
         
 
         pass
-    def send_message(self,msg,session_uuid):
+    def send_message(self,user,msg):
+            session_uuid = user.latest_conversation_uuid
             self.conn = http.client.HTTPConnection("rasa",5005)
             send_msg_link = "/webhooks/rest/webhook"
             package = {}
@@ -31,7 +32,7 @@ class Rasa_Client():
             data = response.read()
             # assuming plain json
             data = data.decode('utf-8')
-
+            self.conn.close()
             return data,response.status
 
     def add_training_data(self,dialogue):

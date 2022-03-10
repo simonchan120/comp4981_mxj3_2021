@@ -6,6 +6,9 @@ from datetime import datetime
 import json
 from mongoengine import connect
 import pyotp
+import boto3
+from botocore.config import Config
+import os
 LOGGING_FOLDER = "backend/logs"
 Path(f"{LOGGING_FOLDER}").mkdir(parents=True, exist_ok=True)
 dictConfig({
@@ -31,9 +34,23 @@ dictConfig({
     }
 })
 app = Flask(__name__)
-# TODO: change this secret key before deployment
-app.config.from_file("config.json", load=json.load)
 
+if os.environ['FLASK_ENV']=='development':
+# TODO: change this secret key before deployment
+    app.config.from_file("config.json", load=json.load)
+
+elif os.environ['FLASK_ENV']=='production':
+    my_config = Config(
+        region_name = 'ap-east-1',
+        signature_version = 's3v4',
+        retries = {
+            'max_attempts': 10,
+            'mode': 'standard'
+        }
+    )
+    ssm = boto3.client('ssm',config=my_config)
+    parameter = ssm.get_parameter(Name='/path/to/param', WithDecryption=True)
+    app.config.update(a='a',b='b')
 
 # mongodb mongoengine
 connect(host=app.config["MONGO_CONNECTION_STRING"])
@@ -49,12 +66,17 @@ app.config.update(dict(
 mail = Mail()
 mail.init_app(app)
 totp = pyotp.TOTP(app.config["OTP_SECRET_KEY"])
+from . import dataclass
+from . import recommender
+from . import giphyUtil
 from . import rasa
 rasa_client = rasa.Rasa_Client()
 from .celery_config import celery_app
 celery_app = celery_app
 from . import server
 app.register_blueprint(server.main_bp)
-app.register_blueprint(server.internal_bp)
 
-__all__ = ['rasa', 'server', 'dataclass', 'recommender']
+if os.environ['FLASK_ENV']=='development':
+    app.register_blueprint(server.internal_bp)
+
+__all__ = ['rasa', 'server', 'dataclass', 'recommender','giphyUtil']
