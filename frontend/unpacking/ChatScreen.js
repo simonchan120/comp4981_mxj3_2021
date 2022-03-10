@@ -94,7 +94,7 @@ const ChatScreen = () => {
   const [data, setData] = useState([]);
   const { manifest } = Constants;
   const uri = `http://${manifest.debuggerHost.split(':').shift()}:5000/`;
-  var send_text, replied_text;
+  var send_text, replied_content = [], replied_type = [];
   const getReplies = async () => {
     console.log("Context: ",context.token);
     let formData = new FormData();
@@ -110,31 +110,58 @@ const ChatScreen = () => {
       });
       const json = await response.json();
       console.log("JSON?", Array.isArray(json));
-      if (!Array.isArray(json)){
+      console.log("len is", json.length);
+      for (var i=0; i<json.length; i++) {
+        if (json[i].type === "text") {
+          replied_content[i] = json[i].text;
+        }
+        else if (json[i].type === "gif") {
+          replied_content[i] = json[i].url;
+        }
+        replied_type[i] = json[i].type;
+      }
+      /*if (!Array.isArray(json)){
         console.log(replied_text == null);
         return ;
-      }
-      replied_text = json[0].text;
+      }*/
+      //replied_text = json[0].text;
       //console.log(data);
     } catch (error) {
       console.error(error);
     } finally {
       setLoading(false);
       console.log("Loading set false");
-      if (replied_text == null) {
+      if (replied_content.lenth == 0) {
         return ;
       }
-      const rasa_replied_msg = [{
-        _id: num_chat + 1,
-        text: replied_text,
-        createdAt: new Date(),
-        user: {
-          _id: 2,
-          name: 'Unpacker',
-        },
-      }]
-      setMessages(previousMessages => GiftedChat.append(previousMessages, rasa_replied_msg[0]));
-      num_chat++;
+      for (var i=0; i<replied_content.length; i++){
+        if (replied_type[i] === "text"){
+          const rasa_replied_msg = [{
+            _id: num_chat + 1,
+            text: replied_content[i],
+            createdAt: new Date(),
+            user: {
+              _id: 2,
+              name: 'Unpacker',
+            },
+          }]
+          setMessages(previousMessages => GiftedChat.append(previousMessages, rasa_replied_msg[0]));
+          num_chat++;
+        }
+        if (replied_type[i] === "gif"){
+          const rasa_replied_msg = [{
+            _id: num_chat + 1,
+            image: replied_content[i], //getting GIF from links
+            createdAt: new Date(),
+            user: {
+              _id: 2,
+              name: 'Unpacker',
+            },
+          }]
+          setMessages(previousMessages => GiftedChat.append(previousMessages, rasa_replied_msg[0]));
+          num_chat++;
+        }
+      }
     }
   }
   /* End */
@@ -229,12 +256,13 @@ const ChatScreen = () => {
                 <Image
                   resizeMode="cover"
                   style={{
-                    //width: 200,
+                    width: 200,
                     height: 200,
                     padding: 10,
                     borderRadius: 50,
-                    resizeMode: "cover",
-                    overflow: 'hidden',
+                    resizeMode: "center",
+                    //object-fit: "cover",
+                    //overflow: 'hidden',
                     marginLeft: 4,
                     marginRight: 4,
                     marginTop: 5,
