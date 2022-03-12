@@ -1,6 +1,6 @@
 import { StyleSheet, View, SafeAreaView, Image } from 'react-native';
 import React, { useState, useCallback, useEffect, useContext } from 'react'
-import { GiftedChat, Bubble } from 'react-native-gifted-chat'
+import { GiftedChat, Bubble, messageIdGenerator } from 'react-native-gifted-chat'
 
 import ActivitiesScreen from "./ActivitiesScreen";
 
@@ -23,7 +23,7 @@ const ChatScreen = () => {
 
   const start_message_list = [
     {
-      _id: 1,
+      _id: 's1',
       text: 'Welcome to Unpacking Happiness :)',
       createdAt: new Date(),
       user: {
@@ -32,10 +32,19 @@ const ChatScreen = () => {
       },
     },
     {
-      _id: 2,
-      text: 'Shall we start with a quick little test?',
+      _id: 's2',
+      text: 'Since this is the first time we talk, I hope to understand you more~',
       createdAt: new Date(),
-      quickReplies: {
+      user: {
+        _id: 2,
+        name: 'Unpacker',
+      },
+    },
+    {
+      _id: 's3',
+      text: 'Shall we start with a quick little test?\nWhat we are starting with is a questionaire for understanding your current status. It just composes of a few questions, and it\'s you and me who will know this!\nNow I will give a list of questions. From a scale of 1 to 5, how much do they sound like describing you? ',
+      createdAt: new Date(),
+      /*quickReplies: {
         type: 'radio', // or 'checkbox',
         keepIt: false,
         values: [
@@ -48,7 +57,7 @@ const ChatScreen = () => {
             value: 'What is it about?',
           },
         ],
-      },
+      },*/
       user: {
         _id: 2,
         name: 'Unpacker',
@@ -57,13 +66,12 @@ const ChatScreen = () => {
 
   ]
 
-  var num_chat = start_message_list.length;
+  var num_chat = 0;
 
   const reply_message_list = [
     {
-      _id: 4,
-      text: 'Great! Now let\'s prepare a piece of paper and a pen, and start drawing a house!',
-      image: 'https://i.giphy.com/media/YsTs5ltWtEhnq/giphy.gif', //getting GIF from links
+      _id: 'r1',
+      text: 'Great! Now I will a list of questions. From a scale of 1 to 5, how much do they sound like describing you? ',
       createdAt: new Date(),
       user: {
         _id: 2,
@@ -71,8 +79,8 @@ const ChatScreen = () => {
       },
     },
     {
-      _id: 4,
-      text: 'What we are starting with is a super simiplifed version of the House-Person-Tree test, a test widely used by clinical psychologist to find out your personality 🧐 Why not start with preparing a piece of paper and a pen, and try to draw a house?',
+      _id: 'r2',
+      text: 'What we are starting with is a questionaire for understanding your current status. It just composes of a few questions, and it\'s you and me who will know this!',
       createdAt: new Date(),
       user: {
         _id: 2,
@@ -81,26 +89,289 @@ const ChatScreen = () => {
     }
   ]
 
-  useEffect(() => {
-    setMessages([
-      start_message_list[0],
-    ]);
-    setMessages(previousMessages => GiftedChat.append(previousMessages, start_message_list[1]));
-  }, [])
+  const back_message_list = [
+    {
+      _id: 'b1',
+      text: 'Hello! Welcome back to Unpacking Hapiness :)',
+      image: 'https://i.giphy.com/media/yKQTrPStO2CcgNWxuK/giphy.gif', //getting GIF from links
+      createdAt: new Date(),
+      user: {
+        _id: 2,
+        name: 'Unpacker',
+      },
+    }
+  ]
+
+  const survey_question_list = [
+    {
+      _id: 'q1',
+      text: 'Q1',
+      createdAt: new Date(),
+      quickReplies: {
+        type: 'radio', // or 'checkbox',
+        keepIt: false,
+        values: [
+          {
+            title: '1',
+            value: 1,
+          },
+          {
+            title: '2',
+            value: 2,
+          },
+          {
+            title: '3',
+            value: 3,
+          },
+          {
+            title: '4',
+            value: 4,
+          },
+          {
+            title: '5',
+            value: 5,
+          },
+        ],
+      },
+      user: {
+        _id: 2,
+        name: 'Unpacker',
+      },
+    },
+    {
+      _id: 'q2',
+      text: 'Q2',
+      createdAt: new Date(),
+      quickReplies: {
+        type: 'radio', // or 'checkbox',
+        keepIt: false,
+        values: [
+          {
+            title: '1',
+            value: 1,
+          },
+          {
+            title: '2',
+            value: 2,
+          },
+          {
+            title: '3',
+            value: 3,
+          },
+          {
+            title: '4',
+            value: 4,
+          },
+          {
+            title: '5',
+            value: 5,
+          },
+        ],
+      },
+      user: {
+        _id: 2,
+        name: 'Unpacker',
+      },
+    },
+    {
+      _id: 'q3',
+      text: 'Q3',
+      createdAt: new Date(),
+      quickReplies: {
+        type: 'radio', // or 'checkbox',
+        keepIt: false,
+        values: [
+          {
+            title: '1',
+            value: 1,
+          },
+          {
+            title: '2',
+            value: 2,
+          },
+          {
+            title: '3',
+            value: 3,
+          },
+          {
+            title: '4',
+            value: 4,
+          },
+          {
+            title: '5',
+            value: 5,
+          },
+        ],
+      },
+      user: {
+        _id: 2,
+        name: 'Unpacker',
+      },
+    },
+    {
+      _id: 'q4',
+      text: 'Q4',
+      createdAt: new Date(),
+      quickReplies: {
+        type: 'radio', // or 'checkbox',
+        keepIt: false,
+        values: [
+          {
+            title: '1',
+            value: 1,
+          },
+          {
+            title: '2',
+            value: 2,
+          },
+          {
+            title: '3',
+            value: 3,
+          },
+          {
+            title: '4',
+            value: 4,
+          },
+          {
+            title: '5',
+            value: 5,
+          },
+        ],
+      },
+      user: {
+        _id: 2,
+        name: 'Unpacker',
+      },
+    },
+    {
+      _id: 'q5',
+      text: 'Q5',
+      createdAt: new Date(),
+      quickReplies: {
+        type: 'radio', // or 'checkbox',
+        keepIt: false,
+        values: [
+          {
+            title: '1',
+            value: 1,
+          },
+          {
+            title: '2',
+            value: 2,
+          },
+          {
+            title: '3',
+            value: 3,
+          },
+          {
+            title: '4',
+            value: 4,
+          },
+          {
+            title: '5',
+            value: 5,
+          },
+        ],
+      },
+      user: {
+        _id: 2,
+        name: 'Unpacker',
+      },
+    },
+    {
+      _id: 'q6',
+      text: 'Q6',
+      createdAt: new Date(),
+      quickReplies: {
+        type: 'radio', // or 'checkbox',
+        keepIt: false,
+        values: [
+          {
+            title: '1',
+            value: 1,
+          },
+          {
+            title: '2',
+            value: 2,
+          },
+          {
+            title: '3',
+            value: 3,
+          },
+          {
+            title: '4',
+            value: 4,
+          },
+          {
+            title: '5',
+            value: 5,
+          },
+        ],
+      },
+      user: {
+        _id: 2,
+        name: 'Unpacker',
+      },
+    },
+    {
+      _id: 'q7',
+      text: 'Q7',
+      createdAt: new Date(),
+      quickReplies: {
+        type: 'radio', // or 'checkbox',
+        keepIt: false,
+        values: [
+          {
+            title: '1',
+            value: 1,
+          },
+          {
+            title: '2',
+            value: 2,
+          },
+          {
+            title: '3',
+            value: 3,
+          },
+          {
+            title: '4',
+            value: 4,
+          },
+          {
+            title: '5',
+            value: 5,
+          },
+        ],
+      },
+      user: {
+        _id: 2,
+        name: 'Unpacker',
+      },
+    },
+    {
+      _id: 'q_done',
+      text: 'That\'s all for the survey. Thank you~',
+      createdAt: new Date(),
+      user: {
+        _id: 2,
+        name: 'Unpacker',
+      },
+    }
+  ]
 
   const context = useContext(Auth);
   /* This part is for API */
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const { manifest } = Constants;
-  const uri = `http://${manifest.debuggerHost.split(':').shift()}:5000/`;
+  const uri_message = `http://${manifest.debuggerHost.split(':').shift()}:5000/`;
   var send_text, replied_content = [], replied_type = [];
   const getReplies = async () => {
     console.log("Context: ",context.token);
     let formData = new FormData();
     formData.append('message', send_text);
     try {
-      const response = await fetch(uri, {
+      const response = await fetch(uri_message, {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',
@@ -120,12 +391,6 @@ const ChatScreen = () => {
         }
         replied_type[i] = json[i].type;
       }
-      /*if (!Array.isArray(json)){
-        console.log(replied_text == null);
-        return ;
-      }*/
-      //replied_text = json[0].text;
-      //console.log(data);
     } catch (error) {
       console.error(error);
     } finally {
@@ -166,6 +431,53 @@ const ChatScreen = () => {
   }
   /* End */
 
+  /*For starting each chat session*/
+  const uri_view_profile = `http://${manifest.debuggerHost.split(':').shift()}:5000/show-profile`;
+  useEffect(() => {
+    async function checkSurveyStatus() {
+      try {
+        const response = await fetch(uri_view_profile, {
+          method: 'GET',
+          headers: {
+            'rasa-access-token': context.token
+          }
+        });
+        const json = await response.json();
+        //console.log(json);
+        console.log("JSON?", Array.isArray(json));
+        console.log(json.surveys.length);
+        if (json.surveys.length === 0) {
+          console.log("No survey before");
+          setMessages([
+            start_message_list[0],
+          ]);
+          for (let i=1; i<start_message_list.length; i++){
+           sendStart(i);
+          }
+          //num_chat = start_message_list.length;
+          setTimeout(function() {setMessages(previousMessages => GiftedChat.append(previousMessages, survey_question_list[0]))}, start_message_list.length*1000);
+        }
+        else {
+          console.log("Done survey before");
+          //console.log(json.surveys.length)
+          setMessages([back_message_list[0],]);
+          //num_chat = back_message_list.length;
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+        console.log("Survey test done");
+      }
+      
+      function sendStart(i) {
+        setTimeout(function() { setMessages(previousMessages => GiftedChat.append(previousMessages, start_message_list[i]));
+        }, i*1000);
+      }
+    };
+    checkSurveyStatus();
+  }, [])
+  /* End */
 
   const onSend = useCallback((messages = []) => {
     setMessages(previousMessages => GiftedChat.append(previousMessages, messages));
@@ -175,14 +487,12 @@ const ChatScreen = () => {
     send_text = messages[0].text;
     getReplies();
   }, [])
-
-
-  const onQuickReply = useCallback((quickReply) => {
-    /*if(quickReply[0].value == "yes") {
-    } else if (quickReply[0].value == "yes_picture") {
-    } else if (quickReply[0].value == "NO") {
-    }*/
-    
+  
+  const QUESTION_NUMBER = 7;
+  var num_survey_answered = 0;
+  var survey_result = [];
+  const uri_submit_survey = `http://${manifest.debuggerHost.split(':').shift()}:5000/add-survey-results`;
+  const onQuickReply = useCallback(async (quickReply) => { 
     let message = quickReply[0].value;
     let msg = {
       _id: num_chat + 1,
@@ -194,17 +504,33 @@ const ChatScreen = () => {
     }
     setMessages(previousMessages => GiftedChat.append(previousMessages, msg));
     num_chat++;
-    if (quickReply[0].value == 'Sure~') {
-      setMessages(previousMessages => GiftedChat.append(previousMessages, reply_message_list[0]));
-    } else {
-      setMessages(previousMessages => GiftedChat.append(previousMessages, reply_message_list[1]));
-    }
+    survey_result.push(message);
+    num_survey_answered++;
+    setMessages(previousMessages => GiftedChat.append(previousMessages, survey_question_list[num_survey_answered]));
     num_chat++;
-
-
-
-    /*var sendBotResponsetxt = "Thanks";
-    this.sendBotResponse(sendBotResponsetxt);*/
+    console.log(survey_result);
+    if (survey_result.length == QUESTION_NUMBER) {
+      let formData = new FormData();
+      for (let i=0; i<QUESTION_NUMBER; i++){
+        let field_name = 'field_' + (i+1);
+        formData.append(field_name, survey_result[i]);
+      }
+      try {
+        const response = await fetch(uri_submit_survey, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            'rasa-access-token': context.token
+          },
+          body: formData
+        });
+        //console.log(response);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    }
   }, [])
 
   /*const chatHeight = ph(70);
@@ -256,11 +582,11 @@ const ChatScreen = () => {
                 <Image
                   resizeMode="cover"
                   style={{
-                    width: 200,
+                    width: 300,
                     height: 200,
                     padding: 10,
                     borderRadius: 50,
-                    resizeMode: "center",
+                    resizeMode: "contain",
                     //object-fit: "cover",
                     //overflow: 'hidden',
                     marginLeft: 4,
