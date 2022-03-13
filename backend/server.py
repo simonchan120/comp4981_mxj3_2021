@@ -247,10 +247,9 @@ def connection_ok():
 def send_message(user, token_body):
     content = request.form
     user_message= content.get('message')
-    json_string, status = rasa_client.send_message(user,
+    response_obj, status = rasa_client.send_message(user,
         str(user_message))
     current_conversation =  Conversation.objects(uuid=user.latest_conversation_uuid).first()
-    response_obj = json.loads(json_string)
     bot_reply = response_obj[0]['text']
     response_obj[0]['type']='text'
 
@@ -259,7 +258,7 @@ def send_message(user, token_body):
     
     current_conversation.content.append(user_message_obj)
     current_conversation.content.append(bot_message_obj)
-    if recommender.Recommender.check_if_recommend(user):
+    if recommender.Recommender.check_if_recommend(user,user_message):
         multimedia,_ = recommender.Recommender.recommend(user.username)
         giphy_tag = multimedia.name
 
@@ -268,7 +267,7 @@ def send_message(user, token_body):
         giphy_link,_ = giphy_util.fetch_multimedia(giphy_tag)
         response_obj.append({'type':'gif','url':giphy_link,'name':giphy_tag})
         recommender_message_obj=Message(content=giphy_link,is_from_user=False,time_sent=datetime.utcnow())
-    current_conversation.content.append(recommender_message_obj)
+        current_conversation.content.append(recommender_message_obj)
     current_conversation.save()
 
     return Response(json.dumps(response_obj), status=status, mimetype='application/json')

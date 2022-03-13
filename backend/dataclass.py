@@ -40,6 +40,7 @@ class User(Document):
     year_of_school_or_work = IntField()
     is_student = BooleanField()
     is_ust = BooleanField()
+    emotion_score = FloatField(default=0.5)
     surveys = SortedListField(EmbeddedDocumentField('Survey',ordering="time_submitted",reverse = True))
     preferences = SortedListField(EmbeddedDocumentField('Preference'),ordering="score",reverse = True)
     pred_preferences = SortedListField(EmbeddedDocumentField('Preference'),ordering="score",reverse = True)

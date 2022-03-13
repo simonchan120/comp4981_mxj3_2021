@@ -1,7 +1,5 @@
 import json
-import socket
-import http.client
-import json
+import requests
 from .data.dialogue import Sentence,Dialogue
 import yaml
 
@@ -10,6 +8,8 @@ from .dataclass import *
 from backend import app
 import logging
 logger = logging.getLogger(__name__)
+#TODO: change this when delpoying
+RASA_HOST_NAME= 'rasa'
 class Rasa_Client():
     def __init__(self):
         
@@ -17,23 +17,11 @@ class Rasa_Client():
         pass
     def send_message(self,user,msg):
             session_uuid = user.latest_conversation_uuid
-            self.conn = http.client.HTTPConnection("rasa",5005)
-            send_msg_link = "/webhooks/rest/webhook"
-            package = {}
-            package['sender'] = session_uuid
-            package['message'] = msg
-            json_package = json.dumps(package)
-            
-            self.conn.request("POST", send_msg_link,json_package)
-
-            #responses are byte strings
-            response = self.conn.getresponse()
-            
-            data = response.read()
-            # assuming plain json
-            data = data.decode('utf-8')
-            self.conn.close()
-            return data,response.status
+            r = requests.post(f'http://{RASA_HOST_NAME}:5005/webhooks/rest/webhook',json.dumps({'sender':session_uuid,'message':msg}))
+            logger.debug(r.content)
+            logger.debug(r.json())
+            data=  r.json()
+            return data,r.status_code
 
     def add_training_data(self,dialogue):
         with open('rasa/domain.yml','r+') as f:
