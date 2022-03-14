@@ -428,6 +428,6 @@ def _do_stuff():
 
 @internal_bp.route("/add_giphy_tags",methods=['POST'])
 def _add_giphy_tag():
-    GIPHY_TAGS=['funny','celebrities','nature']
+    GIPHY_TAGS=['fun','movies','vacation','animals','holidays','cute','happy','pets','celebrities','nature']
     MultiMediaData.objects.insert([MultiMediaData(name=x,description='giphy_tag')for x in GIPHY_TAGS])
     return Response()
