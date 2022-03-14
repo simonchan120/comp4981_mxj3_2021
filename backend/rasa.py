@@ -18,8 +18,6 @@ class Rasa_Client():
     def send_message(self,user,msg):
             session_uuid = user.latest_conversation_uuid
             r = requests.post(f'http://{RASA_HOST_NAME}:5005/webhooks/rest/webhook',json.dumps({'sender':session_uuid,'message':msg}))
-            logger.debug(r.content)
-            logger.debug(r.json())
             data=  r.json()
             return data,r.status_code
 

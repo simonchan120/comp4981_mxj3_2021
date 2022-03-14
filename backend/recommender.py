@@ -10,8 +10,8 @@ _sentiment_intensity_analyzer = SentimentIntensityAnalyzer()
 class Recommender():
     def check_if_recommend(user,message):
         PREVIOUS_WEIGHT = 0.8
-        MAX_FREQ= 15
-        MIN_FREQ= 6
+        MAX_FREQ= 10
+        MIN_FREQ= 5
         sentiment_result  = _sentiment_intensity_analyzer.polarity_scores(message)
         current_score = sentiment_result['compound']
         current_score = (current_score+1)/2
