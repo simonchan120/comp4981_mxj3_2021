@@ -20,8 +20,9 @@ class GiphyUtil():
         return choice(giphy_links),giphy_tag
     def _fetch_giphy(self,query):
         LINK='http://api.giphy.com/v1/gifs/search'
-
+        logger.debug(f'Trying giphy query: {query}')
         r = requests.get(LINK,params={'api_key':self._api_key,'q':query})
+        logger.debug(f'response result: {r.status_code}')
         try:
             res = r.json()
         except JSONDecodeError as e:
