@@ -113,7 +113,7 @@ export function Start() {
   return (
     <NavigationContainer independent={true}>
       <Tab.Navigator
-        initialRouteName="Feed"
+        initialRouteName="ChatStack"
         screenOptions={{
           "tabBarActiveTintColor": '#42f44b',
           "tabBarStyle": [
@@ -170,7 +170,7 @@ export function Start() {
   );
 }
 
-const Auth = React.createContext(null);
+export const Auth = React.createContext(null);
 
 export function Login() {
   const [usr, setUsr] = React.useState('');
