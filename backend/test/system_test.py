@@ -54,12 +54,21 @@ class TestGroup:
         assert r.status_code == 200
 
     def test_add_preferences(self,client):
-        r = client.post(f"{HOSTNAME_FLASK}/add-preference",headers=TestGroup.auth,data={'name':'funny','score':0.5})
+        r = client.post(f"{HOSTNAME_FLASK}/add-preference",headers=TestGroup.auth,data={'name':'cute','score':0.5})
         assert r.status_code == 200 
 
     def test_add_survey_data(self,client):
         r = client.post(f"{HOSTNAME_FLASK}/add-survey-results",headers=TestGroup.auth,data={'field_1':'1','field_2':'2','field_3':'3','field_4':'3','field_5':'5','field_6':'4','field_7':'1'})
         assert r.status_code == 200 
+    def test_check_do_survey(self,client):
+        r = client.get(f"{HOSTNAME_FLASK}/check-do-survey",headers=TestGroup.auth)
+        assert r.status_code == 200
+        assert r.json()['result'] == False
+    def test_check_push_notification(self,client):
+        r = client.get(f"{HOSTNAME_FLASK}/check-send-push-notification",headers=TestGroup.auth)
+        assert r.status_code == 200
+        assert r.json()['result'] == True
+        
     def test_new_chat_session(self,client):
         r = client.post(f"{HOSTNAME_FLASK}/new-chat-session",headers=TestGroup.auth)
         assert r.status_code == 200

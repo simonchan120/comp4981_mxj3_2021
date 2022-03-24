@@ -395,6 +395,26 @@ def add_survey_results(user,token_body):
     user.save()
     return Response(json.dumps({"message": "Survey result saved"}),status=200,mimetype='application/json')
 
+@main_bp.route("/check-do-survey",methods=['GET'])
+@token_required
+def check_do_survey(user,token_body):
+    latest_survey_time = user.surveys[0].time_submitted  if len(list(user.surveys)) >= 1 else datetime(year = 1971,month=1,day=1)
+    seconds_since_last_survey = (datetime.now()-latest_survey_time).total_seconds()
+    base_interval = current_app.config['SURVEY_INTERVAL']
+    threshold = base_interval
+    result = seconds_since_last_survey >= threshold
+    return Response(json.dumps({"result": result, "last_survey":latest_survey_time.strftime("%d-%b-%Y (%H:%M:%S)")}),status=200,mimetype='application/json')
+
+@main_bp.route("/check-send-push-notification",methods=['GET'])
+@token_required
+def check_send_push_notification(user,token_body):
+    current_conversation=next(convo for convo in user.conversations if convo.uuid==user.latest_conversation_uuid)
+    latest_message_time =  current_conversation.content[0].time_sent if len(list(current_conversation.content)) >= 1 else datetime(year = 1971,month=1,day=1)
+    seconds_since_last_message = (datetime.now()-latest_message_time).total_seconds()
+    base_interval = current_app.config['NOTIFICATION_INTERVAL']
+    threshold = base_interval
+    result = seconds_since_last_message >= threshold
+    return Response(json.dumps({"result": result, "last_message":latest_message_time.strftime("%d-%b-%Y (%H:%M:%S)")}),status=200,mimetype='application/json')
 
 @internal_bp.route("/train", methods=['POST'])
 def train_data():
