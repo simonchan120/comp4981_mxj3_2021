@@ -31,8 +31,8 @@ const data2015 = [
 ];
 function App() {
   return (
-    <div>
-    <h1>Victory Tutorial</h1>
+    <div className="App-header">
+    <h1>Unpacking Happiness Backstage</h1>
     <VictoryChart
       domainPadding={10}
       theme={VictoryTheme.material}
@@ -42,30 +42,30 @@ function App() {
       />
       <VictoryAxis
         dependentAxis
-        tickFormat={(x) => (`$${x / 1000}k`)}
+        tickFormat={(x) => ('$${x / 1000}')}
       />
       <VictoryStack
         colorScale={"warm"}
       >
         <VictoryBar
           data={data2012}
-          x={"quarter"}
-          y={"earnings"}
+          x={"week1"}
+          y={"value"}
         />
         <VictoryBar
           data={data2013}
-          x={"quarter"}
-          y={"earnings"}
+          x={"week2"}
+          y={"value"}
         />
         <VictoryBar
           data={data2014}
-          x={"quarter"}
-          y={"earnings"}
+          x={"week3"}
+          y={"value"}
         />
         <VictoryBar
           data={data2015}
-          x={"quarter"}
-          y={"earnings"}
+          x={"week4"}
+          y={"value"}
         />
       </VictoryStack>
     </VictoryChart>
