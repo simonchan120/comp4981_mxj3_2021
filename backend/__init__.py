@@ -39,6 +39,9 @@ if os.environ['FLASK_ENV']=='development':
 # TODO: change this secret key before deployment
     app.config.from_file("config.json", load=json.load)
 
+    app.config.update(SURVEY_INTERVAL=60)
+    app.config.update(NOTIFICATION_INTERVAL=60)
+
 elif os.environ['FLASK_ENV']=='production':
     my_config = Config(
         region_name = 'ap-east-1',
@@ -51,6 +54,9 @@ elif os.environ['FLASK_ENV']=='production':
     ssm = boto3.client('ssm',config=my_config)
     parameter = ssm.get_parameter(Name='/path/to/param', WithDecryption=True)
     app.config.update(a='a',b='b')
+
+    app.config.update(SURVEY_INTERVAL=3600*24*7)
+    app.config.update(NOTIFICATION_INTERVAL=3600*24*2)
 
 # mongodb mongoengine
 connect(host=app.config["MONGO_CONNECTION_STRING"])

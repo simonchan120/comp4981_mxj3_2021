@@ -1,0 +1,795 @@
+version: '3.0'
+stories:
+- story: Please don't tell your talkative and energetic friends to shut up, stop talking,
+    or ask them if they ever stop talking. You will inadvertently create an isolated,
+    introverted, and insecure individual out of what once was a supernova of enthusiasm
+    and character.
+  steps:
+  - user: Be kind and gentle.
+  - bot: But what about the other way around? Friends heckling the quit one to talk
+      more, be more enthusiastic! That made me never want to talk again
+- story: Shout out to therapists who help us work through our shit while they're going
+    through their own.
+  steps:
+  - user: I don't know how you do it, but thank you!
+  - bot: Needed to read this before starting my week tomorrow. Convinced I'll lose
+      it any moment and no longer be able to be there for my clients. Grateful for
+      your post. Thank you.
+- story: My therapist taught me this trick.
+  steps:
+  - user: 'When you feel anxious that someone is mad at you, doesn''t like you, or
+      that things are worse than they actually are, ask yourself:  “Who told you that?”
+      Typically you won''t have an answer and you''ll learn that it''s all in your
+      head. Pass it on!'
+  - bot: The wonders of Cognitive Behavioral therapy
+- story: “People in therapy are often in therapy to deal with people in their life
+    who won't go to therapy”
+  steps:
+  - user: Thought I'd share this because WEOW! saw this on IG, and it just hit hard
+      because I didn't realize how much of this statement is so true
+  - bot: In my first session, I told my therapist, "When parents don't go to therapy,
+      their children have to."
+- story: Once you realize you're a gift, you become very selective with who you offer
+    your presence, spirit, love, and energy to. You are something to be cherished,
+    not taken for granted.
+  steps:
+  - user: Read that again.
+  - bot: How do I realize I'm a gift? Help.
+- story: I love myself and NOBODY can take that away from me. That is MY power. Isn't
+    that incredible? I hope you choose to love yourself today.
+  steps:
+  - user: Read that again. I hope you choose to love yourself today.
+  - bot: I do not have anyone who loves me. Hope to get there because at the end of
+      the day I only have myself.
+- story: Two years from now, I'll be living a completely different life. Everything
+    will be BETTER than it is now. Claiming it, working toward it, and that's how
+    you achieve victory!🤞🏽✨
+  steps:
+  - user: Upvote this. In 2 years when I repost it, let me know how far you've gone
+      and what has happened since this post in 2020!
+  - bot: '!remindme 2 years'
+- story: Don't you hate it when you put up with abuse harassment bullying manipulation
+    gaslighting and shit for too long and when you finally get angry everyone thinks
+    you're crazy, jealous, drama, ... etc
+  steps:
+  - user: why are we shamed for normal emotions? and why we constantly have to block
+      and ignore them?
+  - bot: Yes. People get used to you being a pushover, and when you try to break out
+      of that they get defensive because their paradigm begins to shift. The answer
+      is not to get angry, but to be honest and direct, and to be willing to take
+      the consequences for your relationships, come what may.
+- story: My therapist wouldn't accept payment today.
+  steps:
+  - user: I told her about how tough it'll be on Christmas due to no money.  She wouldn't
+      accept the payment today and said to buy my kids something.  I feel pathetic,
+      but I cried and thanked her.  Honestly the nicest thing anybody has done for
+      us in a long time.
+  - bot: Therapy is often about accepting the things you push away. Accept that you
+      are worthy and that someone wants to help. No one who goes to therapy and opens
+      themselves up to change is ever pathetic, you are worthy and loved
+- story: WHEN YOU SHOW UP TO FIRST DAY OF CLASSES AND YOUR PROFESSOR IS YOUR FORMER
+    THERAPIST
+  steps:
+  - user: 'that is the postUpdate: now I need to make an introduction video as if
+      they don''t know all my trauma lmaoooo'
+  - bot: O no!!!This is definitely the professor 's responsibility to manage . Please
+      don't drop until after a discussion about a possible resolution.
+- story: 'Pro Tip: Establish dominance with your therapist, make them cry first.'
+  steps:
+  - user: I stole it from a facebook post, thought someone could use a laugh :)
+  - bot: i have done that twice. it's a lot more uncomfortable than you might think.
+- story: Therapists of sexually abused children… I don't know how you do it. So very
+    thankful for you to help my child.
+  steps:
+  - user: My child is getting back to her bubbly self. Slowly but surely she's going
+      to be ok.
+  - bot: Thank you for getting her the help she needs. Big hugs to you both.
+- story: My friend is struggling to pay for therapy because she is out of work during
+    the pandemic and the therapist offered therapy in return for a sexual favor. Should
+    I report this to some board?
+  steps:
+  - user: Idk if it's my place since I'm not the one seeing this therapist.
+  - bot: Ugh, is this therapist stupid? How is she supposed to continue her wellness
+      journey after such an offer?
+- story: My sister died this morning
+  steps:
+  - user: It was just me and her left. Now it's just me. I just had to tell someone.
+  - bot: Sorry for your loss. And it is ok to vent here and reach out.
+- story: 'My therapist: “you always use the mocking baby voice when you discuss a
+    vulnerability of yours”'
+  steps:
+  - user: 'Damn I didn''t mean to be DRAGGED to the streets but #true Do you ever
+      find yourself mocking your own struggles like shit'
+  - bot: I love this haha. I definitely also try and minimize my issues in therapy
+      sometimes. Sometimes that's the only way to get it out!
+- story: I need therapy just from trying to find a therapist
+  steps:
+  - user: It's really discouraging putting all this effort into finding a therapist
+      when therapists either don't accept my insurance, aren't accepting new clients,
+      or aren't offering in-office sessions. Not to mention half of them not answering
+      the phone. I'm feeling pretty defeated.
+  - bot: '[removed]'
+- story: I had sex with my therapist
+  steps:
+  - user: Im a 25m, my therapist who's like 30f convinced me to have sex during my
+      session I feel alive but dirty at the same time. Depressed but happy how bad
+      did I just fuck up?
+  - bot: Wait..... DURING the session?
+- story: Is it just me or do people need therapy because of the people who need therapy?
+  steps:
+  - user: Like their life is a mess and they have it bleed into yours, and then because
+      of their behavior, you feel you need therapy yourself? It's like this never
+      ending cycle (or so it seems).
+  - bot: I've heard it said that the kids seek therapy because the parents never did.
+- story: What my therapist told me
+  steps:
+  - user: Somebody needs to hear this.. and if you won't hear this from anyone else
+      hear it out from meMy therapist told me “someone who's emotionally unavailable
+      can often make someone who's emotionally available feel like there basic needs
+      are too much “ I honestly never forgot that.
+  - bot: Someone emotionally unavailable did this to me and traumatized me to the
+      point where I'm now the unavailable one. I felt so crushed BEGGING for the bare
+      minimum that now I ask for nothing from nobody and want men To leave me alone.
+      I can't even see myself dating again after it
+- story: 'For anyone who needed to hear this: Self-love is accepting yourself, exactly
+    as you are, in this very moment ❤️'
+  steps:
+  - user: From the “Ten Percent Happier” podcast; Episode 309.
+  - bot: '[deleted]'
+- story: I'm learning to never defend myself against narcissists. They are professional
+    victims and you will end up in a position where YOU are expected to apologize
+    and reconcile with them. They refuse to take accountability yet YOU will be the
+    bad guy for drawing boundaries.
+  steps:
+  - user: Know your power.
+  - bot: I got a family full of em.
+- story: My therapist said that I was very "boring".
+  steps:
+  - user: I talked to my therapist about my problems that I was facing and issues
+      in high school. It felt horrible bringing it up. But then later in, he started
+      to complain about this and said that I was very boring to listen to. It felt
+      so rude and I didn't know what to do. Any advice?
+  - bot: That's messed up. What type of therapist is this?
+- story: Hey guys!!! I genuinely feel like I have full control of MY LIFE. My mental
+    health is at an all time high 100%.
+  steps:
+  - user: I'm getting mentally stronger day by day. My boundaries are getting thicker
+      and thicker. A WIN. 🙌🏽💕🙏🏽
+  - bot: That's great! Keep it up :) all the best for you
+- story: I made a breakthrough in my therapy session today!!!
+  steps:
+  - user: That is all, just very excited and wanted to share 😊
+  - bot: Good job 🤩🤩🥰
+- story: My too much for you was just enough for the right person. My too little to
+    you was just enough for the right people. As I am, I am enough for the right people.
+    So are you.
+  steps:
+  - user: Never feel like you are too much or too less, and do your best to stop outpouring
+      every ounce of energy left for the wrong people.
+  - bot: Thanks! I needed this today! I just came to the realization that a person
+      I love dearly is incapable of actually loving me the way I need and deserve
+      to be loved no matter what he claims to feel.
+- story: My therapist always waits to take a sip when she thinks I'm not looking
+  steps:
+  - user: But I can always see it from the corner of my eye. No complaints here, just
+      a funny observation. If any therapists are reading this, it's cool to just drink
+      your water, coffee, whatever. Also, when we're looking away from the screen
+      we can usually still register and decode movement.
+  - bot: Lol thank you for saying this! I always feel a little weird because I don't
+      want clients to think I'm just lounging at home chatting with them via telemedicine.
+      What's funnier is that I have my own therapist and am never offended if she
+      has a drink or snack.
+- story: '*emailing my therapist*: haha! I had to take today off of work because I
+    couldn''t stop having a panic attack long enough to take a shower or get dressed.
+    Brain chemistry, amirite?! But I''d love to start seeing you weekly if you''re
+    available. No pressure though. Just let me know!'
+  steps:
+  - user: Anyone else accidentally let slip their feeling of taking up too much space
+      in their therapists life?I'll just go cry about how deeply rooted my insecurities
+      are now that I've realized yet another.LOL AMIRITE!?!?!?!?!?!
+  - bot: If it makes you feel better, yesterday I sent an email to my therapist explaining
+      why I think I feel so attached to her and why I miss her between sessions and
+      with possible solutions about this. I regretted sending the email immediately
+      after pressing the send button. Now I am a ball of anxiety.
+- story: Why is it so hard to open up in therapy about how you really feel? Instead
+    I act like everything is fine when I'm really miserable in life.
+  steps:
+  - user: I don't get it
+  - bot: Maybe its a feeling of being put on the spot, or like, its hard to be vulnerable
+      with your therapist if you haven't warmed up to them yet?
+- story: I've spent $29,750 on therapy.
+  steps:
+  - user: Just did some basic budgeting from my checking account. Over the last seven
+      years I've paid therapists $29,750. My third biggest expenditure category after
+      housing and food. Even more than I've spent on cars in those seven years.  Still
+      don't even know what I'm supposed to do at therapy.
+  - bot: I hate thinking about it. I spent 6k last year on therapy. When I think of
+      it like that, it's like there's so much I'd rather do with that money!! But,
+      working on myself HAS to be a priority. I have to believe it's worth it in the
+      long run.
+- story: Suicide bot
+  steps:
+  - user: Any chance the moderators could insert a suicide bot that posts National
+      suicide hotline info any time the word suicide gets mentioned in a post?
+  - bot: Interesting you ask this. I recently requested it on r/depression and they
+      said they didn't like bots for the reason that alienation is one of the main
+      causes of suicide, and if you immediately see someone has replied to your post
+      but it's a bot you may be more likely to take your life.
+- story: Today I told my therapist I missed him a lot and asked if he was disgusted
+    by that...
+  steps:
+  - user: He said, NO Sigh. Relief. And yes. I come from a severely fucked up, abusive
+      family. *Now no contact, thank christ. Assholes.*
+  - bot: That's probably really normal and sounds like transference to me, which is
+      also very normal.
+- story: Shout out to therapists
+  steps:
+  - user: I spoke to mine just now (after a taking a few months off) and I feel like
+      a new woman! Just wanted to show appreciation for therapists who are working
+      through their own shit while always helping us with ours.
+  - bot: ❤️❤️
+- story: I finally found a therapist that I feel like understands me !!
+  steps:
+  - user: This post is to encourage people to change therapists if you don't think
+      it's a good match. This is my 4th one, but  I can easily tell she takes my issues
+      seriously. Gives me good example, explains the mechanism of brain. Keep finding
+      and don't give up on therapy!
+  - bot: Yay!
+- story: Is it normal/ok to have imaginary conversations with my therapist as I go
+    through my day?
+  steps:
+  - user: It's to the point where my internal dialogue is largely in his voice.
+  - bot: This is not just normal, this is actually a good sign! This means you're
+      engaged in your therapy! And that is great.
+- story: Would you trust a therapist covered in tattoos?
+  steps:
+  - user: I'm currently studying to hopefully become a therapist someday. I already
+      have some tattoos that can easily be covered up but I would like some more.
+      However, I'm hesitant because of the career I want to go into. So I was wondering,
+      would you trust a therapist with lots of tattoos?
+  - bot: I am finishing my masters degree and marriage and family therapy and they
+      tell us all the time we need therapist who represent all walks of life
+- story: I'm tired of my family thinking therapy is like an emotional ATM that's going
+    to magically going to fix me over night.
+  steps:
+  - user: I don't have enough energy right now to type out a rant, but the title says
+      it all.
+  - bot: Your parents might benefit from being reminded that you are working on overcoming/processing
+      past experiences with them.
+- story: Does having a complex about not being understood make you a better communicator,
+    or does the complex drive you to become so distractingly specific about what you
+    mean, that no one knows what you mean?
+  steps:
+  - user: Does anybody understand that?
+  - bot: I realized that my desire to explain things really clearly and be understood
+      made me appear defensive.  I have since worked really hard to correct that.
+- story: I am so tired of therapists selecting every category under the sun for their
+    “specialization”.
+  steps:
+  - user: Why can't I find a therapist who really focuses and has studied a few core
+      issues. Why does every therapist just select every category available when creating
+      online profiles. Is there anywhere left where I can find a therapist who is
+      a specialist?
+  - bot: This a huge problem in the OCD area. And therapists thinking meditation and
+      yoga is the answer for everyone
+- story: Home alone and I just managed to talk myself out of a panic attack
+  steps:
+  - user: Therapy is so worth it. I feel so strong. I'm so proud. That's all I wanted
+      to say. Thanks for listening :)
+  - bot: congrats im proud of you <3
+- story: so...what does life feel like for a person who doesn't struggle with any
+    mental illness?
+  steps:
+  - user: I literally feel like I'm faking everything and nothing really feels real....what
+      does a typical day look like for a “normal” person who doesn't struggle with
+      mental illness? Are they like usually pretty motivated and balanced? lol I'm
+      just trying to picture it to see if I'm faking everything :)))
+  - bot: I'd answer but I'm not “normal” so wouldn't really know. I personally don't
+      think it matters what's normal or not normal. I think it only matters if you're
+      happy. Happy hugs (2 meters apart) xx
+- story: What was the most helpful thing you heard in therapy?
+  steps:
+  - user: Or your most helpful therapy experience?
+  - bot: '"Who made up that rule?"'
+- story: I told me therapist I was racially harassed almost everyday in uni and he
+    responded with “bullying happens to everyone why is it effecting you of all people
+    negatively”.
+  steps:
+  - user: I felt a little bit judged by his comment. I put up with harassment and
+      bullying for years. Until I reached a point where I couldn't tolerate it anymore.
+      I don't see how this indicates something is wrong with me.Toxic uni environment,
+      hostility and hatred from classmates wasn't easy to deal with.
+  - bot: Another person that absolutely should not be a therapist.
+- story: I shut down at the sound of yelling
+  steps:
+  - user: Whenever I hear someone yelling even if it's not directed at me I break
+      down, I start to hyperventilate and I end up crying or not being able to communicate
+      with others for a bit after, what does this mean? and how can I stop this
+  - bot: Do you have a trauma history/ adverse childhood experiences ? This sounds
+      very much like a trauma reaction. If not I'd say it's being overwhelmed to the
+      point of shutting down.
+- story: Day 1, hour 0. Gotta start somewhere
+  steps:
+  - user: First session today and it went well. Proud to have taken the step . Cheers
+      to y'all.
+  - bot: Proud of you!
+- story: HEY YOU!
+  steps:
+  - user: Everything is going to be alright, maybe not today, but eventually. Breathe
+      easy and know that your day is coming.
+  - bot: pulls out uno reverse card
+- story: How can some people humiliate and hurt someone without guilt and for no other
+    reason but their own unresolved trauma and issues.
+  steps:
+  - user: Even though I was abused for years and have anger toward my abusers I can't
+      imagine treating someone the way I was treated. How do people do this shit without
+      any guilt.
+  - bot: I ask this almost every day. I was such a target for abuse in my family.
+      And i just don't understand how they ever thought and think it's okay to treat
+      a child or any human the way they did. And it's so frustrating to see them being
+      normal with everyone else. It's very baffling
+- story: Just wanted to recommend therapistaid.com
+  steps:
+  - user: I recently found the url above and it has helped me immensely and has all
+      sorts of worksheets you can download. I have made a binder and go through it
+      daily. Hope this info helps others.
+  - bot: I love therapistaid! I use the "anger iceberg" quite frequently, especially
+      with men who have a difficult time dealing with emotions.
+- story: Why become a therapist if you don't actually want to help people?
+  steps:
+  - user: When I become one I'm going to do everything in my power to help people,
+      not drain their bank account. If I could, I wouldn't charge them anything at
+      all. This world is so messed up.
+  - bot: It would be amazing if people could graduate without debt,  and then make
+      a living wage helping others. This issue is systemic and not the fault of individual
+      mental health professionals.  I promise this is not a field people go into for
+      the money.
+- story: I feel like I'm addicted to being depressed...like I don't want to be saved
+    and I don't want to get better...has anyone else ever felt this way?
+  steps:
+  - user: I've been on 10mg lexapro for a month and have been kind of like a robot
+      so I'm quitting it cold turkey today. I feel like part of me doesn't want to
+      get better and doesn't want to feel happy. What the heck is going on.
+  - bot: Yes! It's what I know...how I've lived for years. My therapist says it's
+      because I'm more comfortable in chaos than normality (borderline) and that if
+      things start to look ok and normal, I sabotage it.
+- story: Therapist said her job is not to ask questions or provide guidance, but just
+    to bear witness. Does that make any sense?
+  steps:
+  - user: This was her response when I said it would be helpful for me if she asked
+      questions. I was surprised because if her job is just to listen, and provide
+      no feedback, insight, or guidance, then why did I need a licensed therapist
+      when I could have just journaled?
+  - bot: As a therapist, asking questions is an absolutely vital part of my job. It
+      sounds like your therapist might be doing something called "bad therapy."
+- story: What separates good therapists from great therapists?
+  steps:
+  - user: Your views?
+  - bot: I feel like great therapists walk a tightrope between validating their client's
+      emotions/making them feel heard, and pushing back against distorted thought
+      patterns that are likely part of the reason the client is in therapy.
+- story: I found out my ex has talked to my therapist on a dating app.
+  steps:
+  - user: I still live with my ex in a very complicated situation. Last week, I found
+      out that my ex and therapist have talked on a dating app. Obviously, I'm not
+      even remotely comfortable with this. I asked my ex not to go there, but I'd
+      also like to mention it to my therapist. Is this inappropriate?
+  - bot: You should absolutely mention it.
+- story: My therapist asked to reschedule because his mother died; I had planned to
+    talk about my fear of my parents dying during my session…
+  steps:
+  - user: He's a really good therapist, but I'm afraid bringing up parents dying might
+      be hard for him. Should I try a different therapist? Should I ask him about
+      it before setting up an appointment?
+  - bot: He's a professional; he should be able to make the distinction and might
+      have some insights gained from his own experience
+- story: Why is suicide illegal?
+  steps:
+  - user: If someone finds the cards they were dealt unacceptable why should they
+      be forced to live a life unfulfillment and disappointment?
+  - bot: I believe partly because it allows police or whoever to break in to help
+      save the person. I read that somewhere but I could be wrong.
+- story: why am i so obsessed with solving other peoples problems instead of my own?
+  steps:
+  - user: I will do whatever i can to help other people who are struggling, but the
+      thought of helping myself makes me feel crazy anxious
+  - bot: Maybe because it's a good distraction from your own problems.
+- story: Would therapy benefit someone in the incel community?
+  steps:
+  - user: I am a part of the incel community and I have negative views on sex and
+      women. I also have incredibly violent thoughts and bursts of anger which sometimes
+      result in self harm. I don't really know if therapy is capable of helping or
+      if it's just a nice idea with no real results. What do you think?
+  - bot: I'm sure a therapist could help you sort through those thoughts and feelings.
+- story: how do i talk to my therapist when i forget everything that happened throughout
+    the week
+  steps:
+  - user: pretty much just that. i can never remember how i felt or why
+  - bot: Keep a small notebook with you so you can jot things down as they come and
+      then take it to your session.
+- story: Therapist said "Welcome to adulthood" when I mentioned my issue. Am I over
+    thinking or is this a red flag?
+  steps:
+  - user: Context when I said I felt I was left to do everything on my own in work
+      she said this. I explained I get no help since I started new and this is all
+      new to me.
+  - bot: Maybe she's more of a “tough love” kind of person. Sometimes you have to
+      find the right fit for you when it comes to therapy. There's nothing wrong with
+      trying someone else!
+- story: When was the last time you cried?
+  steps:
+  - user: Just curious I suppose.
+  - bot: Lol, currently crying.
+- story: I watched my pet pass away and it is haunting me.
+  steps:
+  - user: 'I don''t know what to doEdit: pet tax. Taj nicknamed in our family "Big
+      Baby" https://i.imgur.com/ZqYg1Gx.jpg'
+  - bot: Commemorate them. Do self care, reach out to your social circle. The world
+      gets a bit darker when we lose the ones we love, but they would be here for
+      us if they could.
+- story: Has anyone wrote out what they were gonna share with their therapist before
+    your session. Did it help?
+  steps:
+  - user: Has one anyone done this? I have something heavy on my mind that I wanna
+      share with my therapist and it's something that I would like to work on as much
+      as possible during my session.
+  - bot: Yes it helps a lot. Sometimes it's difficult to get the words out and say
+      what I need to so I just give them what's written and then we work through it.
+      Right now, we have appointments via video calls because of lockdown, so I just
+      usually email it to her 5 minutes before our call.
+- story: Why do I associate most of the random noises I hear (without seeing where
+    they are actually coming from) with acts of terrible violence?
+  steps:
+  - user: For example sounds from the street, neighbors etc...
+  - bot: Omg I do the same thing. Every time I hear someone talk inside or outside
+      my apartment building or when I hear random noises I always assume the worst
+      and get very nervous... No idea why though :/
+- story: “God-given gift”
+  steps:
+  - user: 'My therapist suggested my highly sensitive nature is a result of my sexual
+      trauma. Then, ya know what she says? She says this sensitivity is a “blessing”
+      and “a god-given gift.” Absurd, no? Thanks for letting me grumble.Edit: this
+      was session #2.'
+  - bot: Does this mean that you are sensitive to the people around you and can "read
+      the room" really well? Maybe the therapist was just trying to spin your struggle
+      into a strength? And used prashing that was triggering?
+- story: Have you ever protected someone's reputation by NOT telling your side of
+    the story?
+  steps:
+  - user: Have you ever watched them humiliate you and play the victim to the public?
+      That's another level of restraint/self control, but the reward is so much greater
+      in the end! I'd rather stay blessed. It feels so much better than revenge!
+  - bot: '[deleted]'
+- story: So i just found out my psychiatrist has been charging my insurance an extra
+    300 dollars for the same time and service each visit if i talked about anything
+    other then my medication during my visit, so im being taxed extra anytime i ask
+    how was you day or talk about mine? Is this normal or shady?
+  steps:
+  - user: Titles sums it up
+  - bot: Depends. In the US, medical billing is different between insurance type.
+      I was told I would need to book two appointments for two issues with the same
+      doc.
+- story: I find myself referring to me as we
+  steps:
+  - user: Like the title says I find when I'm alone and I think things I tend to use
+      "we" instead of I, for example I'll think "we gotta get ready for work" or "we
+      gotta get food", is this a problem? Sounds like a dumb question but I feel like
+      I shouldn't be thinking that
+  - bot: No it's not a problem bit confusing tho over text I imagine
+- story: Idk who needed to hear this but..
+  steps:
+  - user: Your pain and suffering does not define you.
+  - bot: Thank you.
+- story: If I tell my therapist I was raped by my former teacher two years ago, and
+    he is no longer in my life and is no longer teaching, will my therapist have to
+    report it?
+  steps:
+  - user: I was a minor then, and I still am now. I live in IL, USA. I'd prefer if
+      my parents didn't find out, and I absolutely cannot have any police involvement
+  - bot: It varies from state to state. I would say most likely yes they'd have to
+      report it since you are still a minor, and if he has any relationship with a
+      child like parent/guardian/coach etc.I understand why you're hesitant and I
+      hope you do find help.
+- story: Book/ Podcast recommendations for people who can't afford therapy.
+  steps:
+  - user: Got any favourites for people who want to self care but can't afford it.
+      Please list some resources.
+  - bot: '[deleted]'
+- story: Going back to therapy!!!
+  steps:
+  - user: Hi all! I finally contacted my old therapist after about 3 years.I went
+      consistently throughout all of high school, but in college I semi-purposefully
+      chose to stop going (yeah I know, big mistake).After 3 years I finally contacted
+      her and set up a tele health appointment!
+  - bot: '[deleted]'
+- story: How do I tell my therapist I have suicidal thoughts without being sent to
+    a phych ward?
+  steps:
+  - user: That's basically it.
+  - bot: As a therapist clients tell me frequently about having suicidal thoughts.
+      It only becomes a 911 call if they have an active plan with means (e.g. gun)
+      and are set on following through.  Talk to your therapist!
+- story: What will happen when I tell my therapist I was raped yesterday?
+  steps:
+  - user: I was raped yesterday and I called my therapist and asked for an extra appointment,
+      I didn't tell her why. I have bipolar 1 and this has plummeted me into a really
+      bad depression. Has anyone told their therapist they'd been raped right after
+      it happened. I'm just very scared.
+  - bot: I'm not sure but I think this is a very admirable way to move forward.  I'm
+      so sorry you're in this situation.
+- story: I'm afraid my brother will kill me.
+  steps:
+  - user: I think my brother sexually assaulted me when I was younger. He came on
+      to me through text recently when he was drunk and may have admitted it. I don't
+      want to see my immediate family anymore because I think he would shoot me.
+  - bot: Is there someone safe you can talk with about this? Why do you think he will
+      harm you?  Don't feel like you need to process this alone... reach out to someone
+      for support.
+- story: I am so tired but so grateful to be alive.
+  steps:
+  - user: That is all.
+  - bot: Nice....Keep your chin up and stay strong
+- story: using that gift $$
+  steps:
+  - user: 'All my relatives giving me cash to “buy yourself something nice” and I''m
+      just like thanks for covering my therapy co-pays for the next month '
+  - bot: This!!!
+- story: Can I gift my therapist a plant?
+  steps:
+  - user: I propagate and grow succulents so it's not something I will have purchased
+      for them, only taken from what I already have growing. Would it be okay to gift
+      my therapist one of them? They seemed really happy for me when I told them about
+      my hobby and I thought it would be a kind gesture.
+  - bot: Some therapists have a blanket rule, so I do agree that you should ask first.
+      But that sounds like a lovely gift!
+- story: Does anyone else feel worse when they leave therapy? I'm just angry again
+  steps:
+  - user: I went to my walk in clinic because of a mental breakdown but nothing happened
+      and I'm mad.
+  - bot: Yeah, for sure. Some days I'd leave with clarity. Some days with a really
+      raw feeling. Some days really tired and just wiped. Some days confused and no
+      better off. So, yeah, for sure.
+- story: Ive been able to sleep without having the blanket being pulled over my head!!
+  steps:
+  - user: Just realized and, really, it's the small changes that add up 🥰
+  - bot: oh yes, I remember doing that as well!you feel so free and comfortable once
+      you stop doing it, so congrats, I'm very proud of you!
+- story: Thanks for your time
+  steps:
+  - user: 'Therapist: what do we say to people we want to get to know?Me: Welcome
+      to the shit show! Therapist: No "sigh"'
+  - bot: That is totally what you say! Haha I'm kidding! ... mostly...
+- story: I've decided to go to therapy last week and had my first Psych Evaluation
+    today
+  steps:
+  - user: I finally had the courage to consult a therapist last week. Apparently,
+      I've had unresolved trauma that started when i was 6 years old, and I'm 21 now.
+      So that's like 15 years worth of trauma. I feel kinda scared but really proud
+      of myself at the same time.
+  - bot: I'm proud of you!
+- story: how do i stop getting embarrassed when i try to talk to my therapist
+  steps:
+  - user: whenever i want to talk about whats in my head i get embarrassed and think
+      im stupid and that i dont have problems worth her time
+  - bot: Could it be that thinking that you are stupid and that you do not have problems
+      worth her time, is a problem worth her time?
+- story: This is the first time in a long time that I'm going to bed WANTING to wake
+    up tomorrow.
+  steps:
+  - user: I couldn't have done it without my therapist. I'm so grateful to her.
+  - bot: I'm very happy for you! ​Be sure to tell your therapist that, too.
+- story: What are three things that you are grateful for today?
+  steps:
+  - user: What made you smile? Even for a little bit
+  - bot: It's 18c today and I'm so grateful for it. We've had hella hot summers here.
+      (Australia)Really bad TikTok humourMy dog. Always.
+- story: It's happening
+  steps:
+  - user: Today is the dayI'm going to therapy! I hope it goes wellI'm so nervous
+      about this.Wish me luck guys, see you on the other side
+  - bot: Good luck! First therapy for me tomorrow as well. Let us know how it goes
+      (if you feel like sharing!)
+- story: I saw a video of some person getting decapitated and I can't unsee it
+  steps:
+  - user: my brain In the middle of the nights like hey remember the time you saw
+      this person being decapitated I'm like hey get outta my head tryna sleep
+  - bot: Ugh, I am so so sorry you went through that. Graphic violence gets burned
+      into my brain too, and over the years I've learned to avoid media like that
+      just because I am sensitive to graphic material and it will replay in my head.
+- story: signed up for a "covid pen pal" today
+  steps:
+  - user: Made me feel a little less alone. Thought you all might want to also. These
+      days are long. covidpenpals(.)com
+  - bot: 'Just signed up.What a lovely idea. Thank you for sharing. I''m excited.Update:
+      I got my match today! I was getting some serious cabin fever this weekend and
+      it was such a day brightener to have this in my inbox.'
+- story: Hat Trick
+  steps:
+  - user: Good grief. After today's zoom appointment had technical difficulties and
+      was carried out via phone, I now know I can cry using all mediums; face-to-face,
+      zoom video, and phone call. I continue to amaze myself with my talents. 😊
+  - bot: Hope you're doing okay and yes teletherapy these days works amazingly, just
+      that you should be comfortable enough.
+- story: Hang in there!
+  steps:
+  - user: This is for all those who are stuck at home during the pandemic with toxic
+      families. More power to you to get through this tough time!Stay strong <3
+  - bot: And for anyone stuck at home alone too, it can seem very depressing and lonely...
+      but it isn't forever!
+- story: Does anyone else
+  steps:
+  - user: Does anyone else recognize that they need therapy... but feel silly seeking
+      it out because they have a mindset of “it could be worse” or “my trauma is not
+      as severe as others” so I'm unworthy/wasting the therapists time?
+  - bot: 'Listening to a lecture on trauma I''ll always remember this sentence: Trauma
+      can be like a baseball bat and trauma can be like sandpaper.'
+- story: I am proud of myself
+  steps:
+  - user: Today I started the conversation with my therapist on something Ive been
+      keeping secret for so so long. It was the hardest thing Ive ever had to say,
+      but I did it. No idea what Im gonna do next session, but we will figure that
+      out next week. For now, Im just proud of myself.
+  - bot: I'm proud for you! You go Glen Coco!
+- story: When do you know you should see a therapist?
+  steps:
+  - user: Does it show up on your day-to-day life or mentally/physically? I feel like
+      I should see one but I'm not sure.
+  - bot: When you start seriously asking that question. That's your brain telling
+      you what it really needs.
+- story: Is it possible this quarantine is good for mental health? I.e working on
+    urself etc
+  steps:
+  - user: Pretty much just the title
+  - bot: It depends on who you are. My clinic is doing tele-therapy right now and
+      a lot of the clients are saying they're feeling down because they're locked
+      up. But others claim they're doing fantastic and are enjoying the time away
+      from society.
+- story: An excerpt from today's therapy session
+  steps:
+  - user: 'Me: I don''t think I''m tramatized enough to have a disassociative disorder,
+      it''s not like I''ve ever lost time or anythingMy therapist: Yes you do. Last
+      week you said you lost an hour after work.Me: No way, I don''t remember that.Therapist:
+      ....Me: ...Me: Oh dang'
+  - bot: Gotcha!On a more serious note, happy for you that you have a therapist you
+      trust and a good relationship with that person so these moments are possible.Way
+      to go on healing! Or getting abducted by aliens for an hour, whichever it is.
+      💜
+- story: Hello! to put it bluntly I hate women, what options are there for therapy/methods?
+  steps:
+  - user: Currently been to a therapist for about a month, made little progress as
+      of right now though.
+  - bot: A month is not a long time to have been in therapy. Don't expect instant
+      results. Focus on any small insights and work on integrating them between sessions.
+      Good luck!
+- story: Therapist arrives 10 minutes late to session and ends 10 minutes early
+  steps:
+  - user: It's over video chat idk it's kind of annoying and it seems like shes always
+      doing something during the session like looking at her computer or typing while
+      were talking is that a bad sign?
+  - bot: That's a sign that you are getting 20 minutes less of a session and that's
+      bs. I'd find a new therapist.
+- story: What creative ideas do you have to take care of your mental health? I want
+    to turn off the flight/fight!
+  steps:
+  - user: I do all the obvious ones:therapy, diet, exercise, friendships...what else
+      can I do?
+  - bot: Delete social media. Get to the flow state as best as you can and practice
+      doing it so you can get there more
+- story: Anyone else feels that many people claim to be empathetic but they aren't
+    as empathetic as they think they are.
+  steps:
+  - user: I'm wondering if there are limits to empathy. I met very judgmental, abusive
+      people who talks about empathy and being understanding. I find it strange.
+  - bot: Yeah two of the most manipulative, toxic people in my life have called themselves
+      “empaths”. I'm sure there's people who really are more empathetic than others
+      but this makes me wary of people who use that label.
+- story: Found out my therapist is anti-vax
+  steps:
+  - user: Like the title says. Honestly, it changes my opinion of her as a competent
+      medical professional. I find it hard to respect anyone who thinks this about
+      vaccines.Am I being irrational? I don't know. It just rubs me the wrong way.
+  - bot: nope this would bother me too. different fields, same principle. speaks to
+      their ability to think rationally about information presented, a worrying trait
+      for a therapist to posses
+- story: I'm so scared of how much other people hate.... Yet I'm the number one person
+    who hates me.
+  steps:
+  - user: Does anyone else feel this way? Does anyone have suggestions on how to overcome
+      this, or at least not feel that as much?
+  - bot: I don't hate myself but I'm definitely harder on me than anyone else
+- story: 'PSA:'
+  steps:
+  - user: Love isn't something you have to earn in order to deserve.
+  - bot: I needed to see this today.  thank you <3
+- story: Did therapy make a difference?
+  steps:
+  - user: Often on Reddit, everyone says “get therapy” but who here has tried it and
+      what are your experiences?I've tried it thrice and each time has been a waste
+      of time.
+  - bot: '[deleted]'
+- story: Third session.
+  steps:
+  - user: Each session is better than the last. My session went very well and I'm
+      feeling better after each one. Thank goodness. I wish all of you well.
+  - bot: Was it hard to arrange your first one? Like on a personal level?
+- story: Parents listened in on therapy
+  steps:
+  - user: I'm 16. I'll be 17 in April. Is it okay for my dad to hide in my bathroom
+      behind the door to listen in to my therapy session? Am I irrational for being
+      upset? We were just talking about medicine, but like I could've been talking
+      about sa if he was there at a different time. I feel so violated.
+  - bot: No. Not OK. That is definitely the farthest thing from OK.
+- story: Therapists and politics
+  steps:
+  - user: When trying to find a therapist, is it acceptable to ask their political
+      beliefs? Would the scheduler/receptionist be able to answer that question? It's
+      important to me not to be paired with an alt-right Covid-denier. (And that's
+      not up for debate with me.)
+  - bot: I mean, you can ask anything. The therapist does not have to answer. A receptionist
+      probably wouldn't be able to though. Might need to wait for the first session
+- story: I always have so many thoughts that I want to share when we go to couples
+    therapy, but I miss saying them in the emotion of it all. Does it look bad to
+    make some notes on my phone and look at them while in the couples therapy session?
+  steps:
+  - user: Please give me your thoughts
+  - bot: Write them down on a notepad.
+- story: What are some ways I can be less sensitive and reactive? And take things
+    less seriously?
+  steps:
+  - user: A big flaw of mine that affects my relationships is being sensitive and
+      reactive. I frequently overthink and jump to negative conclusions. I'm looking
+      for practices or literally anything to help me stop with this
+  - bot: When I got like this it was because I just had so much unprocessed crap I
+      had to take care of. Once I started processing stuff and got to a better place
+      my emotions regulated out
+- story: Hey you!
+  steps:
+  - user: Erase everything from the past that does not serve you and be grateful it
+      brought you to this place now, to a new beginning. Breathe easy, everything
+      is going to be okay.
+  - bot: Wow, you make it sound so easy, who needs actual therapy...
+- story: Jealous of those with family support
+  steps:
+  - user: Does anyone else feel this way? It comes out as bitterness towards some
+      friends. It is bitterness but I'm just wondering if anyone else has this issue
+      and we can discuss it.
+  - bot: Me right here!!I've always been jealous, I had a very unstable family growing
+      up, and still do. I get no support at all from them lol. Now my mom is sick
+      with cancer and it's honestly just even worse.I've always been so jealous of
+      my friends who have stable and supportive parents.
+- story: Help i lost a fuck ton of money and i just found out my supervisors at work
+    hate me
+  steps:
+  - user: I quit gambling about a year ago and i just started again 2 days ago. In
+      a span of 2 days i've lost about a quarter of my life savings and I just found
+      out my supervisors at work hate me. I really don't know what to do about myself.
+  - bot: Yo don't. Put away the money in a fund where you can't touch it. Do it now.
+- story: Couples counseling while doing individual therapy
+  steps:
+  - user: Is it doable? Or would it be too much? Looking for advice. I'm in individual
+      therapy myself but my wife has suggested couples counseling moving forward in
+      the next few months to sort out some things.
+  - bot: I do both.  I haven't had problems except when it sometimes happens on the
+      same day.  Can be a bit much but sometimes our schedules only work that way.  And
+      often I can take what we've talked about in couples to my individual and break
+      it down some more.  I'm all for it.
+- story: I LOVEEEE DBT
+  steps:
+  - user: It's changing my life it's LIT ❤️❤️❤️ I've never felt so happy or accomplished
+      in myselfI'm so thankful for dbt :)
+  - bot: dbt is truly life changing. i wish everyone could learn at least a little
+      dbt, like its honestly so helpful
+- story: I cannot commit to one thing for a long time. How can I change this?
+  steps:
+  - user: I have a habit of starting new things, working on it tirelessly for the
+      first few months, and then leaving it and venturing into another thing. I have
+      to stop this. But how?
+  - bot: I have the same problem
+- story: Amid the Covid-19 crisis
+  steps:
+  - user: I'm a psychotherapist who recently started posting therapeutic memes on
+      my IG @jourdantraverslcsw to help us get through the Corona Crisis.If you're
+      in the mood for feel good posts and some laughter, feel free to check-it-out!
+      Wishing everyone the best amid the chaos.In solidarity ✊🏻
+  - bot: I really like this but I'm not on Instagram, are you also posting them on
+      any Reddit communities by chance?

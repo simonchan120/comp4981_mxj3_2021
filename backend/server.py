@@ -247,10 +247,9 @@ def connection_ok():
 def send_message(user, token_body):
     content = request.form
     user_message= content.get('message')
-    json_string, status = rasa_client.send_message(user,
+    response_obj, status = rasa_client.send_message(user,
         str(user_message))
     current_conversation =  Conversation.objects(uuid=user.latest_conversation_uuid).first()
-    response_obj = json.loads(json_string)
     bot_reply = response_obj[0]['text']
     response_obj[0]['type']='text'
 
@@ -259,7 +258,7 @@ def send_message(user, token_body):
     
     current_conversation.content.append(user_message_obj)
     current_conversation.content.append(bot_message_obj)
-    if recommender.Recommender.check_if_recommend(user):
+    if recommender.Recommender.check_if_recommend(user,user_message):
         multimedia,_ = recommender.Recommender.recommend(user.username)
         giphy_tag = multimedia.name
 
@@ -268,7 +267,7 @@ def send_message(user, token_body):
         giphy_link,_ = giphy_util.fetch_multimedia(giphy_tag)
         response_obj.append({'type':'gif','url':giphy_link,'name':giphy_tag})
         recommender_message_obj=Message(content=giphy_link,is_from_user=False,time_sent=datetime.utcnow())
-    current_conversation.content.append(recommender_message_obj)
+        current_conversation.content.append(recommender_message_obj)
     current_conversation.save()
 
     return Response(json.dumps(response_obj), status=status, mimetype='application/json')
@@ -396,6 +395,26 @@ def add_survey_results(user,token_body):
     user.save()
     return Response(json.dumps({"message": "Survey result saved"}),status=200,mimetype='application/json')
 
+@main_bp.route("/check-do-survey",methods=['GET'])
+@token_required
+def check_do_survey(user,token_body):
+    latest_survey_time = user.surveys[0].time_submitted  if len(list(user.surveys)) >= 1 else datetime(year = 1971,month=1,day=1)
+    seconds_since_last_survey = (datetime.now()-latest_survey_time).total_seconds()
+    base_interval = current_app.config['SURVEY_INTERVAL']
+    threshold = base_interval
+    result = seconds_since_last_survey >= threshold
+    return Response(json.dumps({"result": result, "last_survey":latest_survey_time.strftime("%d-%b-%Y (%H:%M:%S)")}),status=200,mimetype='application/json')
+
+@main_bp.route("/check-send-push-notification",methods=['GET'])
+@token_required
+def check_send_push_notification(user,token_body):
+    current_conversation=next(convo for convo in user.conversations if convo.uuid==user.latest_conversation_uuid)
+    latest_message_time =  current_conversation.content[0].time_sent if len(list(current_conversation.content)) >= 1 else datetime(year = 1971,month=1,day=1)
+    seconds_since_last_message = (datetime.now()-latest_message_time).total_seconds()
+    base_interval = current_app.config['NOTIFICATION_INTERVAL']
+    threshold = base_interval
+    result = seconds_since_last_message >= threshold
+    return Response(json.dumps({"result": result, "last_message":latest_message_time.strftime("%d-%b-%Y (%H:%M:%S)")}),status=200,mimetype='application/json')
 
 @internal_bp.route("/train", methods=['POST'])
 def train_data():
@@ -429,6 +448,6 @@ def _do_stuff():
 
 @internal_bp.route("/add_giphy_tags",methods=['POST'])
 def _add_giphy_tag():
-    GIPHY_TAGS=['funny','celebrities','nature']
+    GIPHY_TAGS=['fun','movies','vacation','animals','holidays','cute','happy','pets','celebrities','nature']
     MultiMediaData.objects.insert([MultiMediaData(name=x,description='giphy_tag')for x in GIPHY_TAGS])
     return Response()
