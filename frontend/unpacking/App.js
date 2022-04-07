@@ -1,13 +1,9 @@
 import { StatusBar } from "expo-status-bar";
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext, useRef} from "react";
 import {
   StyleSheet,
   Text,
   View,
-  Image,
-  TextInput,
-  Button,
-  TouchableOpacity,
 } from "react-native";
 
 import 'react-native-gesture-handler';
@@ -33,9 +29,23 @@ import SettingsScreen from './SettingsScreen';
 import API_test from './API_test';
 import ForgetPassword from "./ResetPasswordScreen";
 import NewUser from "./NewUserScreen";
+import { schedulePushNotification, registerForPushNotificationsAsync } from "./Notification";
+
+import * as Notifications from "expo-notifications";
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+  }),
+});
+
 
 /*Stack.Navigator.defaultProps = {
   headerMode: 'none',
@@ -110,8 +120,78 @@ function SettingsStack() {
 }
 
 export function Start() {
+  // for notification
+  const [expoPushToken, setExpoPushToken] = useState("");
+  const [notification, setNotification] = useState(false);
+  const notificationListener = useRef();
+  const responseListener = useRef();
+  //console.log("func Notification started!")
+  // for check from API
+  const context = useContext(Auth);
+  const { manifest } = Constants;
+  const uri_view_push = `http://${manifest.debuggerHost.split(':').shift()}:5000/check-send-push-notification`;
+  useEffect(() => {
+    // notification
+    registerForPushNotificationsAsync().then((token) =>
+      setExpoPushToken(token)
+    );
+
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+          setNotification(notification);
+      });
+
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log(response);
+      });
+    // Notification part end
+
+    async function checkPushStatus() {
+      try {
+        const response = await fetch(uri_view_push, {
+          method: 'GET',
+          headers: {
+            'rasa-access-token': context.token
+          }
+        });
+        const json = await response.json();
+        //console.log(json);
+        //console.log("JSON?", Array.isArray(json));
+        //console.log(json.surveys.length);
+        if (json.result) {
+          console.log("push true");
+          async () => {
+            await schedulePushNotification();
+          }
+        }
+        else {
+          console.log("push false");
+          //console.log(json.surveys.length)
+          //setMessages([back_message_list[0],]);
+          //num_chat = back_message_list.length;
+        }
+      } catch (error) {
+        console.error(error);
+      } finally {
+        //
+      }
+
+    };
+    checkPushStatus();
+    // Notification
+    return () => {
+      Notifications.removeNotificationSubscription(
+        notificationListener.current
+      );
+      Notifications.removeNotificationSubscription(responseListener.current);
+    };
+    // Notification part end
+  }, []);
   return (
-    <NavigationContainer independent={true}>
+    <NavigationContainer independent={true} onPress={async () => {
+      console.log("Loading!"); await schedulePushNotification();
+    }}>
       <Tab.Navigator
         initialRouteName="ChatStack"
         screenOptions={{

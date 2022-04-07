@@ -33,7 +33,7 @@ const ChatScreen = () => {
     },
     {
       _id: 's2',
-      text: 'Since this is the first time we talk, I hope to understand you more~',
+      text: 'Before we talk, I hope to understand you more~',
       createdAt: new Date(),
       user: {
         _id: 2,
@@ -432,7 +432,7 @@ const ChatScreen = () => {
   /* End */
 
   /*For starting each chat session*/
-  const uri_view_profile = `http://${manifest.debuggerHost.split(':').shift()}:5000/show-profile`;
+  const uri_view_profile = `http://${manifest.debuggerHost.split(':').shift()}:5000/check-do-survey`;
   useEffect(() => {
     async function checkSurveyStatus() {
       try {
@@ -443,11 +443,11 @@ const ChatScreen = () => {
           }
         });
         const json = await response.json();
-        //console.log(json);
+        console.log(json);
         console.log("JSON?", Array.isArray(json));
-        console.log(json.surveys.length);
-        if (json.surveys.length === 0) {
-          console.log("No survey before");
+        //console.log(json.surveys.length);
+        if (json.result) {
+          console.log("survey now");
           setMessages([
             start_message_list[0],
           ]);
@@ -458,7 +458,7 @@ const ChatScreen = () => {
           setTimeout(function() {setMessages(previousMessages => GiftedChat.append(previousMessages, survey_question_list[0]))}, start_message_list.length*1000);
         }
         else {
-          console.log("Done survey before");
+          console.log("not survey now");
           //console.log(json.surveys.length)
           setMessages([back_message_list[0],]);
           //num_chat = back_message_list.length;
@@ -524,7 +524,7 @@ const ChatScreen = () => {
           },
           body: formData
         });
-        //console.log(response);
+        console.log(response);
       } catch (error) {
         console.error(error);
       } finally {
