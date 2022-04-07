@@ -41,7 +41,7 @@ class User(Document):
     is_student = BooleanField()
     is_ust = BooleanField()
     emotion_score = FloatField(default=0.5)
-    surveys = SortedListField(EmbeddedDocumentField('Survey',ordering="time_submitted",reverse = True))
+    surveys = SortedListField(EmbeddedDocumentField('Survey'),ordering="time_submitted",reverse = True)
     preferences = SortedListField(EmbeddedDocumentField('Preference'),ordering="score",reverse = True)
     pred_preferences = SortedListField(EmbeddedDocumentField('Preference'),ordering="score",reverse = True)
     latest_conversation_uuid = StringField()
