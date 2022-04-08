@@ -30,6 +30,7 @@ import API_test from './API_test';
 import ForgetPassword from "./ResetPasswordScreen";
 import NewUser from "./NewUserScreen";
 import { schedulePushNotification, registerForPushNotificationsAsync } from "./Notification";
+import Agreement from "./Agreement";
 
 import * as Notifications from "expo-notifications";
 
@@ -38,13 +39,13 @@ const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 
-Notifications.setNotificationHandler({
+/*Notifications.setNotificationHandler({
   handleNotification: async () => ({
     shouldShowAlert: true,
     shouldPlaySound: true,
     shouldSetBadge: true,
   }),
-});
+});*/
 
 
 /*Stack.Navigator.defaultProps = {
@@ -62,9 +63,14 @@ function ChatStack() {
           headerTitleStyle: { fontWeight: 'bold' }*/
         }}>
           <Stack.Screen
+          name="Agreement"
+          component={Agreement}
+          options={{ title: 'Agreement Page' }}/>
+          <Stack.Screen
           name="Chatting"
           component={ChatScreen}
           options={{ title: 'Details Page' }} />
+          
 
       </Stack.Navigator>
   );
@@ -158,12 +164,10 @@ export function Start() {
         const json = await response.json();
         //console.log(json);
         //console.log("JSON?", Array.isArray(json));
-        //console.log(json.surveys.length);
-        if (json.result) {
+        console.log(json.result);
+        if (json.result === true) {
           console.log("push true");
-          async () => {
-            await schedulePushNotification();
-          }
+          await schedulePushNotification();
         }
         else {
           console.log("push false");
@@ -189,9 +193,9 @@ export function Start() {
     // Notification part end
   }, []);
   return (
-    <NavigationContainer independent={true} onPress={async () => {
+    <NavigationContainer independent={true} /*onPress={async () => {
       console.log("Loading!"); await schedulePushNotification();
-    }}>
+    }}*/>
       <Tab.Navigator
         initialRouteName="ChatStack"
         screenOptions={{
@@ -388,94 +392,3 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
 });
-
-
- 
-/*const LoginScreen = ({ navigation }) => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
- 
-  return (
-    <View style={styles.container}>
-
- 
-      <StatusBar style="auto" />
-      <View style={styles.inputView}>
-        <TextInput
-          style={styles.TextInput}
-          placeholder="Email"
-          placeholderTextColor="#003f5c"
-          onChangeText={(email) => setEmail(email)}
-        />
-      </View>
- 
-      <View style={styles.inputView}>
-        <TextInput
-          style={styles.TextInput}
-          placeholder="Password"
-          placeholderTextColor="#003f5c"
-          secureTextEntry={true}
-          onChangeText={(password) => setPassword(password)}
-        />
-      </View>
- 
-      <TouchableOpacity>
-        <Text style={styles.forgot_button}>Forgot Password?</Text>
-      </TouchableOpacity>
- 
-      <TouchableOpacity 
-        style={styles.loginBtn}
-        onPress={
-          () => navigation.navigate('Details')
-        }
-      >
-        <Text style={styles.loginText}>LOGIN</Text>
-      </TouchableOpacity>
-    </View>
-  );
-}
- 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
- 
-  image: {
-    marginBottom: 40,
-  },
- 
-  inputView: {
-    backgroundColor: "#FFA500",
-    borderRadius: 30,
-    width: "70%",
-    height: 45,
-    marginBottom: 20,
- 
-    alignItems: "center",
-  },
- 
-  TextInput: {
-    height: 50,
-    flex: 1,
-    padding: 10,
-    marginLeft: 20,
-  },
- 
-  forgot_button: {
-    height: 30,
-    marginBottom: 30,
-  },
- 
-  loginBtn: {
-    width: "80%",
-    borderRadius: 25,
-    height: 50,
-    alignItems: "center",
-    justifyContent: "center",
-    marginTop: 40,
-    backgroundColor: "#FFA500",
-  },
-});*/

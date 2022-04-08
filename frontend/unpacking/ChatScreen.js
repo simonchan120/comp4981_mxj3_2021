@@ -6,6 +6,7 @@ import ActivitiesScreen from "./ActivitiesScreen";
 
 import Constants from "expo-constants";
 import {Auth} from "./App"
+//import Agreement from './Agreement';
 
 const ChatScreen = () => {
   const [messages, setMessages] = useState([]);
@@ -524,7 +525,6 @@ const ChatScreen = () => {
           },
           body: formData
         });
-        console.log(response);
       } catch (error) {
         console.error(error);
       } finally {

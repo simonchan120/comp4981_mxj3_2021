@@ -46,10 +46,11 @@ Notifications.setNotificationHandler({
 }*/
   
 export async function schedulePushNotification() {
+  console.log("Now in schedulePushNotification");
     await Notifications.scheduleNotificationAsync({
         content: {
-        title: "You've got mail! 📬",
-        body: 'Here is the notification body',
+        title: "It has been a while since we last talk",
+        body: 'Anything to share?',
         data: { data: 'goes here' },
         },
         trigger: { seconds: 2 },
