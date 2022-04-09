@@ -3,19 +3,12 @@ from .dataclass import *
 import logging
 logger = logging.getLogger(__name__)
 import random
-import nltk
-nltk.download('vader_lexicon')
-from nltk.sentiment.vader import SentimentIntensityAnalyzer
-_sentiment_intensity_analyzer = SentimentIntensityAnalyzer()
+
 class Recommender():
     def check_if_recommend(user,message):
-        PREVIOUS_WEIGHT = 0.8
         MAX_FREQ= 10
         MIN_FREQ= 5
-        sentiment_result  = _sentiment_intensity_analyzer.polarity_scores(message)
-        current_score = sentiment_result['compound']
-        current_score = (current_score+1)/2
-        user.emotion_score =  user.emotion_score * PREVIOUS_WEIGHT  + current_score * (1-PREVIOUS_WEIGHT)
+        user.emotion_score = User.get_new_emotion_score(user,message)
         user.save()
         threshold=  (1/MIN_FREQ - 1/MAX_FREQ )*user.emotion_score + 1/MAX_FREQ
 
