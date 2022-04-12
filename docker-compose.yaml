@@ -34,4 +34,4 @@ services:
     build: ./backend/rasa
     ports:
       - 5005:5005
-    command: run -p 5005 --enable-api 
+    #command: run -p 5005 --enable-api 
