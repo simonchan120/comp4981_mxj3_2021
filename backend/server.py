@@ -409,7 +409,9 @@ def check_do_survey(user,token_body):
     MAX_CHANGE_TIME = base_interval * 0.4
     MAX_SUM_OF_EMOTION_SCORE_DIFFERENCE = 2
     latest_score = None
-    current_emotion_score_list = user.previous_emotion_score_list[-1]
+    if not user.previous_emotion_score_list:
+        user.previous_emotion_score_list.append([])
+    current_emotion_score_list = user.previous_emotion_score_list[-1] 
     if current_emotion_score_list:
         latest_score = current_emotion_score_list[-1]
         sum_of_emotion_score_difference = sum([abs(current_emotion_score_list[i+1]-current_emotion_score_list[i]) for i in range(0, len(current_emotion_score_list)-1)])
