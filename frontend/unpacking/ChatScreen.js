@@ -595,6 +595,7 @@ const ChatScreen = () => {
                   }}
                   source={{ uri: props.currentMessage.image }}
                 />
+                <Image source='./Image.Poweredby_100px-Black_VertText.png' />
               </View>
             );
           }}
