@@ -95,6 +95,8 @@ def token_required(f):
             _verify_jwt(token,current_user.password)
         except jwt.exceptions.InvalidSignatureError:
             return Response(json.dumps({'message': 'Invalid token'}),401, mimetype='application/json')
+        except jwt.exceptions.ExpiredSignatureError:
+            return Response(json.dumps({'message': 'Please re-login'}),401, mimetype='application/json')
         # returns the current logged in users contex to the routes
         return f(current_user, data, *args, **kwargs)
     wrapper.__name__ = f.__name__
@@ -392,6 +394,7 @@ def add_survey_results(user,token_body):
     if not d1.isnumeric() or not d2.isnumeric() or not d3.isnumeric() or not d4.isnumeric() or not d5.isnumeric() or not d6.isnumeric() or not d7.isnumeric():
         return Response(json.dumps({"message": "invalid survey values, expected integers"}),status=404, mimetype='application/json')
     user.surveys.append(Survey(survey_entry_1=d1,survey_entry_2=d2,survey_entry_3=d3,survey_entry_4=d4,survey_entry_5=d5,survey_entry_6=d6,survey_entry_7=d7))
+    user.previous_emotion_score_list.append([])
     user.save()
     return Response(json.dumps({"message": "Survey result saved"}),status=200,mimetype='application/json')
 
@@ -402,6 +405,19 @@ def check_do_survey(user,token_body):
     seconds_since_last_survey = (datetime.now()-latest_survey_time).total_seconds()
     base_interval = current_app.config['SURVEY_INTERVAL']
     threshold = base_interval
+
+    MAX_CHANGE_TIME = base_interval * 0.4
+    MAX_SUM_OF_EMOTION_SCORE_DIFFERENCE = 2
+    latest_score = None
+    current_emotion_score_list = user.previous_emotion_score_list[-1]
+    if current_emotion_score_list:
+        latest_score = current_emotion_score_list[-1]
+        sum_of_emotion_score_difference = sum([abs(current_emotion_score_list[i+1]-current_emotion_score_list[i]) for i in range(0, len(current_emotion_score_list)-1)])
+        threshold -= max(MAX_SUM_OF_EMOTION_SCORE_DIFFERENCE,sum_of_emotion_score_difference)/MAX_SUM_OF_EMOTION_SCORE_DIFFERENCE*MAX_CHANGE_TIME
+
+    current_emotion_score_list.append(user.emotion_score)
+    user.save()
+
     result = seconds_since_last_survey >= threshold
     return Response(json.dumps({"result": result, "last_survey":latest_survey_time.strftime("%d-%b-%Y (%H:%M:%S)")}),status=200,mimetype='application/json')
 

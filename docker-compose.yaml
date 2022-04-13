@@ -1,11 +1,13 @@
 version: "3.9"
 services:
   web:
-    build: .
+    build: ./backend
     ports:
       - "5000:8000"
     environment:
       - FLASK_ENV=development
+    volumes:
+      - ./backend:/backend
   rabbit:
     hostname: rabbit
     image: rabbitmq:3.9
@@ -16,7 +18,7 @@ services:
       - "5672:5672"
       - "15672:15672"
   worker_1:
-    build: .
+    build: ./backend
     hostname: worker_1
     command: sh -c "celery -A backend.celery_config.celery_app worker --loglevel=info"
     deploy:
@@ -32,4 +34,4 @@ services:
     build: ./backend/rasa
     ports:
       - 5005:5005
-    command: run -p 5005 --enable-api 
+    #command: run -p 5005 --enable-api 

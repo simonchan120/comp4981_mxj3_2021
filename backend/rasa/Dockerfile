@@ -13,7 +13,8 @@ RUN pip install --no-dependencies -r requirements.txt
 #RUN pip install --upgrade pymongo~=3.12.0
 COPY ["/models","/models"]
 COPY ["config.yml","config.yml"]
+COPY ["endpoints.yml","endpoints.yml"]
 
 EXPOSE 5005
 
-ENTRYPOINT ["python3","-m","rasa"]
+CMD ["python3","-m","rasa","run","-p","5005","-m","/models","--enable-api","--cors","*","--endpoints","endpoints.yml"]
