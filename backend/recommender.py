@@ -6,11 +6,13 @@ import random
 
 class Recommender():
     def check_if_recommend(user,message):
+
         MAX_FREQ= 10
         MIN_FREQ= 5
         user.emotion_score = User.get_new_emotion_score(user,message)
         user.save()
-        threshold=  (1/MIN_FREQ - 1/MAX_FREQ )*user.emotion_score + 1/MAX_FREQ
+        full_emotion_score = user.emotion_score.full_score
+        threshold=  (1/MIN_FREQ - 1/MAX_FREQ )*full_emotion_score + 1/MAX_FREQ
 
         return random.uniform(0,1) < threshold
     # 1- avg mean sq diff 
@@ -83,7 +85,7 @@ class Recommender():
         current_user = User.objects(username=username).first()
 
         idx = randint(0,num_of_top_items-1) if len(current_user.pred_preferences) >=num_of_top_items else (len(current_user.preferences) -1)
-        
+        logger.debug(f'{[x.content.name for x in current_user.pred_preferences]}, index: {idx}, no of origianlly existing items: {num_of_top_items-remaining_items}, no of added items: {remaining_items}')
         return current_user.pred_preferences[idx].content,current_user.pred_preferences
 
         

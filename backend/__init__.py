@@ -39,7 +39,8 @@ if os.environ['FLASK_ENV']=='development':
 # TODO: change this secret key before deployment
     app.config.from_file("config.json", load=json.load)
 
-    app.config.update(SURVEY_INTERVAL=60)
+    app.config.update(SURVEY_INTERVAL_BASE=60)
+    app.config.update(SURVEY_INTERVAL_CHANGE=60)
     app.config.update(NOTIFICATION_INTERVAL=60)
 
 elif os.environ['FLASK_ENV']=='production':
@@ -55,7 +56,8 @@ elif os.environ['FLASK_ENV']=='production':
     parameter = ssm.get_parameter(Name='/path/to/param', WithDecryption=True)
     app.config.update(a='a',b='b')
 
-    app.config.update(SURVEY_INTERVAL=3600*24*7)
+    app.config.update(SURVEY_INTERVAL_BASE=3600*24*30*3)
+    app.config.update(SURVEY_INTERVAL_CHANGE=3600*24*14)
     app.config.update(NOTIFICATION_INTERVAL=3600*24*2)
 
 # mongodb mongoengine

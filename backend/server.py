@@ -1,4 +1,7 @@
+import logging
+from multiprocessing.sharedctypes import Value
 from unicodedata import name
+
 from .data.dialogue import Dialogue
 from flask import request, Response, Blueprint, current_app
 
@@ -7,11 +10,11 @@ import jwt
 from flask_mail import Message as FlaskMessage
 
 from hashlib import sha256
-from datetime import datetime, timedelta
 from mongoengine import *
-from .dataclass import *
+from .dataclass import Survey,Message,MultiMediaData,Preference,User,Conversation, EmotionScore, EmotionScoreList
 from random import randint, uniform
 import uuid
+from datetime import datetime,timezone,timedelta
 # main flask app object for configer dependencies only
 # endpoints are defined using blueprints, global flask app object is accessed by current_app
 from backend import app,rasa_client,totp,mail,celery_app, recommender, giphyUtil
@@ -19,7 +22,9 @@ main_bp = Blueprint('main', __name__)
 internal_bp = Blueprint('internal', __name__)
 AUTH_TOKEN_HEADER_NAME = 'rasa-access-token'
 giphy_util = giphyUtil.GiphyUtil(app.config['GIPHY_API_KEY'])
-
+DEFAULT_DATE_DISPLAY_FORMAT="%d-%b-%Y (%H:%M:%S)"
+logger = logging.getLogger(__name__)
+User._survey_period = app.config['SURVEY_INTERVAL_BASE']
 def _hash_password(pw):
     return sha256(pw.encode('utf-8')).hexdigest()
 
@@ -56,19 +61,11 @@ def _create_new_conversation(user):
 def handle_exception(e):
     current_app.logger.exception('An error occured')
     """Return JSON instead of HTML for HTTP errors."""
-    # start with the correct headers and status code from the error
-    response = Response(status=500)
-    # replace the body with JSON
-    response.data = json.dumps({
-        "code": 500,
-        "message": 'An error occured'
-    })
-    response.content_type = "application/json" 
-    return response
+    return Response(json.dumps({'message':"An error occured"}), 500, mimetype='application/json')
 
 
 def token_required(f):
-
+    
     def wrapper(*args, **kwargs):
         token = None
         # jwt is passed in the request header
@@ -84,21 +81,23 @@ def token_required(f):
                 token)
         except jwt.exceptions.ExpiredSignatureError:
             return Response(json.dumps({'message': 'Token has expired'}),401, mimetype='application/json')
-        current_user = User.objects(username=data['username'])\
+        except Exception:
+            return Response(json.dumps({'message':'Error processing jwt token'},400, mimetype='application/json'))
+        user = User.objects(username=data['username'])\
             .first()
             
-        if current_user is None:
+        if user is None:
             return Response(json.dumps({
                 'message': 'Token is invalid !!'
             }), 401, mimetype='application/json')
         try:
-            _verify_jwt(token,current_user.password)
+            _verify_jwt(token,user.password)
         except jwt.exceptions.InvalidSignatureError:
             return Response(json.dumps({'message': 'Invalid token'}),401, mimetype='application/json')
         except jwt.exceptions.ExpiredSignatureError:
             return Response(json.dumps({'message': 'Please re-login'}),401, mimetype='application/json')
         # returns the current logged in users contex to the routes
-        return f(current_user, data, *args, **kwargs)
+        return f(user, data, *args, **kwargs)
     wrapper.__name__ = f.__name__
     return wrapper
 
@@ -147,7 +146,7 @@ def login():
     # wrong password
     return Response(
         json.dumps({"message": 'Could not verify'}),
-        403,
+        401,
         mimetype='application/json'
     )
 
@@ -270,6 +269,10 @@ def send_message(user, token_body):
         response_obj.append({'type':'gif','url':giphy_link,'name':giphy_tag})
         recommender_message_obj=Message(content=giphy_link,is_from_user=False,time_sent=datetime.utcnow())
         current_conversation.content.append(recommender_message_obj)
+
+        #swap order to allow message to go last
+        current_conversation.content[0], current_conversation.content[1] = current_conversation.content[1],current_conversation.content[0]
+        response_obj[0],response_obj[1] = response_obj[1],response_obj[0]
     current_conversation.save()
 
     return Response(json.dumps(response_obj), status=status, mimetype='application/json')
@@ -295,10 +298,18 @@ def add_training_data():
 
 @main_bp.route("/add-preference", methods=['POST'])
 @token_required
-def add_preference_to_user(current_user, token_body):
+def add_preference_to_user(user, token_body):
     data = request.form
     media_name = data.get('name')
     score = data.get('score')
+    if media_name is None or score is None:
+        return Response(json.dumps({"message":"Missing fields"}),404,
+            mimetype='application/json')
+    try:
+        float(score)
+    except ValueError:
+        return Response(json.dumps({"message":"invalid score"}),404,
+            mimetype='application/json')
     media = MultiMediaData.objects(name=media_name).first()
     if media is None:
         return Response(
@@ -306,7 +317,12 @@ def add_preference_to_user(current_user, token_body):
             404,
             mimetype='application/json'
         )
-    current_user.preferences.append(Preference(content=media, score=score))
+    existing_preference = next((x for x in user.preferences if x.content.name == media_name),None)
+    if existing_preference:
+        existing_preference.score = float(score)
+    else:
+        user.preferences.append(Preference(content=media, score=score))
+    user.save()
     return Response(json.dumps({'message': 'Prefence added'}), status=200, mimetype='application/json')
 
 
@@ -329,25 +345,46 @@ def delete_user(user, token_body):
     user.delete()
     return Response(json.dumps({'message': 'Profile deleted'}), status=200, mimetype='application/json')
 
+def _preprocess_user_profile(d,user_utc):
+    if isinstance(d, dict):
+        for key in list(d.keys()):
 
-class DateTimeEncoder(json.JSONEncoder):
-    def default(self, o):
-        if isinstance(o, datetime):
-            return o.isoformat()
-
-        return json.JSONEncoder.default(self, o) 
+            if '$' in key and len(key) > 1:
+                new_key_name =  key.replace('$','')
+                d[new_key_name]=d[key]
+                del d[key]
+                key = new_key_name
+            
+            if key=='date':
+                d[key] = datetime.fromtimestamp(d[key]/1000,user_utc).strftime(DEFAULT_DATE_DISPLAY_FORMAT)
+            elif key == '_id' or key == 'oid' or 'uuid' in key:
+                del d[key]
+                continue
+            _preprocess_user_profile(d[key],user_utc)
+    if isinstance(d, list):
+        for item in d:
+            _preprocess_user_profile(item,user_utc)
 
 @main_bp.route("/show-profile", methods=['GET'])
 @token_required
 def get_user_profile(user, token_body):
+    is_verbose = False
+
+    data = request.form
+    try:
+        is_verbose = data.get('verbose').lower() == 'true'
+    except (ValueError, AttributeError):
+        pass
     user.password = None
     user.otp = None
     user_json = json.loads(user.to_json())
-    new_list = []
-    for entry in user.conversations:
-        new_list.append(json.loads(entry.to_json()))
-    user_json["conversations"]=new_list
-    return Response(json.dumps(user_json,cls=DateTimeEncoder),200, mimetype='application/json')
+    user_json['conversations']= [json.loads(x.to_json()) for x in user.conversations]
+    user_json['preferences'] = [({'content':json.loads(x.content.to_json()),'score':x.score}) for x in user.preferences]
+    user_json['pred_preferences'] = [({'content':json.loads(x.content.to_json()),'score':x.score}) for x in user.pred_preferences]
+    if not is_verbose:
+        user_timezone = timezone(timedelta(hours=user.utc_in_hours))
+        _preprocess_user_profile(user_json,user_timezone)
+    return Response(json.dumps(user_json),200, mimetype='application/json')
 
 @main_bp.route("/signup/forget-password", methods=['POST'])
 def reset_pw_sendEmail():
@@ -388,40 +425,51 @@ def reset_pw():
 @token_required
 def add_survey_results(user,token_body):
     data=request.form
-    d1,d2,d3,d4,d5,d6,d7=data.get('field_1'),data.get('field_2'),data.get('field_3'),data.get('field_4'),data.get('field_5'),data.get('field_6'),data.get('field_7')
-    if not d1 or not d2 or not d3 or not d4 or not d5 or not d6 or not d7:
+    d1,d2,d3,d4,d5,d6,d7,d8,d9=data.get('field_1'),data.get('field_2'),data.get('field_3'),data.get('field_4'),data.get('field_5'),data.get('field_6'),data.get('field_7'),data.get('field_8'),data.get('field_9')
+    if not d1 or not d2 or not d3 or not d4 or not d5 or not d6 or not d7 or not d8 or not d9:
         return Response(json.dumps({"message": "missing survey fields"}),status=404,mimetype='application/json')
-    if not d1.isnumeric() or not d2.isnumeric() or not d3.isnumeric() or not d4.isnumeric() or not d5.isnumeric() or not d6.isnumeric() or not d7.isnumeric():
+    try:
+        [d1,d2,d3,d4,d5,d6,d7,d8,d9] = [int(x) for x in [d1,d2,d3,d4,d5,d6,d7,d8,d9]]
+    except ValueError:
+    #if not d1.isnumeric() or not d2.isnumeric() or not d3.isnumeric() or not d4.isnumeric() or not d5.isnumeric() or not d6.isnumeric() or not d7.isnumeric()or not d8.isnumeric()or not d9.isnumeric():
         return Response(json.dumps({"message": "invalid survey values, expected integers"}),status=404, mimetype='application/json')
-    user.surveys.append(Survey(survey_entry_1=d1,survey_entry_2=d2,survey_entry_3=d3,survey_entry_4=d4,survey_entry_5=d5,survey_entry_6=d6,survey_entry_7=d7))
-    user.previous_emotion_score_list.append([])
+    survey_result = round(sum((x-1)/4 for x in [d1,d2,d3,d4,d5,d6,d7,d8,d9])/9,4)
+    user.surveys.append(Survey(survey_entry_1=d1,survey_entry_2=d2,survey_entry_3=d3,survey_entry_4=d4,survey_entry_5=d5,survey_entry_6=d6,survey_entry_7=d7, survey_entry_8=d8,survey_entry_9=d9,result=survey_result))
+    user.previous_emotion_score_lists.append(EmotionScoreList())
     user.save()
-    return Response(json.dumps({"message": "Survey result saved"}),status=200,mimetype='application/json')
+
+    return Response(json.dumps({"message": "Survey result saved", "result": survey_result}),status=200,mimetype='application/json')
 
 @main_bp.route("/check-do-survey",methods=['GET'])
 @token_required
 def check_do_survey(user,token_body):
+    
     latest_survey_time = user.surveys[0].time_submitted  if len(list(user.surveys)) >= 1 else datetime(year = 1971,month=1,day=1)
     seconds_since_last_survey = (datetime.now()-latest_survey_time).total_seconds()
-    base_interval = current_app.config['SURVEY_INTERVAL']
+    base_interval = current_app.config['SURVEY_INTERVAL_BASE']
+    change_interval = current_app.config['SURVEY_INTERVAL_CHANGE']
     threshold = base_interval
 
-    MAX_CHANGE_TIME = base_interval * 0.4
     MAX_SUM_OF_EMOTION_SCORE_DIFFERENCE = 2
-    latest_score = None
-    if not user.previous_emotion_score_list:
-        user.previous_emotion_score_list.append([])
-    current_emotion_score_list = user.previous_emotion_score_list[-1] 
-    if current_emotion_score_list:
-        latest_score = current_emotion_score_list[-1]
-        sum_of_emotion_score_difference = sum([abs(current_emotion_score_list[i+1]-current_emotion_score_list[i]) for i in range(0, len(current_emotion_score_list)-1)])
-        threshold -= max(MAX_SUM_OF_EMOTION_SCORE_DIFFERENCE,sum_of_emotion_score_difference)/MAX_SUM_OF_EMOTION_SCORE_DIFFERENCE*MAX_CHANGE_TIME
+    if not user.previous_emotion_score_lists:
+        user.previous_emotion_score_lists.append(EmotionScoreList())
+    
+    #relies on sortedlistfield function of mongoengine, from latest to newest
+    current_emotion_score_list = user.previous_emotion_score_lists[0].score_list
 
-    current_emotion_score_list.append(user.emotion_score)
+    result_change = False
+    if current_emotion_score_list:
+        sum_of_emotion_score_difference = sum([abs(current_emotion_score_list[i+1].chat_score-current_emotion_score_list[i].chat_score) for i in range(0, len(current_emotion_score_list)-1)])
+
+        if sum_of_emotion_score_difference >= MAX_SUM_OF_EMOTION_SCORE_DIFFERENCE:
+            result_change = seconds_since_last_survey >= change_interval
+
+    current_emotion_score_list.append(EmotionScore(full_score=user.emotion_score.full_score,chat_score=user.emotion_score.chat_score))
     user.save()
 
-    result = seconds_since_last_survey >= threshold
-    return Response(json.dumps({"result": result, "last_survey":latest_survey_time.strftime("%d-%b-%Y (%H:%M:%S)")}),status=200,mimetype='application/json')
+    result_base = seconds_since_last_survey >= threshold
+    result = result_base or result_change
+    return Response(json.dumps({"result": result, "last_survey":latest_survey_time.strftime(DEFAULT_DATE_DISPLAY_FORMAT)}),status=200,mimetype='application/json')
 
 @main_bp.route("/check-send-push-notification",methods=['GET'])
 @token_required
@@ -432,7 +480,7 @@ def check_send_push_notification(user,token_body):
     base_interval = current_app.config['NOTIFICATION_INTERVAL']
     threshold = base_interval
     result = seconds_since_last_message >= threshold
-    return Response(json.dumps({"result": result, "last_message":latest_message_time.strftime("%d-%b-%Y (%H:%M:%S)")}),status=200,mimetype='application/json')
+    return Response(json.dumps({"result": result, "last_message":latest_message_time.strftime(DEFAULT_DATE_DISPLAY_FORMAT)}),status=200,mimetype='application/json')
 
 @internal_bp.route("/train", methods=['POST'])
 def train_data():
