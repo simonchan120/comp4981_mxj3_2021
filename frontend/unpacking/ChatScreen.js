@@ -43,7 +43,7 @@ const ChatScreen = () => {
     },
     {
       _id: 's3',
-      text: 'Shall we start with a quick little test?\nWhat we are starting with is a questionaire for understanding your current status. It just composes of a few questions, and it\'s you and me who will know this!\nNow I will give a list of questions. From a scale of 1 to 5, how much do they sound like describing you? ',
+      text: 'Shall we start with a quick little test?\nWhat we are starting with is a questionaire for understanding your current status. It just composes of a few questions, and it\'s you and me who will know this!\nNow I will give a list of situations. Over the last 2 weeks, how often have you been bothered by them?',
       createdAt: new Date(),
       /*quickReplies: {
         type: 'radio', // or 'checkbox',
@@ -106,31 +106,27 @@ const ChatScreen = () => {
   const survey_question_list = [
     {
       _id: 'q1',
-      text: 'Q1',
+      text: 'Little interest or pleasure in doing things',
       createdAt: new Date(),
       quickReplies: {
         type: 'radio', // or 'checkbox',
         keepIt: false,
         values: [
           {
-            title: '1',
+            title: 'Not at all',
+            value: 0,
+          },
+          {
+            title: 'Several days',
             value: 1,
           },
           {
-            title: '2',
+            title: 'More than half the days',
             value: 2,
           },
           {
-            title: '3',
+            title: 'Nearly every day',
             value: 3,
-          },
-          {
-            title: '4',
-            value: 4,
-          },
-          {
-            title: '5',
-            value: 5,
           },
         ],
       },
@@ -141,31 +137,27 @@ const ChatScreen = () => {
     },
     {
       _id: 'q2',
-      text: 'Q2',
+      text: 'Feeling down, depressed, or hopeless',
       createdAt: new Date(),
       quickReplies: {
         type: 'radio', // or 'checkbox',
         keepIt: false,
         values: [
           {
-            title: '1',
+            title: 'Not at all',
+            value: 0,
+          },
+          {
+            title: 'Several days',
             value: 1,
           },
           {
-            title: '2',
+            title: 'More than half the days',
             value: 2,
           },
           {
-            title: '3',
+            title: 'Nearly every day',
             value: 3,
-          },
-          {
-            title: '4',
-            value: 4,
-          },
-          {
-            title: '5',
-            value: 5,
           },
         ],
       },
@@ -176,31 +168,27 @@ const ChatScreen = () => {
     },
     {
       _id: 'q3',
-      text: 'Q3',
+      text: 'Trouble falling or staying asleep, or sleeping too much',
       createdAt: new Date(),
       quickReplies: {
         type: 'radio', // or 'checkbox',
         keepIt: false,
         values: [
           {
-            title: '1',
+            title: 'Not at all',
+            value: 0,
+          },
+          {
+            title: 'Several days',
             value: 1,
           },
           {
-            title: '2',
+            title: 'More than half the days',
             value: 2,
           },
           {
-            title: '3',
+            title: 'Nearly every day',
             value: 3,
-          },
-          {
-            title: '4',
-            value: 4,
-          },
-          {
-            title: '5',
-            value: 5,
           },
         ],
       },
@@ -211,31 +199,27 @@ const ChatScreen = () => {
     },
     {
       _id: 'q4',
-      text: 'Q4',
+      text: 'Feeling tired or having little energy',
       createdAt: new Date(),
       quickReplies: {
         type: 'radio', // or 'checkbox',
         keepIt: false,
         values: [
           {
-            title: '1',
+            title: 'Not at all',
+            value: 0,
+          },
+          {
+            title: 'Several days',
             value: 1,
           },
           {
-            title: '2',
+            title: 'More than half the days',
             value: 2,
           },
           {
-            title: '3',
+            title: 'Nearly every day',
             value: 3,
-          },
-          {
-            title: '4',
-            value: 4,
-          },
-          {
-            title: '5',
-            value: 5,
           },
         ],
       },
@@ -246,31 +230,27 @@ const ChatScreen = () => {
     },
     {
       _id: 'q5',
-      text: 'Q5',
+      text: 'Poor appetite or overeating',
       createdAt: new Date(),
       quickReplies: {
         type: 'radio', // or 'checkbox',
         keepIt: false,
         values: [
           {
-            title: '1',
+            title: 'Not at all',
+            value: 0,
+          },
+          {
+            title: 'Several days',
             value: 1,
           },
           {
-            title: '2',
+            title: 'More than half the days',
             value: 2,
           },
           {
-            title: '3',
+            title: 'Nearly every day',
             value: 3,
-          },
-          {
-            title: '4',
-            value: 4,
-          },
-          {
-            title: '5',
-            value: 5,
           },
         ],
       },
@@ -281,31 +261,27 @@ const ChatScreen = () => {
     },
     {
       _id: 'q6',
-      text: 'Q6',
+      text: 'Feeling bad about yourself - or that you are a failure or have let yourself or your family down',
       createdAt: new Date(),
       quickReplies: {
         type: 'radio', // or 'checkbox',
         keepIt: false,
         values: [
           {
-            title: '1',
+            title: 'Not at all',
+            value: 0,
+          },
+          {
+            title: 'Several days',
             value: 1,
           },
           {
-            title: '2',
+            title: 'More than half the days',
             value: 2,
           },
           {
-            title: '3',
+            title: 'Nearly every day',
             value: 3,
-          },
-          {
-            title: '4',
-            value: 4,
-          },
-          {
-            title: '5',
-            value: 5,
           },
         ],
       },
@@ -316,31 +292,89 @@ const ChatScreen = () => {
     },
     {
       _id: 'q7',
-      text: 'Q7',
+      text: 'Trouble concentrating on things, such as reading the newspaper or watching television',
       createdAt: new Date(),
       quickReplies: {
         type: 'radio', // or 'checkbox',
         keepIt: false,
         values: [
           {
-            title: '1',
+            title: 'Not at all',
+            value: 0,
+          },
+          {
+            title: 'Several days',
             value: 1,
           },
           {
-            title: '2',
+            title: 'More than half the days',
             value: 2,
           },
           {
-            title: '3',
+            title: 'Nearly every day',
             value: 3,
           },
+        ],
+      },
+      user: {
+        _id: 2,
+        name: 'Unpacker',
+      },
+    },
+    {
+      _id: 'q8',
+      text: 'Moving or speaking so slowly that other people could have noticed? Or the opposite - being so fidgety or restless that you have been moving around a lot more than usual',
+      createdAt: new Date(),
+      quickReplies: {
+        type: 'radio', // or 'checkbox',
+        keepIt: false,
+        values: [
           {
-            title: '4',
-            value: 4,
+            title: 'Not at all',
+            value: 0,
           },
           {
-            title: '5',
-            value: 5,
+            title: 'Several days',
+            value: 1,
+          },
+          {
+            title: 'More than half the days',
+            value: 2,
+          },
+          {
+            title: 'Nearly every day',
+            value: 3,
+          },
+        ],
+      },
+      user: {
+        _id: 2,
+        name: 'Unpacker',
+      },
+    },
+    {
+      _id: 'q9',
+      text: 'Thoughts that you would be better off dead or of hurting yourself in some way',
+      createdAt: new Date(),
+      quickReplies: {
+        type: 'radio', // or 'checkbox',
+        keepIt: false,
+        values: [
+          {
+            title: 'Not at all',
+            value: 0,
+          },
+          {
+            title: 'Several days',
+            value: 1,
+          },
+          {
+            title: 'More than half the days',
+            value: 2,
+          },
+          {
+            title: 'Nearly every day',
+            value: 3,
           },
         ],
       },
@@ -489,12 +523,12 @@ const ChatScreen = () => {
     getReplies();
   }, [])
   
-  const QUESTION_NUMBER = 7;
+  const QUESTION_NUMBER = 9;
   var num_survey_answered = 0;
   var survey_result = [];
   const uri_submit_survey = `http://${manifest.debuggerHost.split(':').shift()}:5000/add-survey-results`;
   const onQuickReply = useCallback(async (quickReply) => { 
-    let message = quickReply[0].value;
+    let message = quickReply[0].title;
     let msg = {
       _id: num_chat + 1,
       text: message,
@@ -505,7 +539,7 @@ const ChatScreen = () => {
     }
     setMessages(previousMessages => GiftedChat.append(previousMessages, msg));
     num_chat++;
-    survey_result.push(message);
+    survey_result.push(quickReply[0].value);
     num_survey_answered++;
     setMessages(previousMessages => GiftedChat.append(previousMessages, survey_question_list[num_survey_answered]));
     num_chat++;
