@@ -2,8 +2,9 @@
 // https://aboutreact.com/react-native-bottom-navigation/
 
 import * as React from 'react';
-import { View, Text, SafeAreaView } from 'react-native';
+import { View, Text } from 'react-native';
 import { Avatar } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const ProfileScreen = () => {
   return (

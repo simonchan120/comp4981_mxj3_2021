@@ -3,13 +3,13 @@ import { View, Text } from 'react-native';
 import { Button, Paragraph, Dialog, Portal, Provider } from 'react-native-paper';
 const Agreement = ({ route, navigation }) => {
   const [visible, setVisible] = React.useState(true);
-  const hideDialog = () => setmodalVisible(false);
+  //const hideDialog = () => setmodalVisible(false);
 
   return (
     <Provider>
       <View>
         <Portal>
-          <Dialog visible={visible} onDismiss={hideDialog}>
+          <Dialog visible={visible} /*onDismiss={hideDialog}*/>
             <Dialog.Title>About Unpacking Happiness </Dialog.Title>
             <Dialog.Content>
               <Paragraph> {content} </Paragraph>

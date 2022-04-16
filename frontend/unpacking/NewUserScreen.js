@@ -4,8 +4,8 @@ import {
     StyleSheet,
     Text,
     View,
-    SafeAreaView
   } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Constants from "expo-constants";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
