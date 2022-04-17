@@ -1,7 +1,4 @@
 from .. import tests
-# import sys
-# sys.path.append('..')
-# import test_cases
 import pytest
 from backend import giphyUtil
 @pytest.fixture(autouse=True)

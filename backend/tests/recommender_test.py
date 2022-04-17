@@ -5,34 +5,39 @@ from sqlalchemy import false
 from backend.data import dataclass
 from .. import tests
 import pytest
-from backend import giphyUtil, recommender
+from backend import recommender
 HOSTNAME_FLASK=tests.HOSTNAME_FLASK
 TEST_EMAIL=tests.TEST_EMAIL
 RASA_ACCESS_TOKEN_HEADER=tests.RASA_ACCESS_TOKEN_HEADER
 
 valid_giphy_test_tags=tests.valid_giphy_test_tags
 
-@pytest.fixture(scope="session")
+base_create_user= tests.base_create_user
+base_user = tests.base_user
+
+@pytest.fixture(scope="module")
 def existing_multimedia():
     existing_multimedia= dataclass.MultiMediaData.objects.all()
     return existing_multimedia
 
-@pytest.fixture(scope="session")
-def create_user(existing_multimedia):
-    def _make_user(name=None):
-        if name is None:
-            name = 'recommender_test_testuser'
-        
-        preferences = [dataclass.Preference(content= multimedia,score=uniform(0,1))for multimedia in existing_multimedia]
-        user = dataclass.User(username=name, preferences=preferences)
-        return user
-    return _make_user
-@pytest.fixture(scope="session")
-def user(create_user):
-    return create_user()
+@pytest.fixture(scope="module")
+def create_user(base_create_user,existing_multimedia):
+    def _create_user(*args,**kwargs):
+        _user = _create_user=base_create_user(*args,**kwargs)
+        _user.preferences = [dataclass.Preference(content= multimedia,score=uniform(0,1))for multimedia in existing_multimedia]
+        return _user
+    return _create_user
+
+
+@pytest.fixture(scope="module")
+def user(create_user:dataclass.User):
+    _user=create_user()
+    return _user
+
 
 def test__knn_sim(create_user, existing_multimedia):
     user1,user2 = create_user('test_user_1'),create_user('test_user_2')
+    print(user1.preferences)
     mse = recommender.Recommender._knn_sim(user1,user2)
     assert mse <= len(existing_multimedia)
 
