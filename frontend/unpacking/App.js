@@ -34,6 +34,7 @@ import Agreement from "./Agreement";
 import PrivacyScreen from "./PrivacyScreen";
 import DeleteScreen from "./DeleteBriefScreen";
 import DeletePopUp from "./DeletePopUp";
+import AboutScreen from "./AboutScreen";
 
 import * as Notifications from "expo-notifications";
 
@@ -116,6 +117,10 @@ function SettingsStack() {
         name="Profile"
         component={ProfileScreen}
         options={{ title: 'Profile Page' }}/>
+      <Stack.Screen
+        name="About"
+        component={AboutScreen}
+        options={{ title: 'About Page' }}/>
       <Stack.Screen
         name="Privacy"
         component={PrivacyScreen}

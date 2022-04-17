@@ -1,10 +1,31 @@
-import React, { Component } from 'react';
+import React, { Component, useEffect } from 'react';
 import { Headline, Paragraph, Subheading, List } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, BackHandler } from 'react-native';
 
 
 const DeleteScreen = ({ route, navigation }) => {
+    useEffect(() => {
+        const backAction = () => {
+          /*Alert.alert("Hold on!", "Are you sure you want to go back?", [
+            {
+              text: "Cancel",
+              onPress: () => null,
+              style: "cancel"
+            },
+            { text: "YES", onPress: () => BackHandler.exitApp() }
+          ]);*/
+          navigation.navigate('Settings');
+          return true;
+        };
+    
+        const backHandler = BackHandler.addEventListener(
+          "hardwareBackPress",
+          backAction
+        );
+    
+        return () => backHandler.remove();
+    }, []);
     return (
         <SafeAreaView style={{ flex:1 }}>
             <Headline>Deleting Your Account</Headline>

@@ -1,5 +1,5 @@
-import React, { useContext } from 'react';
-import { View, Text } from 'react-native';
+import React, { useContext, useEffect } from 'react';
+import { View, Text, BackHandler } from 'react-native';
 import { Button, Paragraph, Dialog, Portal, Provider, Snackbar } from 'react-native-paper';
 import { Restart } from 'fiction-expo-restart';
 import Constants from "expo-constants";
@@ -37,6 +37,28 @@ const DeletePopUp = ({ route, navigation }) => {
     }
 
   };
+  useEffect(() => {
+    const backAction = () => {
+      /*Alert.alert("Hold on!", "Are you sure you want to go back?", [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel"
+        },
+        { text: "YES", onPress: () => BackHandler.exitApp() }
+      ]);*/
+      //setVisible(false);
+      navigation.navigate('Settings');
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
   return (
     
     <Provider>

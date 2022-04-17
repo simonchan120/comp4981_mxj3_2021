@@ -1,10 +1,23 @@
-import React, { Component } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import React, { useEffect } from 'react';
+import { StyleSheet, Text, View, BackHandler } from 'react-native';
 import { WebView } from 'react-native-webview';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 
 const PrivacyScreen = ({ route, navigation }) => {
+    useEffect(() => {
+        const backAction = () => {
+          navigation.navigate('Settings');
+          return true;
+        };
+    
+        const backHandler = BackHandler.addEventListener(
+          "hardwareBackPress",
+          backAction
+        );
+    
+        return () => backHandler.remove();
+      }, []);
     return (
         <SafeAreaView style={{ flex:1 }}>
             <WebView
@@ -16,22 +29,6 @@ const PrivacyScreen = ({ route, navigation }) => {
 }
 
 export default PrivacyScreen;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 const content = `<html>
 <body>

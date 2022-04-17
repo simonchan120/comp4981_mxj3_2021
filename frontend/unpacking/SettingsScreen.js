@@ -25,7 +25,7 @@ const SettingsScreen = ({ route, navigation }) => {
         title = "About"
         left={props => <List.Icon {...props} icon="information" />}
         onPress={
-          () => navigation.navigate('Profile')
+          () => navigation.navigate('About')
         }
       />
       <List.Item

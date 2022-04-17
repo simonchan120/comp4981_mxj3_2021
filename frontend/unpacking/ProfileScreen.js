@@ -1,12 +1,33 @@
 // React Native Bottom Navigation
 // https://aboutreact.com/react-native-bottom-navigation/
 
-import * as React from 'react';
-import { View, Text } from 'react-native';
+import React, { useEffect } from 'react';
+import { View, Text, BackHandler } from 'react-native';
 import { Avatar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-const ProfileScreen = () => {
+const ProfileScreen = ({ navigation }) => {
+  useEffect(() => {
+    const backAction = () => {
+      /*Alert.alert("Hold on!", "Are you sure you want to go back?", [
+        {
+          text: "Cancel",
+          onPress: () => null,
+          style: "cancel"
+        },
+        { text: "YES", onPress: () => BackHandler.exitApp() }
+      ]);*/
+      navigation.navigate('Settings');
+      return true;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      backAction
+    );
+
+    return () => backHandler.remove();
+  }, []);
   return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1, padding: 16 }}>
