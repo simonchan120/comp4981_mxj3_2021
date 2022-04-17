@@ -2,7 +2,6 @@ import logging
 from multiprocessing.sharedctypes import Value
 from unicodedata import name
 
-from .data.dialogue import Dialogue
 from flask import request, Response, Blueprint, current_app
 
 import json
@@ -11,7 +10,8 @@ from flask_mail import Message as FlaskMessage
 
 from hashlib import sha256
 from mongoengine import *
-from .dataclass import Survey,Message,MultiMediaData,Preference,User,Conversation, EmotionScore, EmotionScoreList
+from .data.dialogue import Dialogue
+from .data.dataclass import Survey,Message,MultiMediaData,Preference,User,Conversation, EmotionScore, EmotionScoreList
 from random import randint, uniform
 import uuid
 from datetime import datetime,timezone,timedelta
@@ -260,7 +260,7 @@ def send_message(user, token_body):
     current_conversation.content.append(user_message_obj)
     current_conversation.content.append(bot_message_obj)
     if recommender.Recommender.check_if_recommend(user,user_message):
-        multimedia,_ = recommender.Recommender.recommend(user.username)
+        multimedia,_ = recommender.Recommender.recommend(user)
         giphy_tag = multimedia.name
 
         current_app.logger.debug(f'User: {user.username}, Recommended: {giphy_tag}')

@@ -1,11 +1,11 @@
 import json
 import requests
-from .data.dialogue import Sentence,Dialogue
 import yaml
 
-
-from .dataclass import *
-from backend import app
+try:
+    from .data.dataclass import *
+except:
+    from data.dataclass import *
 import logging
 logger = logging.getLogger(__name__)
 #TODO: change this when delpoying

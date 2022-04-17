@@ -74,7 +74,7 @@ app.config.update(dict(
 mail = Mail()
 mail.init_app(app)
 totp = pyotp.TOTP(app.config["OTP_SECRET_KEY"])
-from . import dataclass
+from .data import dataclass
 from . import recommender
 from . import giphyUtil
 from . import rasa
@@ -87,4 +87,4 @@ app.register_blueprint(server.main_bp)
 if os.environ['FLASK_ENV']=='development':
     app.register_blueprint(server.internal_bp)
 
-__all__ = ['rasa', 'server', 'dataclass', 'recommender','giphyUtil']
+__all__ = ['rasa', 'dataclass', 'recommender','giphyUtil']

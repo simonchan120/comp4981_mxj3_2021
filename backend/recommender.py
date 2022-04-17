@@ -1,10 +1,12 @@
 from random import randint, sample
-from .dataclass import *
+from .data.dataclass import *
 import logging
 logger = logging.getLogger(__name__)
 import random
 
 class Recommender():
+
+    @staticmethod
     def check_if_recommend(user,message):
 
         MAX_FREQ= 10
@@ -15,7 +17,9 @@ class Recommender():
         threshold=  (1/MIN_FREQ - 1/MAX_FREQ )*full_emotion_score + 1/MAX_FREQ
 
         return random.uniform(0,1) < threshold
+
     # 1- avg mean sq diff 
+    @staticmethod
     def _knn_sim(user_a,user_b):
         
         se = []
@@ -29,6 +33,7 @@ class Recommender():
         return mse
 
     # aggregation approach: average
+    @staticmethod
     def _predict_scores(user, top_k_neighbors_score_list):
         
         preference_list = []
@@ -53,10 +58,8 @@ class Recommender():
         return preference_list
 
     @classmethod
-    def recommend(cls,username,num_of_top_items = 3):
+    def recommend(cls,current_user,num_of_top_items = 3,save_predicted=True):
         num_of_neighbors = 5
-       
-        current_user = User.objects(username=username).first()
         users=User.objects()
         neighbors_score_list = []
         for user in users:
@@ -81,8 +84,9 @@ class Recommender():
             remaining_multimediadata = MultiMediaData.objects(name__not__in=list(map(lambda x:x.content.name,current_user.pred_preferences))).all()
             current_user.pred_preferences += [Preference(content=x,score=-1) for x in sample(list(remaining_multimediadata),k=remaining_items)]
 
-        current_user.save()
-        current_user = User.objects(username=username).first()
+        if save_predicted:
+            current_user.save()
+        # current_user = User.objects(username=current_user.username).first()
 
         idx = randint(0,num_of_top_items-1) if len(current_user.pred_preferences) >=num_of_top_items else (len(current_user.preferences) -1)
         logger.debug(f'{[x.content.name for x in current_user.pred_preferences]}, index: {idx}, no of origianlly existing items: {num_of_top_items-remaining_items}, no of added items: {remaining_items}')

@@ -1,8 +1,9 @@
 import sys
 
 from backend.server import new_chat_session
-sys.path.append("../..")
+#sys.path.append("../")
 
+from .. import tests
 import pytest
 import random
 from backend import app
@@ -10,9 +11,10 @@ import string
 import requests
 import numbers
 from collections import Counter
-HOSTNAME_FLASK='http://localhost:5000'
-TEST_EMAIL='ccysimon476@gmail.com'
-RASA_ACCESS_TOKEN_HEADER='rasa-access-token'
+
+HOSTNAME_FLASK=tests.HOSTNAME_FLASK
+TEST_EMAIL=tests.TEST_EMAIL
+RASA_ACCESS_TOKEN_HEADER=tests.RASA_ACCESS_TOKEN_HEADER
 @pytest.fixture()
 def client():
     return requests.session()

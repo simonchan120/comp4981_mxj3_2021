@@ -8,8 +8,8 @@ RUN pip install -r /backend/requirements.txt
 ENV FLASK_APP=backend
 ENV PYTHOHUNBUFFERED=1
 ENV PROPAGATE_EXCEPTIONS=1
-COPY ["data","/backend/data"]
-COPY ["__init__.py","requirements.txt","dataclass.py","rasa.py","recommender.py","server.py","config.json","giphyUtil.py","/backend/"]
+COPY ["data/dialogue.py","data/dataclass.py","/backend/data/"]
+COPY ["__init__.py","requirements.txt","rasa.py","recommender.py","server.py","config.json","giphyUtil.py","/backend/"]
 COPY ["celery_config","/backend/celery_config"]
 EXPOSE 8000
 
