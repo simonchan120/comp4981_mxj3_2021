@@ -11,7 +11,7 @@ from flask_mail import Message as FlaskMessage
 from hashlib import sha256
 from mongoengine import *
 from .data.dialogue import Dialogue
-from .data.dataclass import Survey,Message,MultiMediaData,Preference,User,Conversation, EmotionScore, EmotionScoreList
+from .data.dataclass import Survey,Message,MultiMediaData,Preference,User,Conversation, EmotionProfile, EmotionProfileList, MessageTypes
 from random import randint, uniform
 import uuid
 from datetime import datetime,timezone,timedelta
@@ -21,7 +21,7 @@ from backend import app,rasa_client,totp,mail,celery_app, recommender, giphyUtil
 main_bp = Blueprint('main', __name__)
 internal_bp = Blueprint('internal', __name__)
 AUTH_TOKEN_HEADER_NAME = 'rasa-access-token'
-giphy_util = giphyUtil.GiphyUtil(app.config['GIPHY_API_KEY'])
+
 DEFAULT_DATE_DISPLAY_FORMAT="%d-%b-%Y (%H:%M:%S)"
 logger = logging.getLogger(__name__)
 User._survey_period = app.config['SURVEY_INTERVAL_BASE']
@@ -254,25 +254,14 @@ def send_message(user, token_body):
     bot_reply = response_obj[0]['text']
     response_obj[0]['type']='text'
 
-    user_message_obj = Message(content=user_message,is_from_user=True,time_sent=datetime.utcnow())
-    bot_message_obj = Message(content=bot_reply,is_from_user=False,time_sent=datetime.utcnow())
+    user_message_obj = Message(content=user_message,is_from_user=True,type=MessageTypes.TEXT)
+    bot_message_obj = Message(content=bot_reply,is_from_user=False,type=MessageTypes.TEXT)
     
     current_conversation.content.append(user_message_obj)
     current_conversation.content.append(bot_message_obj)
-    if recommender.Recommender.check_if_recommend(user,user_message):
-        multimedia,_ = recommender.Recommender.recommend(user)
-        giphy_tag = multimedia.name
 
-        current_app.logger.debug(f'User: {user.username}, Recommended: {giphy_tag}')
-        #TODO: more types
-        giphy_link,_ = giphy_util.fetch_multimedia(giphy_tag)
-        response_obj.append({'type':'gif','url':giphy_link,'name':giphy_tag})
-        recommender_message_obj=Message(content=giphy_link,is_from_user=False,time_sent=datetime.utcnow())
-        current_conversation.content.append(recommender_message_obj)
+    recommender.Recommender.process_message(user,user_message,current_conversation,response_obj)
 
-        #swap order to allow message to go last
-        current_conversation.content[0], current_conversation.content[1] = current_conversation.content[1],current_conversation.content[0]
-        response_obj[0],response_obj[1] = response_obj[1],response_obj[0]
     current_conversation.save()
 
     return Response(json.dumps(response_obj), status=status, mimetype='application/json')
@@ -435,14 +424,14 @@ def add_survey_results(user,token_body):
         return Response(json.dumps({"message": "invalid survey values, expected integers"}),status=404, mimetype='application/json')
     survey_result = round(sum((x-1)/4 for x in [d1,d2,d3,d4,d5,d6,d7,d8,d9])/9,4)
     user.surveys.append(Survey(survey_entry_1=d1,survey_entry_2=d2,survey_entry_3=d3,survey_entry_4=d4,survey_entry_5=d5,survey_entry_6=d6,survey_entry_7=d7, survey_entry_8=d8,survey_entry_9=d9,result=survey_result))
-    user.previous_emotion_score_lists.append(EmotionScoreList())
+    user.previous_emotion_profile_lists.append(EmotionProfileList())
     user.save()
 
     return Response(json.dumps({"message": "Survey result saved", "result": survey_result}),status=200,mimetype='application/json')
 
 @main_bp.route("/check-do-survey",methods=['GET'])
 @token_required
-def check_do_survey(user,token_body):
+def check_do_survey(user:User,token_body):
     
     latest_survey_time = user.surveys[0].time_submitted  if len(list(user.surveys)) >= 1 else datetime(year = 1971,month=1,day=1)
     seconds_since_last_survey = (datetime.now()-latest_survey_time).total_seconds()
@@ -451,20 +440,20 @@ def check_do_survey(user,token_body):
     threshold = base_interval
 
     MAX_SUM_OF_EMOTION_SCORE_DIFFERENCE = 2
-    if not user.previous_emotion_score_lists:
-        user.previous_emotion_score_lists.append(EmotionScoreList())
+    if not user.previous_emotion_profile_lists:
+        user.previous_emotion_profile_lists.append(EmotionProfileList())
     
     #relies on sortedlistfield function of mongoengine, from latest to newest
-    current_emotion_score_list = user.previous_emotion_score_lists[0].score_list
+    current_emotion_profile_list = user.previous_emotion_profile_lists[0].profile_list
 
     result_change = False
-    if current_emotion_score_list:
-        sum_of_emotion_score_difference = sum([abs(current_emotion_score_list[i+1].chat_score-current_emotion_score_list[i].chat_score) for i in range(0, len(current_emotion_score_list)-1)])
+    if current_emotion_profile_list:
+        sum_of_emotion_score_difference = sum([abs(current_emotion_profile_list[i+1].chat_score-current_emotion_profile_list[i].chat_score) for i in range(0, len(current_emotion_profile_list)-1)])
 
         if sum_of_emotion_score_difference >= MAX_SUM_OF_EMOTION_SCORE_DIFFERENCE:
             result_change = seconds_since_last_survey >= change_interval
 
-    current_emotion_score_list.append(EmotionScore(full_score=user.emotion_score.full_score,chat_score=user.emotion_score.chat_score))
+    current_emotion_profile_list.append(user.get_emotion_profile_copy())
     user.save()
 
     result_base = seconds_since_last_survey >= threshold

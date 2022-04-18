@@ -14,6 +14,7 @@ valid_giphy_test_tags=tests.valid_giphy_test_tags
 
 base_create_user= tests.base_create_user
 base_user = tests.base_user
+from backend.models import emotion_tags
 
 @pytest.fixture(scope="module")
 def existing_multimedia():
@@ -23,8 +24,9 @@ def existing_multimedia():
 @pytest.fixture(scope="module")
 def create_user(base_create_user,existing_multimedia):
     def _create_user(*args,**kwargs):
-        _user = _create_user=base_create_user(*args,**kwargs)
+        _user = base_create_user(*args,**kwargs)
         _user.preferences = [dataclass.Preference(content= multimedia,score=uniform(0,1))for multimedia in existing_multimedia]
+        _user.latest_emotion_profile= recommender.Recommender.calculate_new_emotion_profile(_user,"test")
         return _user
     return _create_user
 
@@ -48,7 +50,11 @@ def test__predict_scores(user:dataclass.User,create_user):
     predicted_preferences_names = map(lambda x: x.content.name , preference_list)
     assert all(x not in predicted_preferences_names for x in existing_preferences_names)
 
-def test_recommend(user:dataclass.User, existing_multimedia):
-    (content,pred_preferences)=recommender.Recommender.recommend(user,save_predicted=False)
+def test_recommend_multimedia(user:dataclass.User, existing_multimedia):
+    (content,pred_preferences)=recommender.Recommender.recommend_multimedia(user)
     assert len(user.pred_preferences) >= len(user.preferences)
     assert content in existing_multimedia
+
+def test_recommend_activities(user:dataclass.User):
+    emotion=recommender.Recommender.recommend_activities(user)
+    assert emotion in emotion_tags

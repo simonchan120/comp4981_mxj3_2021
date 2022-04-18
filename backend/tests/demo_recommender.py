@@ -19,7 +19,7 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S')
 def test_recommender():
     logger.debug("tes")
-    content,pred_preferences = recommender.Recommender.recommend(username="1")
+    content,pred_preferences = recommender.Recommender.recommend_multimedia(username="1")
 
     logger.debug(pred_preferences)
 
