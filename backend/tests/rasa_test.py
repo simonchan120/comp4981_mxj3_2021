@@ -21,7 +21,7 @@ def user(create_user:dataclass.User):
     _user=create_user()
     return _user
 
-@pytest.mark.parametrize('message,status_code',[('hi',200),('🙃',200),('😭',200),('',200)])
+@pytest.mark.parametrize('message,status_code',[('hi',200),('🙃',200),('😭',200),(',,,,,,ree,,,,,,,',200)])
 def test_send_message(user:dataclass.User, message: str,status_code : int,rasa_client: rasa.Rasa_Client):
     
     res,returned_status_code = rasa_client.send_message(user,message)
