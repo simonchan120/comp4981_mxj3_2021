@@ -6,11 +6,46 @@ import {
   StyleSheet,
   View,
   Text,
-  SafeAreaView
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+
+import { List } from 'react-native-paper';
 
 const SettingsScreen = ({ route, navigation }) => {
   return (
+    <SafeAreaView /*style={styles.container}*/>
+      <List.Item
+        title = "My Profile"
+        left={props => <List.Icon {...props} icon="account" />}
+        onPress={
+          () => navigation.navigate('Profile')
+        }
+      />
+      <List.Item
+        title = "About"
+        left={props => <List.Icon {...props} icon="information" />}
+        onPress={
+          () => navigation.navigate('About')
+        }
+      />
+      <List.Item
+        title = "Privacy Policies"
+        left={props => <List.Icon {...props} icon="shield-star" />}
+        onPress={
+          () => navigation.navigate('Privacy')
+        }
+      />
+      <List.Item
+        titleStyle={styles.delete}
+        title = "Delete Account"
+        left={props => <List.Icon {...props} icon="delete-forever" color='red'/>}
+        onPress={
+          () => navigation.navigate('Delete')
+        }
+      />
+    </SafeAreaView>
+  )
+  /*return (
     <SafeAreaView style={{ flex: 1 }}>
       <View style={{ flex: 1, padding: 16 }}>
         <View
@@ -44,7 +79,8 @@ const SettingsScreen = ({ route, navigation }) => {
         </View>
       </View>
     </SafeAreaView>
-  );
+  );*/
+
 }
 const styles = StyleSheet.create({
   button: {
@@ -53,6 +89,12 @@ const styles = StyleSheet.create({
     padding: 10,
     width: 300,
     marginTop: 16,
+  },
+  container: {
+    flex: 1,
+  },
+  delete: {
+    color: 'red',
   },
 });
 export default SettingsScreen;

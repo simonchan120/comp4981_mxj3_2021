@@ -1,15 +1,16 @@
 import { Button as Button_Paper, TextInput as TextInput_Paper, Snackbar} from 'react-native-paper' ;
-import React from "react";
+import React, { useEffect } from "react";
 import {
     StyleSheet,
     Text,
     View,
-    SafeAreaView
+    SafeAreaView,
+    BackHandler
   } from "react-native";
 import Constants from "expo-constants";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-import {Restart} from 'fiction-expo-restart';
+import { Restart }  from 'fiction-expo-restart';
 
 const Stack = createStackNavigator();
 
@@ -37,6 +38,7 @@ const ForgetPassword = () => {
 export default ForgetPassword;
 
 const EnterEmail = ({navigation}) => {
+    //const context = useContext(Auth);
     const [err_visible, setErrVisible] = React.useState(false);
     const onDismissErrSnackBar = () => setErrVisible(false);
 
@@ -88,6 +90,20 @@ const EnterEmail = ({navigation}) => {
        }
      }
     }
+
+    useEffect(() => {
+      const backAction = () => {
+        Restart();
+        return true;
+      };
+  
+      const backHandler = BackHandler.addEventListener(
+        "hardwareBackPress",
+        backAction
+      );
+  
+      return () => backHandler.remove();
+    }, []);
   
     return (
       <View style={styles.container}>

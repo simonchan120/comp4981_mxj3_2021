@@ -31,6 +31,10 @@ import ForgetPassword from "./ResetPasswordScreen";
 import NewUser from "./NewUserScreen";
 import { schedulePushNotification, registerForPushNotificationsAsync } from "./Notification";
 import Agreement from "./Agreement";
+import PrivacyScreen from "./PrivacyScreen";
+import DeleteScreen from "./DeleteBriefScreen";
+import DeletePopUp from "./DeletePopUp";
+import AboutScreen from "./AboutScreen";
 
 import * as Notifications from "expo-notifications";
 
@@ -110,18 +114,26 @@ function SettingsStack() {
         component={SettingsScreen}
         options={{ title: 'Setting Page' }}/>
       <Stack.Screen
-        name="Chat"
-        component={ChatScreen}
-        options={{ title: 'Details Page' }}/>
-      <Stack.Screen
         name="Profile"
         component={ProfileScreen}
         options={{ title: 'Profile Page' }}/>
       <Stack.Screen
-        name="API"
-        component={API_test}
-        options={{ title: 'API test Page' }}/>
-    </Stack.Navigator>
+        name="About"
+        component={AboutScreen}
+        options={{ title: 'About Page' }}/>
+      <Stack.Screen
+        name="Privacy"
+        component={PrivacyScreen}
+        options={{ title: 'Privacy Page' }}/>
+      <Stack.Screen
+        name="Delete"
+        component={DeleteScreen}
+        options={{ title: 'Delete Page' }}/>
+      <Stack.Screen
+        name="DeletePop"
+        component={DeletePopUp}
+        options={{ title: 'Delete Pop Up' }}/>
+      </Stack.Navigator>
   );
 }
 
