@@ -111,11 +111,12 @@ class GlobalStatistics(Document):
         if not self.statistics:
             return Statistic(users_average_full_score=0.5,users_average_chat_score=0.5)
         return self.statistics[0]
-    def calculate_global_statistics(self,users: List[User]):
+    @staticmethod
+    def calculate_global_statistics(users: List[User]):
         stat = Statistic()
-        users_average_full_score = statistics.fmean(map(lambda user:user.latest_emotion_profile.full_score,users))
-        users_average_chat_score = statistics.fmean(map(lambda user:user.latest_emotion_profile.chat_score,users))
-        return Statistic(users_average_full_score=users_average_full_score,users_average_chat_score=users_average_chat_score)
+        stat.users_average_full_score = statistics.fmean(map(lambda user:user.latest_emotion_profile.full_score,users))
+        stat.users_average_chat_score = statistics.fmean(map(lambda user:user.latest_emotion_profile.chat_score,users))
+        return stat
 
 
 

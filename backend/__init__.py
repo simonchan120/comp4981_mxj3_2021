@@ -42,6 +42,7 @@ if os.environ['FLASK_ENV']=='development':
     app.config.update(SURVEY_INTERVAL_BASE=60)
     app.config.update(SURVEY_INTERVAL_CHANGE=60)
     app.config.update(NOTIFICATION_INTERVAL=60)
+    app.config.update(RUN_CALCULATE_GLOBAL_STATISTICS_PERIOD=60*1)
 
 elif os.environ['FLASK_ENV']=='production':
     my_config = Config(
@@ -59,6 +60,7 @@ elif os.environ['FLASK_ENV']=='production':
     app.config.update(SURVEY_INTERVAL_BASE=3600*24*30*3)
     app.config.update(SURVEY_INTERVAL_CHANGE=3600*24*14)
     app.config.update(NOTIFICATION_INTERVAL=3600*24*2)
+    app.config.update(RUN_CALCULATE_GLOBAL_STATISTICS_PERIOD=3600*1)
 
 from .data import dataclass
 # mongodb mongoengine
