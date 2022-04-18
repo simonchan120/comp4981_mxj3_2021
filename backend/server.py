@@ -1,5 +1,4 @@
 import logging
-from multiprocessing.sharedctypes import Value
 from unicodedata import name
 
 from flask import request, Response, Blueprint, current_app
@@ -11,7 +10,7 @@ from flask_mail import Message as FlaskMessage
 from hashlib import sha256
 from mongoengine import *
 from .data.dialogue import Dialogue
-from .data.dataclass import Survey,Message,MultiMediaData,Preference,User,Conversation, EmotionProfile, EmotionProfileList, MessageTypes
+from .data.dataclass import Survey,Message,MultiMediaData,Preference,User,Conversation, EmotionProfile, EmotionProfileList, MessageTypes, GlobalStatistics, Statistic
 from random import randint, uniform
 import uuid
 from datetime import datetime,timezone,timedelta
@@ -422,12 +421,12 @@ def add_survey_results(user,token_body):
     except ValueError:
     #if not d1.isnumeric() or not d2.isnumeric() or not d3.isnumeric() or not d4.isnumeric() or not d5.isnumeric() or not d6.isnumeric() or not d7.isnumeric()or not d8.isnumeric()or not d9.isnumeric():
         return Response(json.dumps({"message": "invalid survey values, expected integers"}),status=404, mimetype='application/json')
-    survey_result = round(sum((x-1)/4 for x in [d1,d2,d3,d4,d5,d6,d7,d8,d9])/9,4)
-    user.surveys.append(Survey(survey_entry_1=d1,survey_entry_2=d2,survey_entry_3=d3,survey_entry_4=d4,survey_entry_5=d5,survey_entry_6=d6,survey_entry_7=d7, survey_entry_8=d8,survey_entry_9=d9,result=survey_result))
+    survey = Survey.create_survey(d1,d2,d3,d4,d5,d6,d7,d8,d9)
+    user.surveys.append(survey)
     user.previous_emotion_profile_lists.append(EmotionProfileList())
     user.save()
 
-    return Response(json.dumps({"message": "Survey result saved", "result": survey_result}),status=200,mimetype='application/json')
+    return Response(json.dumps({"message": "Survey result saved", "result": survey.result}),status=200,mimetype='application/json')
 
 @main_bp.route("/check-do-survey",methods=['GET'])
 @token_required
@@ -470,6 +469,15 @@ def check_send_push_notification(user,token_body):
     threshold = base_interval
     result = seconds_since_last_message >= threshold
     return Response(json.dumps({"result": result, "last_message":latest_message_time.strftime(DEFAULT_DATE_DISPLAY_FORMAT)}),status=200,mimetype='application/json')
+
+@main_bp.route("/get-global-statistics",methods=['GET'])
+@token_required
+def get_global_statistics(user, token_body):
+    global_statistics: GlobalStatistics = GlobalStatistics.objects.first()
+    recent_statistic=global_statistics.get_recent_statistic()
+    users_average_full_score = recent_statistic.users_average_full_score
+    users_average_chat_score = recent_statistic.users_average_chat_score
+    return Response(json.dumps({"users_average_full_score":users_average_full_score, "users_average_chat_score":users_average_chat_score}),status=200,mimetype='application/json')
 
 @internal_bp.route("/train", methods=['POST'])
 def train_data():

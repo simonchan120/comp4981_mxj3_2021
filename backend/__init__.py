@@ -60,6 +60,7 @@ elif os.environ['FLASK_ENV']=='production':
     app.config.update(SURVEY_INTERVAL_CHANGE=3600*24*14)
     app.config.update(NOTIFICATION_INTERVAL=3600*24*2)
 
+from .data import dataclass
 # mongodb mongoengine
 connect(host=app.config["MONGO_CONNECTION_STRING"])
 app.config.update(dict(
@@ -71,11 +72,15 @@ app.config.update(dict(
     MAIL_USERNAME=app.config["EMAIL_VERIFICATION_SENDER_ADDRESS"],
     MAIL_PASSWORD=app.config["EMAIL_PASSWORD"],
 ))
+if not dataclass.GlobalStatistics.objects.first():
+    stats=dataclass.GlobalStatistics()
+    stats.save()
+
 mail = Mail()
 mail.init_app(app)
 totp = pyotp.TOTP(app.config["OTP_SECRET_KEY"])
 from .models import goemotions
-from .data import dataclass
+
 from . import giphyUtil
 giphy_util = giphyUtil.GiphyUtil(app.config['GIPHY_API_KEY'])
 from . import recommender

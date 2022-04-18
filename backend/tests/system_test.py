@@ -172,6 +172,12 @@ class TestGroup:
         r = client.post(f"{HOSTNAME_FLASK}/",data={'message':message},headers=TestGroup.auth)
         assert r.status_code ==200
 
+    def test_get_global_statistics(self,client):
+        r = client.get(f"{HOSTNAME_FLASK}/get-global-statistics",headers=TestGroup.auth)
+        assert r.status_code == 200
+        res = r.json()
+        assert 0 <= res['users_average_full_score'] and res['users_average_full_score']<=1
+        assert 0 <= res['users_average_chat_score'] and res['users_average_chat_score']<=1
     def test_cleanup(self,client):
         if TestGroup.auth is not None:
             r = client.delete(f"{HOSTNAME_FLASK}/delete-profile",headers=TestGroup.auth)

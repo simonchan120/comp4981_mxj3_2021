@@ -3,7 +3,8 @@ from mongoengine.fields import BooleanField, EmbeddedDocumentField, EnumField, I
 from datetime import datetime
 
 from enum import Enum
-
+import statistics
+from typing import List
 class Survey(EmbeddedDocument):
     time_submitted = DateTimeField(default=datetime.utcnow)
     name = StringField(default="PMH-Scale")
@@ -17,7 +18,15 @@ class Survey(EmbeddedDocument):
     survey_entry_8 = IntField()
     survey_entry_9 = IntField()
     result = FloatField()
-
+    def calculate_survey_result(self):
+        return round(sum((x-1)/3 for x in [self.survey_entry_1,self.survey_entry_2,self.survey_entry_3,self.survey_entry_4,self.survey_entry_5,self.survey_entry_6,self.survey_entry_7,self.survey_entry_8,self.survey_entry_9])/9,4)
+    @staticmethod
+    def create_survey(e1,e2,e3,e4,e5,e6,e7,e8,e9,name = None):
+        survey = Survey(survey_entry_1=e1,survey_entry_2=e2,survey_entry_3=e3,survey_entry_4=e4,survey_entry_5=e5,survey_entry_6=e6,survey_entry_7=e7,survey_entry_8=e8,survey_entry_9=e9)
+        if name:
+            survey.name = name
+        survey.result=survey.calculate_survey_result()
+        return survey
 class MessageTypes(Enum):
     TEXT = 'text'
     MULTIMEDIA=  'multimedia'
@@ -92,6 +101,21 @@ class Conversation(Document):
     user = ReferenceField(User,reverse_delete_rule=CASCADE)
     content = SortedListField(EmbeddedDocumentField(Message),ordering="time_sent",reverse = True)
 
+class Statistic(EmbeddedDocument):
+    users_average_full_score = FloatField()
+    users_average_chat_score = FloatField()
+    time_recorded = DateTimeField(default=datetime.utcnow, required=True)
+class GlobalStatistics(Document):
+    statistics: List[Statistic] = SortedListField(EmbeddedDocumentField(Statistic),ordering="time_recorded",reverse = True)
+    def get_recent_statistic(self):
+        if not self.statistics:
+            return Statistic(users_average_full_score=0.5,users_average_chat_score=0.5)
+        return self.statistics[0]
+    def calculate_global_statistics(self,users: List[User]):
+        stat = Statistic()
+        users_average_full_score = statistics.fmean(map(lambda user:user.latest_emotion_profile.full_score,users))
+        users_average_chat_score = statistics.fmean(map(lambda user:user.latest_emotion_profile.chat_score,users))
+        return Statistic(users_average_full_score=users_average_full_score,users_average_chat_score=users_average_chat_score)
 
 
 
