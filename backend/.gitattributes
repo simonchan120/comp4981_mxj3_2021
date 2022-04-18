@@ -1,0 +1,2 @@
+models/models/classifier/pytorch_model.bin filter=lfs diff=lfs merge=lfs -text
+rasa/models/20220415-065409-inventive-apparition.tar.gz filter=lfs diff=lfs merge=lfs -text

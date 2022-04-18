@@ -1,15 +1,21 @@
 # Set base image (host OS)
-FROM python:3.8-alpine
+FROM ubuntu:20.04
+
+RUN apt-get -y update && apt-get -y install python3-pip
+RUN pip install --upgrade pip
 
 COPY requirements.txt backend/requirements.txt
-
 RUN pip install -r /backend/requirements.txt
+
+#nltk data
+RUN python3 -m nltk.downloader vader_lexicon
 
 ENV FLASK_APP=backend
 ENV PYTHOHUNBUFFERED=1
 ENV PROPAGATE_EXCEPTIONS=1
-COPY ["data","/backend/data"]
-COPY ["__init__.py","requirements.txt","dataclass.py","rasa.py","recommender.py","server.py","config.json","giphyUtil.py","/backend/"]
+COPY ["data/dialogue.py","data/dataclass.py","/backend/data/"]
+COPY ["models","/backend/models/"]
+COPY ["__init__.py","requirements.txt","rasa.py","recommender.py","server.py","config.json","giphyUtil.py","/backend/"]
 COPY ["celery_config","/backend/celery_config"]
 EXPOSE 8000
 

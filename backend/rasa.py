@@ -1,23 +1,21 @@
 import json
 import requests
-from .data.dialogue import Sentence,Dialogue
 import yaml
 
-
-from .dataclass import *
-from backend import app
+try:
+    from .data.dataclass import *
+except:
+    from data.dataclass import *
 import logging
 logger = logging.getLogger(__name__)
-#TODO: change this when delpoying
-RASA_HOST_NAME= 'rasa'
 class Rasa_Client():
-    def __init__(self):
-        
+    def __init__(self, host_name = None):
+        self.RASA_HOST_NAME=host_name or 'rasa'
 
         pass
     def send_message(self,user,msg):
             session_uuid = user.latest_conversation_uuid
-            r = requests.post(f'http://{RASA_HOST_NAME}:5005/webhooks/rest/webhook',json.dumps({'sender':session_uuid,'message':msg}))
+            r = requests.post(f'http://{self.RASA_HOST_NAME}:5005/webhooks/rest/webhook',json.dumps({'sender':session_uuid,'message':msg}))
             data=  r.json()
             return data,r.status_code
 

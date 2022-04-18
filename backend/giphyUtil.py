@@ -4,8 +4,6 @@ import logging
 from random import randint, choice
 #from flask import current_app
 import requests
-import re
-from .recommender import Recommender
 
 logger = logging.getLogger(__name__)
 
