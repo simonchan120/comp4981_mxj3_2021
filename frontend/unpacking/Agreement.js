@@ -12,7 +12,7 @@ const Agreement = ({ route, navigation }) => {
           <Dialog visible={visible} /*onDismiss={hideDialog}*/>
             <Dialog.Title>About Unpacking Happiness </Dialog.Title>
             <Dialog.Content>
-              <Paragraph> {content} </Paragraph>
+              <Paragraph>{content}</Paragraph>
             </Dialog.Content>
             <Dialog.Actions>
               <Button onPress={() => navigation.navigate('Chatting')}>Done</Button>

@@ -2,7 +2,7 @@ import { StyleSheet, View, Image } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState, useCallback, useEffect, useContext } from 'react'
 import { GiftedChat, Bubble, messageIdGenerator } from 'react-native-gifted-chat'
-
+import YoutubePlayer from "react-native-youtube-iframe";
 import ActivitiesScreen from "./ActivitiesScreen";
 
 import Constants from "expo-constants";
@@ -394,13 +394,21 @@ const ChatScreen = () => {
       },
     }
   ]
+  var actvities_list = [];
+  actvities_list['anger'] = {'video':'F9l61cXa6Gg', 'text':'Here\'s a short video that may help'};
+  actvities_list['disgust'] = {'video':'F9l61cXa6Gg', 'text':'Here\'s a short video that may help'};
+  actvities_list['fear'] = {'video':'F9l61cXa6Gg', 'text':'Here\'s a short video that may help'};
+  actvities_list['joy'] = {'video':'F9l61cXa6Gg', 'text':'Here\'s a short video that may help'};
+  actvities_list['neutral'] = {'video':'F9l61cXa6Gg', 'text':'Here\'s a short video that may help'};
+  actvities_list['sadness'] = {'video':'F9l61cXa6Gg', 'text':'Here\'s a short video that may help'};
+  actvities_list['surprise'] = {'video':'F9l61cXa6Gg', 'text':'Here\'s a short video that may help'};
 
   const context = useContext(Auth);
   /* This part is for API */
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const { manifest } = Constants;
-  const uri_message = `http://${manifest.debuggerHost.split(':').shift()}:5000/`;
+  const uri_message = `https://f467-210-6-181-56.ap.ngrok.io/`;
   var send_text, replied_content = [], replied_type = [];
   const getReplies = async () => {
     console.log("Context: ",context.token);
@@ -424,6 +432,9 @@ const ChatScreen = () => {
         }
         else if (json[i].type === "gif") {
           replied_content[i] = json[i].url;
+        }
+        else if (json[i].type === "emotion_tag") {
+          replied_content[i] = json[i].tag;
         }
         replied_type[i] = json[i].type;
       }
@@ -462,13 +473,29 @@ const ChatScreen = () => {
           setMessages(previousMessages => GiftedChat.append(previousMessages, rasa_replied_msg[0]));
           num_chat++;
         }
+        if (replied_type[i] === "emotion_tag") {
+          console.log("emotion")
+          console.log(actvities_list[replied_content[i]])
+          const rasa_replied_msg = [{
+            _id: num_chat + 1,
+            video: actvities_list[replied_content[i]].video,
+            text: actvities_list[replied_content[i]].text,
+            createdAt: new Date(),
+            user: {
+              _id: 2,
+              name: 'Unpacker',
+            },
+          }]
+          setMessages(previousMessages => GiftedChat.append(previousMessages, rasa_replied_msg[0]));
+          num_chat++;
+        }
       }
     }
   }
   /* End */
 
   /*For starting each chat session*/
-  const uri_view_profile = `http://${manifest.debuggerHost.split(':').shift()}:5000/check-do-survey`;
+  const uri_view_profile = `https://f467-210-6-181-56.ap.ngrok.io/check-do-survey`;
   useEffect(() => {
     async function checkSurveyStatus() {
       try {
@@ -527,7 +554,7 @@ const ChatScreen = () => {
   const QUESTION_NUMBER = 9;
   var num_survey_answered = 0;
   var survey_result = [];
-  const uri_submit_survey = `http://${manifest.debuggerHost.split(':').shift()}:5000/add-survey-results`;
+  const uri_submit_survey = `https://f467-210-6-181-56.ap.ngrok.io/add-survey-results`;
   const onQuickReply = useCallback(async (quickReply) => { 
     let message = quickReply[0].title;
     let msg = {
@@ -632,6 +659,23 @@ const ChatScreen = () => {
                 />
                 <Image source={require('./Image/Poweredby_100px-Black_VertText.png')} />
               </View>
+            );
+          }}
+          renderMessageVideo = {(props) => {
+            return(
+                <View
+                  style={{
+                    borderRadius: 15,
+                    padding: 2,
+                    width: 300,
+                    //height: 500,
+                  }}
+                >
+                  <YoutubePlayer
+                    height={300}
+                    //play={playing}
+                    videoId={props.currentMessage.video}/>
+                </View>
             );
           }}
         />
