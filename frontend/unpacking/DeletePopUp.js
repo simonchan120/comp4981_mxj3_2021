@@ -1,5 +1,5 @@
 import React, { useContext, useEffect } from 'react';
-import { View, Text, BackHandler } from 'react-native';
+import { View, BackHandler } from 'react-native';
 import { Button, Paragraph, Dialog, Portal, Provider, Snackbar } from 'react-native-paper';
 import { Restart } from 'fiction-expo-restart';
 import Constants from "expo-constants";
@@ -39,15 +39,6 @@ const DeletePopUp = ({ route, navigation }) => {
   };
   useEffect(() => {
     const backAction = () => {
-      /*Alert.alert("Hold on!", "Are you sure you want to go back?", [
-        {
-          text: "Cancel",
-          onPress: () => null,
-          style: "cancel"
-        },
-        { text: "YES", onPress: () => BackHandler.exitApp() }
-      ]);*/
-      //setVisible(false);
       navigation.navigate('Settings');
       return true;
     };
@@ -68,7 +59,7 @@ const DeletePopUp = ({ route, navigation }) => {
           <Dialog visible={visible}>
             <Dialog.Title>Deleting your account</Dialog.Title>
             <Dialog.Content>
-              <Paragraph> {content} </Paragraph>
+              <Paragraph>{content}</Paragraph>
             </Dialog.Content>
             <Dialog.Actions>
               <Button onPress={() => navigation.navigate('Settings')}>Cancel</Button>
