@@ -125,7 +125,7 @@ class TestGroup:
         database_preferences = Counter(map(lambda x: x['content']['name'],r.json()['preferences'])).keys()
         assert database_preferences==unique_preferences
 
-    @pytest.mark.parametrize('survey_value_list,status_code',[([1,2,3,4,5,4,3,2,1],200),([1,2,3,'4',5,4,3,'2',1],200),([None,2,3,None,5,4,3,2,1],404),([1,2,3,'aweg',5,4,3,2,1],404)],ids=['normal values1','normal values2','Missing fields','non-integer values'])
+    @pytest.mark.parametrize('survey_value_list,status_code',[([1,2,3,4,4,4,3,2,1],200),([1,2,3,'4',4,4,3,'2',1],200),([None,2,3,None,4,4,3,2,1],404),([1,2,3,'aweg',5,4,3,2,1],404)],ids=['normal values1','normal values2','Missing fields','non-integer values'])
     def test_add_survey_data(self,client,survey_value_list,status_code):
         data_package={}
         for idx,val in enumerate(survey_value_list):

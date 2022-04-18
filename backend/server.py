@@ -422,6 +422,8 @@ def add_survey_results(user,token_body):
     #if not d1.isnumeric() or not d2.isnumeric() or not d3.isnumeric() or not d4.isnumeric() or not d5.isnumeric() or not d6.isnumeric() or not d7.isnumeric()or not d8.isnumeric()or not d9.isnumeric():
         return Response(json.dumps({"message": "invalid survey values, expected integers"}),status=404, mimetype='application/json')
     survey = Survey.create_survey(d1,d2,d3,d4,d5,d6,d7,d8,d9)
+    if not survey:
+        return Response(json.dumps({f"message": "invalid survey values"}),status=404, mimetype='application/json')
     user.surveys.append(survey)
     user.previous_emotion_profile_lists.append(EmotionProfileList())
     user.save()
@@ -439,21 +441,14 @@ def check_do_survey(user:User,token_body):
     threshold = base_interval
 
     MAX_SUM_OF_EMOTION_SCORE_DIFFERENCE = 2
-    if not user.previous_emotion_profile_lists:
-        user.previous_emotion_profile_lists.append(EmotionProfileList())
     
-    #relies on sortedlistfield function of mongoengine, from latest to newest
-    current_emotion_profile_list = user.previous_emotion_profile_lists[0].profile_list
-
     result_change = False
-    if current_emotion_profile_list:
+    if user.previous_emotion_profile_lists and user.previous_emotion_profile_lists[0].profile_list:
+        current_emotion_profile_list = user.previous_emotion_profile_lists[0].profile_list
         sum_of_emotion_score_difference = sum([abs(current_emotion_profile_list[i+1].chat_score-current_emotion_profile_list[i].chat_score) for i in range(0, len(current_emotion_profile_list)-1)])
 
         if sum_of_emotion_score_difference >= MAX_SUM_OF_EMOTION_SCORE_DIFFERENCE:
             result_change = seconds_since_last_survey >= change_interval
-
-    current_emotion_profile_list.append(user.get_emotion_profile_copy())
-    user.save()
 
     result_base = seconds_since_last_survey >= threshold
     result = result_base or result_change

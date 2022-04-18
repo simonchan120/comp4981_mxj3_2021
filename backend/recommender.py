@@ -34,7 +34,7 @@ class Recommender():
         normalized_time_since_last_survey=0
         if user.surveys:
             latest_survey_score = user.surveys[0].result 
-            normalized_time_since_last_survey = max((datetime.utcnow() - user.surveys[0].time_submitted).total_seconds()/User._survey_period,1)
+            normalized_time_since_last_survey = min((datetime.utcnow() - user.surveys[0].time_submitted).total_seconds()/User._survey_period,1)
         survey_factor = LOWEST_SURVEY_FACTOR + (HIGHEST_SURVEY_FACTOR-LOWEST_SURVEY_FACTOR) * (1-normalized_time_since_last_survey) if normalized_time_since_last_survey else 0
         new_emotion_full_score = survey_factor * latest_survey_score + (1-survey_factor)* new_emotion_chat_score
         

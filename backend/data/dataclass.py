@@ -1,3 +1,4 @@
+from __future__ import annotations
 from mongoengine import *
 from mongoengine.fields import BooleanField, EmbeddedDocumentField, EnumField, IntField, ListField, ReferenceField, SortedListField
 from datetime import datetime
@@ -18,10 +19,14 @@ class Survey(EmbeddedDocument):
     survey_entry_8 = IntField()
     survey_entry_9 = IntField()
     result = FloatField()
+    ACCEPTABLE_VALUES = [1,2,3,4]
     def calculate_survey_result(self):
         return round(sum((x-1)/3 for x in [self.survey_entry_1,self.survey_entry_2,self.survey_entry_3,self.survey_entry_4,self.survey_entry_5,self.survey_entry_6,self.survey_entry_7,self.survey_entry_8,self.survey_entry_9])/9,4)
     @staticmethod
     def create_survey(e1,e2,e3,e4,e5,e6,e7,e8,e9,name = None):
+        params = [e1,e2,e3,e4,e5,e6,e7,e8,e9]
+        if not all(int(param) in Survey.ACCEPTABLE_VALUES for param in params):
+            return None
         survey = Survey(survey_entry_1=e1,survey_entry_2=e2,survey_entry_3=e3,survey_entry_4=e4,survey_entry_5=e5,survey_entry_6=e6,survey_entry_7=e7,survey_entry_8=e8,survey_entry_9=e9)
         if name:
             survey.name = name
@@ -57,6 +62,11 @@ class EmotionProfile(EmbeddedDocument):
     full_score = FloatField(required=True)
     chat_score = FloatField(required=True)
     latest_emotions = EmbeddedDocumentField(EmotionTagGroup)
+    def check_if_equal(emotion_profile_1:EmotionProfile,emotion_profile_2:EmotionProfile):
+        DELTA=0.0001
+        is_full_score_equal = abs(emotion_profile_1.full_score-emotion_profile_2.full_score) < DELTA
+        is_chat_score_equal = abs(emotion_profile_1.chat_score-emotion_profile_2.chat_score) < DELTA
+        return is_full_score_equal and is_chat_score_equal
 class EmotionProfileList(EmbeddedDocument):
     time_started = DateTimeField(default=datetime.utcnow)
     profile_list = SortedListField(EmbeddedDocumentField(EmotionProfile),ordering="time_recorded",reverse = True)
@@ -92,7 +102,11 @@ class User(Document):
     def get_most_confident_emotion(self):
         emotion_tag = self.latest_emotion_profile.latest_emotions
         return emotion_tag.tags[0].tag
-
+    def check_if_should_be_saved(self):
+        if not self.previous_emotion_profile_lists or not self.previous_emotion_profile_lists[0].profile_list:
+            return True
+        last_saved_profile = self.previous_emotion_profile_lists[0].profile_list[0]
+        return not EmotionProfile.check_if_equal(last_saved_profile,self.latest_emotion_profile)
 
 class Conversation(Document):
     time_started = DateTimeField(default=datetime.utcnow, required=True)

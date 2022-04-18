@@ -43,6 +43,7 @@ if os.environ['FLASK_ENV']=='development':
     app.config.update(SURVEY_INTERVAL_CHANGE=60)
     app.config.update(NOTIFICATION_INTERVAL=60)
     app.config.update(RUN_CALCULATE_GLOBAL_STATISTICS_PERIOD=60*1)
+    app.config.update(SAVE_COPY_USERS_EMOTION_PROFILE_PERIOD=60*1)
 
 elif os.environ['FLASK_ENV']=='production':
     my_config = Config(
@@ -61,6 +62,7 @@ elif os.environ['FLASK_ENV']=='production':
     app.config.update(SURVEY_INTERVAL_CHANGE=3600*24*14)
     app.config.update(NOTIFICATION_INTERVAL=3600*24*2)
     app.config.update(RUN_CALCULATE_GLOBAL_STATISTICS_PERIOD=3600*1)
+    app.config.update(SAVE_COPY_USERS_EMOTION_PROFILE_PERIOD=3600*1)
 
 from .data import dataclass
 # mongodb mongoengine
@@ -77,6 +79,7 @@ app.config.update(dict(
 if not dataclass.GlobalStatistics.objects.first():
     stats=dataclass.GlobalStatistics()
     stats.save()
+GIPHY_TAGS=['fun','movies','vacation','animals','holidays','cute','happy','pets','celebrities','nature']
 
 mail = Mail()
 mail.init_app(app)

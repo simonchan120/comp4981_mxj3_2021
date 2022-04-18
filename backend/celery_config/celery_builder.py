@@ -1,3 +1,4 @@
+from typing import List
 from celery import Celery
 from backend import app,dataclass
 from backend.data.dataclass import GlobalStatistics
@@ -21,15 +22,29 @@ celery_app = Celery(
 @celery_app.on_after_configure.connect
 def setup_periodic_tasks(sender, **kwargs):
     sender.add_periodic_task(app.config["RUN_CALCULATE_GLOBAL_STATISTICS_PERIOD"], run_calculate_global_statistics.s(), name='run_calculate_global_statistics')
+    sender.add_periodic_task(app.config["SAVE_COPY_USERS_EMOTION_PROFILE_PERIOD"], save_copy_users_emotion_profile.s(), name='save_copy_users_emotion_profile')
 
 @celery_app.task
 def run_calculate_global_statistics():
     users = dataclass.User.objects.all()
-    logger.info(f"Calculating global statistics with user group size: {len(users)}")
     new_statistic = dataclass.GlobalStatistics.calculate_global_statistics(users)
     global_stat_pobj: GlobalStatistics = dataclass.GlobalStatistics.objects.first()
     global_stat_pobj.statistics.append(new_statistic)
     global_stat_pobj.save()
+    logger.info(f"Calculatd global statistics with user group size: {len(users)}")
+
+@celery_app.task
+def save_copy_users_emotion_profile():
+    users: List[dataclass.User] = dataclass.User.objects.all()
+    counter = 0
+    for user in users:
+        if not user.previous_emotion_profile_lists:
+            user.previous_emotion_profile_lists.append(dataclass.EmotionProfileList())
+        if user.check_if_should_be_saved():
+            user.previous_emotion_profile_lists[0].profile_list.append(user.get_emotion_profile_copy())
+            user.save()
+            counter += 1
+    logger.info(f"Copying Emotion Profile, num of saved users: {counter}, num of total users: {len(users)}")
 
 celery_app.autodiscover_tasks()
 

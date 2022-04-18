@@ -47,4 +47,7 @@ services:
     build: ./backend/rasa
     ports:
       - 5005:5005
+    deploy:
+      restart_policy:
+        condition: on-failure
     #command: run -p 5005 --enable-api 
