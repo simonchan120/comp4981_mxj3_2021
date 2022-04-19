@@ -26,7 +26,7 @@ import ChatScreen from './ChatScreen';
 import ProfileScreen from './ProfileScreen';
 import ActivitiesScreen from "./ActivitiesScreen";
 import SettingsScreen from './SettingsScreen';
-import API_test from './API_test';
+//import API_test from './_API_test';
 import ForgetPassword from "./ResetPasswordScreen";
 import NewUser from "./NewUserScreen";
 import { schedulePushNotification, registerForPushNotificationsAsync } from "./Notification";
@@ -36,6 +36,8 @@ import DeleteScreen from "./DeleteBriefScreen";
 import DeletePopUp from "./DeletePopUp";
 import AboutScreen from "./AboutScreen";
 import ShowJSONScreen from "./ShowJSONScreen";
+//import ShowActivities from "./_ShowActivities";
+//import CurrentActivitiesScreen from "./_CurrentActivities";
 
 import * as Notifications from "expo-notifications";
 
@@ -75,8 +77,6 @@ function ChatStack() {
           name="Chatting"
           component={ChatScreen}
           options={{ title: 'Details Page' }} />
-          
-
       </Stack.Navigator>
   );
 }
@@ -150,9 +150,14 @@ export function Start() {
   const responseListener = useRef();
   //console.log("func Notification started!")
   // for check from API
-  const context = useContext(Auth);
+  //const context = useContext(Auth);
+  const { token, name, detail } = useContext(Info);
+  const [stateToken, setStateToken] = token;
+  const [stateName, setStateName] = name;
+  const [stateDetail, setStateDetail] = detail;
+  
   const { manifest } = Constants;
-  const uri_view_push = `http://${manifest.debuggerHost.split(':').shift()}:5000/check-send-push-notification`;
+  const uri_view_push = `https://f467-210-6-181-56.ap.ngrok.io/check-send-push-notification`;
   useEffect(() => {
     // notification
     registerForPushNotificationsAsync().then((token) =>
@@ -175,7 +180,7 @@ export function Start() {
         const response = await fetch(uri_view_push, {
           method: 'GET',
           headers: {
-            'rasa-access-token': context.token
+            'rasa-access-token': stateToken
           }
         });
         const json = await response.json();
@@ -271,7 +276,7 @@ export function Start() {
   );
 }
 
-export const Auth = React.createContext(null);
+export const Info = React.createContext(null);
 
 export function Login() {
   const [usr, setUsr] = React.useState('');
@@ -279,11 +284,14 @@ export function Login() {
   const [err_visible, setErrVisible] = React.useState(false);
   const onDismissErrSnackBar = () => setErrVisible(false);
   
-  const { setToken } = React.useContext(Auth)
+  const { token, name, detail } = useContext(Info);
+  const [stateToken, setStateToken] = token;
+  const [stateName, setStateName] = name;
+  const [stateDetail, setStateDetail] = detail;
   const { manifest } = Constants;
 
 
-  const uri = `http://${manifest.debuggerHost.split(':').shift()}:5000/login`;
+  const uri = `https://f467-210-6-181-56.ap.ngrok.io/login`;
   const loginAuth = async () => {
     let json_result;
     let formData = new FormData();
@@ -311,7 +319,7 @@ export function Login() {
       setErrVisible(true);
      }
      else {
-       setToken(json_result['rasa-access-token']);
+      setStateToken(json_result['rasa-access-token']);
      }
    }
   }
@@ -342,10 +350,10 @@ export function Login() {
         loginAuth();
         }}>Submit</Button_Paper>
       <Button_Paper mode="text" onPress={() => {
-        setToken('FORGET PASSWORD');
+        setStateToken('FORGET PASSWORD');
         }}>Forget password?</Button_Paper>
       <Button_Paper mode="text" onPress={() => {
-        setToken('NEW USER');
+        setStateToken('NEW USER');
         }}>New to Unpacking Happiness?</Button_Paper>
 
     </View>
@@ -360,21 +368,25 @@ export function Login() {
 }
 
 export function Home() {
-const { setToken } = React.useContext(Auth)
+  const { token, name, detail } = useContext(Info);
+  const [stateToken, setStateToken] = token;
+  const [stateName, setStateName] = name;
+  const [stateDetail, setStateDetail] = detail;
 
   return (
     <View>
       <Text>Home</Text>
-      <Button_Paper mode="contained" onPress={() => setToken(null)}>Signout</Button_Paper>
+      <Button_Paper mode="contained" onPress={() => setStateToken(null)}>Signout</Button_Paper>
     </View>
   );
 }
 
 export default function App() {
   const [token, setToken] = React.useState(null);
-
+  const [name, setName] = React.useState(null);
+  const [detail, setDetail] = React.useState(null);
   return (
-    <Auth.Provider value={{token, setToken}}>
+    <Info.Provider value={{token:[token, setToken], name: [name, setName], detail:[detail, setDetail]}}>
       <NavigationContainer>
         <Stack.Navigator
         screenOptions={{
@@ -389,7 +401,7 @@ export default function App() {
           )}
         </Stack.Navigator>
       </NavigationContainer>
-    </Auth.Provider>
+    </Info.Provider>
   );
 }
 

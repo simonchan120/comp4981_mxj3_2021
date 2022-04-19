@@ -1,62 +1,67 @@
-import React from 'react';
-import { StyleSheet, Text, View, FlatList, Dimensions } from 'react-native';
-//import VegaScrollList from 'react-native-vega-scroll-list';
-import { Card, Title, Paragraph, TouchableRipple, Button } from 'react-native-paper' ;
-import { SafeAreaView } from 'react-navigation';
-
-const ActivitiesScreen = () => {
-    const languages = [
-        { name: 'Activities A' , cover: 'https://picsum.photos/seed/picsum1/1200/600', key: '1' },
-        { name: 'Activities B' , cover: 'https://picsum.photos/seed/picsum2/1200/600', key: '2' },
-        { name: 'Activities C' , cover: 'https://picsum.photos/seed/picsum3/1200/600', key: '3' },
-        { name: 'Activities ABC' , cover: 'https://picsum.photos/seed/picsum4/1200/600', key: '4' },
-        { name: 'Activities DEF' , cover: 'https://picsum.photos/seed/picsum5/1200/600', key: '5' },
-      ]
-
+import React, { useEffect, useContext, useState } from 'react';
+import { Headline, Subheading, List } from 'react-native-paper';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { BackHandler, View } from 'react-native';
+import YoutubePlayer from "react-native-youtube-iframe";
+//import { ActivityStatus } from './ChatScreen';
+import { Info } from './App';
+const ActivitiesScreen = ({ navigation }) => {
+    /*const { name, detail } = useContext(ActivityStatus);
+    const [stateName, setStateName] = name;
+    const [stateDetail, setStateDetail] = detail;*/
+    const { token, name, detail } = useContext(Info);
+    const [stateToken, setStateToken] = token;
+    const [stateName, setStateName] = name;
+    const [stateDetail, setStateDetail] = detail;
+    const [show, setShow] = useState(false);
+    function name_shown() {
+        console.log("Now name:")
+        console.log(stateName)
+        // //return stateName;
+        // if (!stateDetail) {
+        //   setShow(false) // to hide it
+        // } else {
+        //   setShow(true)  // to show it  
+        // }
+        return !stateName ? "No activity yet" : stateName
+    }
+    function detail_shown() {
+        console.log("Now name:")
+        console.log(String(stateDetail))
+        
+        return !stateDetail ? "No activity yet" : stateDetail
+    }
+    /*useEffect(() => {
+        const backAction = () => {
+          navigation.navigate('Chatting');
+          return true;
+        };
+    
+        const backHandler = BackHandler.addEventListener(
+          "hardwareBackPress",
+          backAction
+        );
+    
+        return () => backHandler.remove();
+    }, []);*/
     return (
-        <SafeAreaView style={{ flex: 1 }}>
-            <View>
-                <FlatList
-                    //distanceBetweenItem={12}
-                    horizontal = { true }
-                    data = {languages}
-                    renderItem={({ item }) => 
-                        <TouchableRipple>
-                            <Card>
-                                <Card.Cover style={styles.card_template} source={{ uri: item.cover }} />
-                                <Card.Content style={styles.text_template}>
-                                    <Title style={styles.title}>{item.name}</Title>
-                                    <Paragraph style={styles.content}>{item.name}</Paragraph>
-                                </Card.Content>
-                                <Card.Actions>
-                                    <Button style={styles.title}>Cancel</Button>
-                                    <Button style={styles.title}>Ok</Button>
-                                </Card.Actions>
-                            </Card>
-                        </TouchableRipple>}
-                />
-            </View>
+        <SafeAreaView style={{ flex:1 }}>
+          <View>
+            <Headline 
+              style={{
+              fontSize: 25,
+              textAlign: 'center',
+              marginBottom: 16
+            }}>{name_shown()}</Headline>
+            { stateDetail && 
+              
+            <YoutubePlayer
+              height={500}
+              //play={playing}
+              videoId={stateDetail}/>}
+          </View>
         </SafeAreaView>
-    );
+    )
 }
-
-const styles = StyleSheet.create({
-  card_template:{
-    //width: '30%',
-    height: '30%',
-    //boxShadow: "10px 10px 17px -12px rgba(0,0,0,0.75)"
-  },
-  text_template:{
-    //width: '30%',
-    height: '15%',
-    //boxShadow: "10px 10px 17px -12px rgba(0,0,0,0.75)"
-  },
-  title:{
-    fontSize: 10,
-  },
-  content:{
-    fontSize: 8,
-  },
-});
 
 export default ActivitiesScreen;
