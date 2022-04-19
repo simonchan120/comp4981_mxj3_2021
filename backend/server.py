@@ -47,15 +47,6 @@ def _decode_jwt_without_verifying(token):
 def _verify_jwt(token, second_par):
     return jwt.decode(
         token, _get_jwt_encode_key(second_par), algorithms=["HS256"])
-def _create_new_conversation(user):
-    new_uuid = str(uuid.uuid4())
-    user.latest_conversation_uuid = new_uuid
-    new_conversation = Conversation(uuid=new_uuid, user=user)
-    new_conversation.save()
-    new_conversation_with_id = Conversation.objects(uuid=new_uuid).first()
-    user.conversations.append(new_conversation_with_id)
-    user.save()
-    return user,new_conversation_with_id
 @main_bp.errorhandler(Exception)
 def handle_exception(e):
     current_app.logger.exception('An error occured')
@@ -179,7 +170,7 @@ def signup():
 
             _sendVerificationEmail.delay(email, f"Verification code for registration: {otp}")
             user.save()
-            _create_new_conversation(user)
+            user.create_new_conversation()
             
             return Response(json.dumps({"message": 'Successfully registered. Please verify your email.'}), 201, mimetype='application/json')
         else:
@@ -249,7 +240,7 @@ def send_message(user, token_body):
     user_message= content.get('message')
     response_obj, status = rasa_client.send_message(user,
         str(user_message))
-    current_conversation =  Conversation.objects(uuid=user.latest_conversation_uuid).first()
+    current_conversation =  uuid=user.latest_conversation
     bot_reply = response_obj[0]['text']
     response_obj[0]['type']='text'
 
@@ -318,13 +309,13 @@ def add_preference_to_user(user, token_body):
 @token_required
 def new_chat_session(user, token_body):
     if user.conversations.__len__()==0:
-        _create_new_conversation(user)
+        user.create_new_conversation()
         current_app.logger.warn(f"User: {user.username} does not have an existing conversation, creating a new one")
         return Response(json.dumps({'message': 'New chat session created'}), status=200, mimetype='application/json')
     if user.conversations[0].content.__len__() ==0:
         current_app.logger.info(f"User: {user.username} attempted to start a new conversation without finishing the last one")
         return Response(json.dumps({'message': 'New chat session created'}), status=200, mimetype='application/json')
-    _create_new_conversation(user)
+    user.create_new_conversation()
     return Response(json.dumps({'message': 'New chat session created'}), status=200, mimetype='application/json')
 
 @main_bp.route("/delete-profile", methods=['DELETE'])
@@ -355,7 +346,7 @@ def _preprocess_user_profile(d,user_utc):
 
 @main_bp.route("/show-profile", methods=['GET'])
 @token_required
-def get_user_profile(user, token_body):
+def get_user_profile(user: User, token_body):
     is_verbose = False
 
     data = request.form
@@ -369,6 +360,7 @@ def get_user_profile(user, token_body):
     user_json['conversations']= [json.loads(x.to_json()) for x in user.conversations]
     user_json['preferences'] = [({'content':json.loads(x.content.to_json()),'score':x.score}) for x in user.preferences]
     user_json['pred_preferences'] = [({'content':json.loads(x.content.to_json()),'score':x.score}) for x in user.pred_preferences]
+    user_json['latest_conversation'] = json.loads(user.latest_conversation.to_json())
     if not is_verbose:
         user_timezone = timezone(timedelta(hours=user.utc_in_hours))
         _preprocess_user_profile(user_json,user_timezone)
@@ -457,7 +449,7 @@ def check_do_survey(user:User,token_body):
 @main_bp.route("/check-send-push-notification",methods=['GET'])
 @token_required
 def check_send_push_notification(user,token_body):
-    current_conversation=next(convo for convo in user.conversations if convo.uuid==user.latest_conversation_uuid)
+    current_conversation=user.latest_conversation
     latest_message_time =  current_conversation.content[0].time_sent if len(list(current_conversation.content)) >= 1 else datetime(year = 1971,month=1,day=1)
     seconds_since_last_message = (datetime.now()-latest_message_time).total_seconds()
     base_interval = current_app.config['NOTIFICATION_INTERVAL']

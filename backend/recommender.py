@@ -46,11 +46,11 @@ class Recommender():
     @staticmethod
     def check_if_recommend_multimedia(user: User,message):
 
-        MAX_FREQ= 10
-        MIN_FREQ= 5
+        MAX_FREQ= 1/5
+        MIN_FREQ= 1/10
         
         full_emotion_score = user.latest_emotion_profile.full_score
-        threshold=  (1/MIN_FREQ - 1/MAX_FREQ )*full_emotion_score + 1/MAX_FREQ
+        threshold=  (MAX_FREQ - MIN_FREQ)*full_emotion_score + MIN_FREQ
 
         return random.uniform(0,1) < threshold
     @staticmethod
@@ -156,6 +156,11 @@ class Recommender():
         current_user.pred_preferences = current_user.preferences + preference_list
         
         remaining_items = num_of_top_items - len(current_user.pred_preferences)
+
+        # 5% chance for recommending all random items
+        if random.uniform(0,1) <= 0.05:
+            remaining_items = num_of_top_items
+            current_user.pred_preferences = []
 
         # add random items if predicted preferences lack members
         if remaining_items >0:            

@@ -12,8 +12,8 @@ def rasa_client():
 @pytest.fixture(scope="module")
 def create_user(base_create_user):
     def _create_user(*args,**kwargs):
-        _user = base_create_user(*args,**kwargs)
-        _user.latest_conversation_uuid = 'test_rasa_12362138602168'
+        _user: dataclass.User = base_create_user(*args,**kwargs)
+        _user.create_new_conversation(save_documents=False)
         return _user
     return _create_user
 @pytest.fixture(scope="module")
@@ -27,6 +27,6 @@ def test_send_message(user:dataclass.User, message: str,status_code : int,rasa_c
     res,returned_status_code = rasa_client.send_message(user,message)
     assert len(res) == 1
     assert returned_status_code == status_code
-    assert  res[0]['recipient_id']== user.latest_conversation_uuid
+    assert  res[0]['recipient_id']== user.latest_conversation.uuid
     assert len(res[0]['text']) > 0
 

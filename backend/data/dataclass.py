@@ -1,4 +1,5 @@
 from __future__ import annotations
+import uuid
 from mongoengine import *
 from mongoengine.fields import BooleanField, EmbeddedDocumentField, EnumField, IntField, ListField, ReferenceField, SortedListField
 from datetime import datetime
@@ -89,7 +90,7 @@ class User(Document):
     surveys = SortedListField(EmbeddedDocumentField(Survey),ordering="time_submitted",reverse = True)
     preferences = SortedListField(EmbeddedDocumentField(Preference),ordering="score",reverse = True)
     pred_preferences = SortedListField(EmbeddedDocumentField(Preference),ordering="score",reverse = True)
-    latest_conversation_uuid = StringField()
+    latest_conversation = ReferenceField('Conversation')
     activities_emotion= StringField(default='neutral')
     activities_change_positive_threshold=FloatField(default=0.5)
     activities_change_negative_threshold=FloatField(default=0.5)
@@ -107,11 +108,18 @@ class User(Document):
             return True
         last_saved_profile = self.previous_emotion_profile_lists[0].profile_list[0]
         return not EmotionProfile.check_if_equal(last_saved_profile,self.latest_emotion_profile)
-
+    def create_new_conversation(self, save_documents= True):
+        new_conversation = Conversation(user=self)
+        self.latest_conversation = new_conversation
+        self.conversations.append(new_conversation)
+        if save_documents:
+            new_conversation.save()
+            self.save()
+        return self
 class Conversation(Document):
     time_started = DateTimeField(default=datetime.utcnow, required=True)
     time_ended = DateTimeField()
-    uuid = StringField()
+    uuid = StringField(default=lambda: str(uuid.uuid4()))
     user = ReferenceField(User,reverse_delete_rule=CASCADE)
     content = SortedListField(EmbeddedDocumentField(Message),ordering="time_sent",reverse = True)
 
