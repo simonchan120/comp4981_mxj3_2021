@@ -1,15 +1,20 @@
-import { StyleSheet, View, Image } from 'react-native';
+import { StyleSheet, View, Image, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useState, useCallback, useEffect, useContext } from 'react'
 import { GiftedChat, Bubble, messageIdGenerator } from 'react-native-gifted-chat'
 import YoutubePlayer from "react-native-youtube-iframe";
+import { Button } from 'react-native-paper' ;
+//import { SafeAreaView, withNavigation } from 'react-navigation';
 import ActivitiesScreen from "./ActivitiesScreen";
+import CurrentActivitiesScreen from './_CurrentActivities';
 
 import Constants from "expo-constants";
-import {Auth} from "./App"
+import {Info} from "./App"
 //import Agreement from './Agreement';
 
-const ChatScreen = () => {
+//export const ActivityStatus = React.createContext(null);
+
+const ChatScreen = ({ navigation }) => {
   const [messages, setMessages] = useState([]);
   /*interface Reply {
     title: string
@@ -22,6 +27,7 @@ const ChatScreen = () => {
     values: Reply[]
     keepIt?: boolean
   }*/
+
 
   const start_message_list = [
     {
@@ -386,7 +392,7 @@ const ChatScreen = () => {
     },
     {
       _id: 'q_done',
-      text: 'That\'s all for the survey. Thank you~',
+      text: 'That\'s all for the survey. Thank you~ You can see the resulting score of the survey at the Profile page in Settings. Now that as I understand you more, feel free to say if there\'s that you want me to know :)',
       createdAt: new Date(),
       user: {
         _id: 2,
@@ -403,7 +409,10 @@ const ChatScreen = () => {
   actvities_list['sadness'] = {'video':'F9l61cXa6Gg', 'text':'Here\'s a short video that may help'};
   actvities_list['surprise'] = {'video':'F9l61cXa6Gg', 'text':'Here\'s a short video that may help'};
 
-  const context = useContext(Auth);
+  const { token, name, detail } = useContext(Info);
+  const [stateToken, setStateToken] = token;
+  const [stateName, setStateName] = name;
+  const [stateDetail, setStateDetail] = detail;
   /* This part is for API */
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
@@ -411,7 +420,9 @@ const ChatScreen = () => {
   const uri_message = `https://f467-210-6-181-56.ap.ngrok.io/`;
   var send_text, replied_content = [], replied_type = [];
   const getReplies = async () => {
-    console.log("Context: ",context.token);
+    replied_content = [];
+    replied_type = [];
+    console.log("Context: ",stateToken);
     let formData = new FormData();
     formData.append('message', send_text);
     try {
@@ -419,7 +430,7 @@ const ChatScreen = () => {
         method: 'POST',
         headers: {
           'Content-Type': 'multipart/form-data',
-          'rasa-access-token': context.token
+          'rasa-access-token': stateToken
         },
         body: formData
       });
@@ -460,7 +471,7 @@ const ChatScreen = () => {
           setMessages(previousMessages => GiftedChat.append(previousMessages, rasa_replied_msg[0]));
           num_chat++;
         }
-        if (replied_type[i] === "gif"){
+        else if (replied_type[i] === "gif"){
           const rasa_replied_msg = [{
             _id: num_chat + 1,
             image: replied_content[i], //getting GIF from links
@@ -473,9 +484,11 @@ const ChatScreen = () => {
           setMessages(previousMessages => GiftedChat.append(previousMessages, rasa_replied_msg[0]));
           num_chat++;
         }
-        if (replied_type[i] === "emotion_tag") {
+        else if (replied_type[i] === "emotion_tag") {
           console.log("emotion")
           console.log(actvities_list[replied_content[i]])
+          setStateName(actvities_list[replied_content[i]].text);
+          setStateDetail(actvities_list[replied_content[i]].video);
           const rasa_replied_msg = [{
             _id: num_chat + 1,
             video: actvities_list[replied_content[i]].video,
@@ -502,7 +515,7 @@ const ChatScreen = () => {
         const response = await fetch(uri_view_profile, {
           method: 'GET',
           headers: {
-            'rasa-access-token': context.token
+            'rasa-access-token': stateToken
           }
         });
         const json = await response.json();
@@ -518,7 +531,7 @@ const ChatScreen = () => {
            sendStart(i);
           }
           //num_chat = start_message_list.length;
-          setTimeout(function() {setMessages(previousMessages => GiftedChat.append(previousMessages, survey_question_list[0]))}, start_message_list.length*1000);
+          setTimeout(function() {setMessages(previousMessages => GiftedChat.append(previousMessages, survey_question_list[0]))}, start_message_list.length*2500);
         }
         else {
           console.log("not survey now");
@@ -535,9 +548,12 @@ const ChatScreen = () => {
       
       function sendStart(i) {
         setTimeout(function() { setMessages(previousMessages => GiftedChat.append(previousMessages, start_message_list[i]));
-        }, i*1000);
+        }, i*2500);
       }
     };
+    /*setName("No activity yet...")
+    setDetail("No activity yet")
+    console.log(context)*/
     checkSurveyStatus();
   }, [])
   /* End */
@@ -583,7 +599,7 @@ const ChatScreen = () => {
           method: 'POST',
           headers: {
             'Content-Type': 'multipart/form-data',
-            'rasa-access-token': context.token
+            'rasa-access-token': stateToken
           },
           body: formData
         });
@@ -594,14 +610,23 @@ const ChatScreen = () => {
       }
     }
   }, [])
-
+  function name_shown() {
+    console.log("Now name:")
+    console.log(stateName)
+    //return stateName;
+    return !stateName ? "No activity yet" : stateName
+}
   /*const chatHeight = ph(70);
   const chatWeight = pw(90);
   const actHeight = ph(20);
   const actWeight = pw(90);*/
-
+  /*const [name, setName] = React.useState(null);
+  const [detail, setDetail] = React.useState(null);*/
+  //setName("No activity recommended currently...")
+  //setDetail("No activity yet")
   return (
     <SafeAreaView style={{ flex: 1 }}>
+
       <View style={style.chat}>
         <GiftedChat
           messages={messages}
@@ -666,13 +691,13 @@ const ChatScreen = () => {
                 <View
                   style={{
                     borderRadius: 15,
-                    padding: 2,
-                    width: 300,
-                    //height: 500,
+                    padding: 10,
+                    width: 325,
+                    height: 200,
                   }}
                 >
                   <YoutubePlayer
-                    height={300}
+                    height={200}
                     //play={playing}
                     videoId={props.currentMessage.video}/>
                 </View>
@@ -681,7 +706,33 @@ const ChatScreen = () => {
         />
       </View>
       <View style={style.act}>
-        <ActivitiesScreen/>
+        <Text
+        style={{
+            fontSize: 17,
+            marginLeft:5,
+            marginRight:5,
+            textAlign: 'left',
+            marginBottom: 7,
+            fontWeight: 'bold'
+          }}>Current recommended activity</Text>
+          <Text
+            style={{
+            fontSize: 15,
+            marginLeft:5,
+            marginRight:5,
+            textAlign: 'left',
+            marginBottom: 16,
+          }}>{name_shown()}</Text>
+        
+        <Button 
+        style={{
+            align: 'right',
+          }}
+        //icon="arrow-right"
+        mode="contained"
+        onPress={() => navigation.navigate('ActivitiesStack')}>
+            Click here for detail
+        </Button>
       </View>
     </SafeAreaView>
   )

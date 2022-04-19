@@ -25,4 +25,18 @@ const Agreement = ({ route, navigation }) => {
 };
 
 export default Agreement;
-const content = "This is Unpacking Happiness, developed by UST CSE 2021-2022 FYP Group MXJ3. By using this app, you agree with our Privacy Policies. This app is based on a chatbot that is not real-time monitored, so it is NOT intended for replacement of any therapy and NOT FOR HANDLING IMMEDIATE CRISES. Please seek help immediately from proper channels if you are encountering an immediate crisis."
+const content = `This is Unpacking Happiness, developed by UST CSE 2021-2022 FYP Group MXJ3. 
+By using this app, you agree with our Privacy Policies. The content of the Privacy Policies is available in the Settings page. 
+This app is based on a chatbot that is not real-time monitored.
+It is NOT intended for replacement of any therapy and NOT FOR HANDLING IMMEDIATE CRISES. 
+Please seek help immediately from proper channels if you are encountering an immediate crisis.
+Some 24-hour helping hotlines available in Hong Kong:
+
+The Samaritans 撒瑪利亞會 (Multi-Lingual)
+(852) 2896 0000
+
+Justone Mental Health Linking Project《即時通》精神健康守護同行計劃 
+(852) 3512 2626
+
+List of helplines globally is available at:
+https://en.wikipedia.org/wiki/List_of_suicide_crisis_lines`

@@ -49,9 +49,20 @@ const AboutScreen = ({ navigation }) => {
               marginRight:5,
               textAlign: 'left',
               marginBottom: 16
-            }}>Here's is some resources that may be useful...</Subheading>
+            }}>{helplines}</Subheading>
         </SafeAreaView>
     )
 }
 
 export default AboutScreen;
+
+const helplines = `Some 24-hour helping hotlines available in Hong Kong:
+
+The Samaritans 撒瑪利亞會 (Multi-Lingual)
+(852) 2896 0000
+
+Justone Mental Health Linking Project《即時通》精神健康守護同行計劃 
+(852) 3512 2626
+
+List of helplines globally is available at:
+https://en.wikipedia.org/wiki/List_of_suicide_crisis_lines`

@@ -1,19 +1,19 @@
-// React Native Bottom Navigation
-// https://aboutreact.com/react-native-bottom-navigation/
-
 import React, { useEffect, useContext, useState } from 'react';
 import { View, Text, BackHandler } from 'react-native';
 import { Avatar, Caption } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Constants from "expo-constants";
-import {Auth} from "./App"
+import {Info} from "./App"
 
 const ProfileScreen = ({ navigation }) => {
   const [full, setFull] = useState(null);
   const [survey, setSurvey] = useState(null);
-  const context = useContext(Auth);
+  const { token, name, detail } = useContext(Info);
+  const [stateToken, setStateToken] = token;
+  const [stateName, setStateName] = name;
+  const [stateDetail, setStateDetail] = detail;
   const { manifest } = Constants;
-  const uri_view_profile = `http://${manifest.debuggerHost.split(':').shift()}:5000/show-profile`;
+  const uri_view_profile = `https://f467-210-6-181-56.ap.ngrok.io/show-profile`;
   useEffect(() => {
     const backAction = () => {
       /*Alert.alert("Hold on!", "Are you sure you want to go back?", [
@@ -37,7 +37,7 @@ const ProfileScreen = ({ navigation }) => {
         const response = await fetch(uri_view_profile, {
           method: 'GET',
           headers: {
-            'rasa-access-token': context.token
+            'rasa-access-token': stateToken
           }
         });
         const json = await response.json();
