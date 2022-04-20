@@ -51,7 +51,7 @@ def test__predict_scores(user:dataclass.User,create_user):
     assert all(x not in predicted_preferences_names for x in existing_preferences_names)
 
 def test_recommend_multimedia(user:dataclass.User, existing_multimedia):
-    (content,pred_preferences)=recommender.Recommender.recommend_multimedia(user)
+    (content,pred_preferences)=recommender.Recommender.recommend_multimedia(user,save_user=False)
     assert len(user.pred_preferences) >= len(user.preferences)
     assert content in existing_multimedia
 

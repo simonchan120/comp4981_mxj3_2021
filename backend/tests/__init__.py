@@ -27,6 +27,7 @@ def base_create_user():
             else:
                 break
         user = dataclass.User(username=name)
+        user.init_new_user(save_documents=False)
         return user
     return _make_user
 @pytest.fixture(scope="session")
