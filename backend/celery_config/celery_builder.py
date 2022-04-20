@@ -39,7 +39,7 @@ def save_copy_users_emotion_profile():
     counter = 0
     for user in users:
         if not user.previous_emotion_profile_lists:
-            user.previous_emotion_profile_lists.append(dataclass.EmotionProfileList())
+            user.add_new_emotion_profile_list()
         if user.check_if_should_be_saved():
             user.previous_emotion_profile_lists[0].profile_list.append(user.get_emotion_profile_copy())
             user.save()

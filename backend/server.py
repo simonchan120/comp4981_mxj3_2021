@@ -75,7 +75,7 @@ def token_required(f):
             return Response(json.dumps({'message':'Error processing jwt token'},400, mimetype='application/json'))
         user = User.objects(username=data['username'])\
             .first()
-            
+        
         if user is None:
             return Response(json.dumps({
                 'message': 'Token is invalid !!'
@@ -169,8 +169,8 @@ def signup():
             )
 
             _sendVerificationEmail.delay(email, f"Verification code for registration: {otp}")
-            user.save()
-            user.create_new_conversation()
+            user.init_new_user()
+            logger.debug(f"Creating user: {user.username}, conversation_list len: {len(user.conversations)}")
             
             return Response(json.dumps({"message": 'Successfully registered. Please verify your email.'}), 201, mimetype='application/json')
         else:
@@ -240,7 +240,7 @@ def send_message(user, token_body):
     user_message= content.get('message')
     response_obj, status = rasa_client.send_message(user,
         str(user_message))
-    current_conversation =  uuid=user.latest_conversation
+    current_conversation =  user.latest_conversation
     bot_reply = response_obj[0]['text']
     response_obj[0]['type']='text'
 
@@ -307,7 +307,8 @@ def add_preference_to_user(user, token_body):
 
 @main_bp.route("/new-chat-session", methods=['POST'])
 @token_required
-def new_chat_session(user, token_body):
+def new_chat_session(user: User, token_body):
+    current_app.logger.debug(f'len of conversations: {len(user.conversations)} for user: {user.username}')
     if user.conversations.__len__()==0:
         user.create_new_conversation()
         current_app.logger.warn(f"User: {user.username} does not have an existing conversation, creating a new one")
@@ -403,7 +404,7 @@ def reset_pw():
     
 @main_bp.route("/add-survey-results",methods=['POST'])
 @token_required
-def add_survey_results(user,token_body):
+def add_survey_results(user: User,token_body):
     data=request.form
     d1,d2,d3,d4,d5,d6,d7,d8,d9=data.get('field_1'),data.get('field_2'),data.get('field_3'),data.get('field_4'),data.get('field_5'),data.get('field_6'),data.get('field_7'),data.get('field_8'),data.get('field_9')
     if not d1 or not d2 or not d3 or not d4 or not d5 or not d6 or not d7 or not d8 or not d9:
@@ -413,11 +414,12 @@ def add_survey_results(user,token_body):
     except ValueError:
     #if not d1.isnumeric() or not d2.isnumeric() or not d3.isnumeric() or not d4.isnumeric() or not d5.isnumeric() or not d6.isnumeric() or not d7.isnumeric()or not d8.isnumeric()or not d9.isnumeric():
         return Response(json.dumps({"message": "invalid survey values, expected integers"}),status=404, mimetype='application/json')
+    #survey = Survey(survey_entry_1=d1,survey_entry_2=d2,survey_entry_3=d3,survey_entry_4=d4,survey_entry_5=d5,survey_entry_6=d6,survey_entry_7=d7,survey_entry_8=d8,survey_entry_9=d9)
+    
     survey = Survey.create_survey(d1,d2,d3,d4,d5,d6,d7,d8,d9)
     if not survey:
         return Response(json.dumps({f"message": "invalid survey values"}),status=404, mimetype='application/json')
-    user.surveys.append(survey)
-    user.previous_emotion_profile_lists.append(EmotionProfileList())
+    user.add_new_survey(survey)
     user.save()
 
     return Response(json.dumps({"message": "Survey result saved", "result": survey.result}),status=200,mimetype='application/json')
@@ -432,7 +434,7 @@ def check_do_survey(user:User,token_body):
     change_interval = current_app.config['SURVEY_INTERVAL_CHANGE']
     threshold = base_interval
 
-    MAX_SUM_OF_EMOTION_SCORE_DIFFERENCE = 2
+    MAX_SUM_OF_EMOTION_SCORE_DIFFERENCE = 100
     
     result_change = False
     if user.previous_emotion_profile_lists and user.previous_emotion_profile_lists[0].profile_list:
@@ -448,7 +450,7 @@ def check_do_survey(user:User,token_body):
 
 @main_bp.route("/check-send-push-notification",methods=['GET'])
 @token_required
-def check_send_push_notification(user,token_body):
+def check_send_push_notification(user: User,token_body):
     current_conversation=user.latest_conversation
     latest_message_time =  current_conversation.content[0].time_sent if len(list(current_conversation.content)) >= 1 else datetime(year = 1971,month=1,day=1)
     seconds_since_last_message = (datetime.now()-latest_message_time).total_seconds()

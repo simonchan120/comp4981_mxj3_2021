@@ -1,4 +1,5 @@
 from __future__ import annotations
+from collections import Counter
 import uuid
 from mongoengine import *
 from mongoengine.fields import BooleanField, EmbeddedDocumentField, EnumField, IntField, ListField, ReferenceField, SortedListField
@@ -56,13 +57,13 @@ class EmotionTag(EmbeddedDocument):
     tag= StringField(required=True)
     score = FloatField(default=0.5)
 class EmotionTagGroup(EmbeddedDocument):
-    tags = SortedListField(EmbeddedDocumentField(EmotionTag),ordering="score",reverse = True)
+    tags: List[EmotionTag] = SortedListField(EmbeddedDocumentField(EmotionTag),ordering="score",reverse = True)
     time_recorded= DateTimeField(default=datetime.utcnow)
 class EmotionProfile(EmbeddedDocument):
     time_recorded = DateTimeField(default=datetime.utcnow)
     full_score = FloatField(required=True)
     chat_score = FloatField(required=True)
-    latest_emotions = EmbeddedDocumentField(EmotionTagGroup)
+    latest_emotions: EmotionTagGroup = EmbeddedDocumentField(EmotionTagGroup)
     def check_if_equal(emotion_profile_1:EmotionProfile,emotion_profile_2:EmotionProfile):
         DELTA=0.0001
         is_full_score_equal = abs(emotion_profile_1.full_score-emotion_profile_2.full_score) < DELTA
@@ -70,7 +71,7 @@ class EmotionProfile(EmbeddedDocument):
         return is_full_score_equal and is_chat_score_equal
 class EmotionProfileList(EmbeddedDocument):
     time_started = DateTimeField(default=datetime.utcnow)
-    profile_list = SortedListField(EmbeddedDocumentField(EmotionProfile),ordering="time_recorded",reverse = True)
+    profile_list: List[EmotionProfile] = SortedListField(EmbeddedDocumentField(EmotionProfile),ordering="time_recorded",reverse = True)
 class User(Document):
     email = StringField()
     username = StringField(max_length=50,unique=True,required=True)
@@ -85,7 +86,7 @@ class User(Document):
     is_student = BooleanField()
     is_ust = BooleanField()
     utc_in_hours=FloatField(default=0.0)
-    previous_emotion_profile_lists = SortedListField(EmbeddedDocumentField(EmotionProfileList),ordering="time_started",reverse = True)
+    previous_emotion_profile_lists: List[EmotionProfileList] = SortedListField(EmbeddedDocumentField(EmotionProfileList),ordering="time_started",reverse = True)
     latest_emotion_profile :EmotionProfile = EmbeddedDocumentField(EmotionProfile,default=lambda: EmotionProfile(full_score=0.5,chat_score=0.5)) 
     surveys = SortedListField(EmbeddedDocumentField(Survey),ordering="time_submitted",reverse = True)
     preferences = SortedListField(EmbeddedDocumentField(Preference),ordering="score",reverse = True)
@@ -101,19 +102,42 @@ class User(Document):
         return emotion_profile
 
     def get_most_confident_emotion(self):
-        emotion_tag = self.latest_emotion_profile.latest_emotions
-        return emotion_tag.tags[0].tag
+        PREVIOUS_HISTORY_LENGTH = 10
+        current_emotion_list = self.previous_emotion_profile_lists[0].profile_list
+        if len(current_emotion_list) <= PREVIOUS_HISTORY_LENGTH:
+
+
+
+            emotion_tag = self.latest_emotion_profile.latest_emotions
+            return emotion_tag.tags[0].tag
+        else:
+            extracted_tags = map(lambda profile: profile.latest_emotions.tags[0].tag ,current_emotion_list[0:PREVIOUS_HISTORY_LENGTH])
+            data=  Counter(extracted_tags)
+            return max(data, key = data.get)
     def check_if_should_be_saved(self):
         if not self.previous_emotion_profile_lists or not self.previous_emotion_profile_lists[0].profile_list:
             return True
         last_saved_profile = self.previous_emotion_profile_lists[0].profile_list[0]
         return not EmotionProfile.check_if_equal(last_saved_profile,self.latest_emotion_profile)
     def create_new_conversation(self, save_documents= True):
+        if save_documents:
+            self.save()
         new_conversation = Conversation(user=self)
         self.latest_conversation = new_conversation
         self.conversations.append(new_conversation)
         if save_documents:
             new_conversation.save()
+            self.save()
+        return self
+    def add_new_emotion_profile_list(self):
+        self.previous_emotion_profile_lists.append(EmotionProfileList())
+    def add_new_survey(self,survey):
+        self.surveys.append(survey)
+        self.add_new_emotion_profile_list()
+    def init_new_user(self,save_documents=True):
+        self.create_new_conversation(save_documents=save_documents)
+        self.add_new_emotion_profile_list()
+        if save_documents:
             self.save()
         return self
 class Conversation(Document):

@@ -8,6 +8,9 @@ services:
       - FLASK_ENV=development
     volumes:
       - ./backend:/backend
+    deploy:
+      restart_policy:
+        condition: on-failure
   rabbit:
     hostname: rabbit
     image: rabbitmq:3.9

@@ -19,7 +19,7 @@ class GiphyUtil():
     def _fetch_giphy(self,query):
         LINK='http://api.giphy.com/v1/gifs/search'
         logger.debug(f'Trying giphy query: {query}')
-        r = requests.get(LINK,params={'api_key':self._api_key,'q':query})
+        r = requests.get(LINK,params={'api_key':self._api_key,'q':query,'rating':'pg-13'})
         logger.debug(f'response result: {r.status_code}')
         try:
             res = r.json()
