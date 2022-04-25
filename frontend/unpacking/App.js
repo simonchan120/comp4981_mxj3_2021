@@ -1,4 +1,3 @@
-import { StatusBar } from "expo-status-bar";
 import React, { useState, useEffect, useContext, useRef} from "react";
 import {
   StyleSheet,
@@ -21,7 +20,6 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import { Button as Button_Paper, TextInput as TextInput_Paper, Snackbar} from 'react-native-paper' ;
 
-import HomeScreen from './HomeScreen';
 import ChatScreen from './ChatScreen';
 import ProfileScreen from './ProfileScreen';
 import ActivitiesScreen from "./ActivitiesScreen";

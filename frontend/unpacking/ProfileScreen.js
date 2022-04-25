@@ -84,8 +84,8 @@ const ProfileScreen = ({ navigation }) => {
             }}>
             Your Profile
           </Text>
-          <Caption>Your full emotion score: {full}</Caption>
-          <Caption>Your most recent survey score: {survey}</Caption>
+          <Caption>Your full emotion score: {parseFloat(full).toFixed(4) + " - Okay"}</Caption>
+          <Caption>Your most recent survey score: {parseFloat(survey).toFixed(4) + " - Good"}</Caption>
           <Caption>We value your right to know what we are storing.</Caption>
           <Caption>View all the stored data of your profile</Caption>
           <Caption 
