@@ -1,13 +1,36 @@
 import React, { useEffect } from 'react';
-import { Headline } from 'react-native-paper';
+import { Headline, Checkbox, Button, Snackbar } from 'react-native-paper';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { StyleSheet, BackHandler, Text, ScrollView } from 'react-native';
+import { StyleSheet, BackHandler, View, TouchableOpacity, Text, ScrollView } from 'react-native';
+import { Restart } from 'fiction-expo-restart';
 
-const PrivacyScreen = ({ navigation }) => {
+const NewUserPrivacy = ({ navigation }) => {
+    const [checked, setChecked] = React.useState(false);
+    const [error_visible, setErrorVisible] = React.useState(false);
+    const onDismissErrorSnackBar = () => setErrorVisible(false);
+    function CheckBox({ label, status, onPress }) {
+        return (
+          <TouchableOpacity onPress={onPress}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <Checkbox status={status} />
+              <Text style={styles.content_bold}>{label}</Text>
+            </View>
+          </TouchableOpacity>
+        );
+    }
+    
+    function checkAgree() {
+        if(checked) {
+            navigation.navigate('EnterData');
+        } else {
+            setErrorVisible(true)
+        }
+    }
+
     useEffect(() => {
         const backAction = () => {
-          navigation.navigate('Settings');
-          return true;
+            Restart();
+            return true;
         };
     
         const backHandler = BackHandler.addEventListener(
@@ -16,50 +39,69 @@ const PrivacyScreen = ({ navigation }) => {
         );
     
         return () => backHandler.remove();
-      }, []);
+    }, []);
     return (
         <SafeAreaView style={{ flex:1 }}>
-            <ScrollView>
+            <View style={styles.container}>
+              <ScrollView>
                 <Headline
-                    style={{
-                    fontSize: 25,
-                    textAlign: 'center',
-                    marginBottom: 16
+                  style={{
+                  fontSize: 25,
+                  textAlign: 'center',
+                  marginBottom: 16
                 }}>Privacy Policy</Headline>
                 <Text
-                    style={styles.content_bold}>{intro}</Text>
+                  style={styles.content_bold}>{intro}</Text>
                 <Text
-                    style={styles.title}>{title_1}</Text>
+                  style={styles.title}>{title_1}</Text>
                 <Text
-                    style={styles.content}>{content_1}</Text>
+                  style={styles.content}>{content_1}</Text>
                 <Text
-                    style={styles.content_bold}>{content_1_1}</Text>
+                  style={styles.content_bold}>{content_1_1}</Text>
                 <Text
-                    style={styles.title}>{title_2}</Text>
+                  style={styles.title}>{title_2}</Text>
                 <Text
-                    style={styles.content}>{content_2}</Text>
+                  style={styles.content}>{content_2}</Text>
                 <Text
-                    style={styles.title}>{title_3}</Text>
+                  style={styles.title}>{title_3}</Text>
                 <Text
-                    style={styles.content}>{content_3}</Text>
+                  style={styles.content}>{content_3}</Text>
                 <Text
-                    style={styles.title}>{title_4}</Text>
+                  style={styles.title}>{title_4}</Text>
                 <Text
-                    style={styles.content}>{content_4}</Text>
+                  style={styles.content}>{content_4}</Text>
                 <Text
-                    style={styles.title}>{title_5}</Text>
+                  style={styles.title}>{title_5}</Text>
                 <Text
-                    style={styles.content}>{content_5}</Text>
+                  style={styles.content}>{content_5}</Text>
                 <Text
-                    style={styles.title}>{title_6}</Text>
+                  style={styles.title}>{title_6}</Text>
                 <Text
-                    style={styles.content}>{content_6}</Text>
-            </ScrollView>
+                  style={styles.content}>{content_6}</Text>
+                <CheckBox
+                  status={checked ? 'checked' : 'unchecked'}
+                  onPress={() => {
+                      setChecked(!checked);
+                  }}
+                  label='I understand and agree the above Privacy Policy.'
+                />
+                <Button mode="contained" onPress={() => {
+                  checkAgree();
+                }}>Submit</Button>
+              </ScrollView>
+              <Snackbar
+                  visible={error_visible}
+                  onDismiss={onDismissErrorSnackBar}
+                  duration={2000}
+              >
+                You need to agree with this Privacy Policy to use Unpacking Happines.
+              </Snackbar>
+            </View>
         </SafeAreaView>
     )
 }
 
-export default PrivacyScreen;
+export default NewUserPrivacy;
 
 const styles = StyleSheet.create({
     title: {

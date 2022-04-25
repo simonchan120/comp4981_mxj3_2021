@@ -11,6 +11,7 @@ import Constants from "expo-constants";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Restart } from 'fiction-expo-restart';
+import NewUserPrivacy from './NewUserPrivacy';
 
 const Stack = createStackNavigator();
 
@@ -18,6 +19,10 @@ const NewUser = () => {
     return (
       <NavigationContainer independent={true}>
         <Stack.Navigator initialRouteName="EnterEmail" screenOptions={{headerShown: false}}>
+        <Stack.Screen
+            name="NewPrivacy"
+            component={NewUserPrivacy}
+          />
           <Stack.Screen
             name="EnterData"
             component={EnterData}

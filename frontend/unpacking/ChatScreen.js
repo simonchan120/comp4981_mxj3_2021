@@ -392,7 +392,16 @@ const ChatScreen = ({ navigation }) => {
     },
     {
       _id: 'q_done',
-      text: 'That\'s all for the survey. Thank you~ You can see the resulting score of the survey at the Profile page in Settings. Now that as I understand you more, feel free to say if there\'s that you want me to know :)',
+      text: 'That\'s all for the survey. Thank you~ You can see the resulting score of the survey at the Profile page in Settings.',
+      createdAt: new Date(),
+      user: {
+        _id: 2,
+        name: 'Unpacker',
+      },
+    },
+    {
+      _id: 'q_next',
+      text: 'It\'s your turn - Feel free to say if there\'s things that you want me to know :)',
       createdAt: new Date(),
       user: {
         _id: 2,
@@ -401,13 +410,13 @@ const ChatScreen = ({ navigation }) => {
     }
   ]
   var actvities_list = [];
-  actvities_list['anger'] = {'video':'F9l61cXa6Gg', 'text':'Here\'s a short video that may help'};
-  actvities_list['disgust'] = {'video':'F9l61cXa6Gg', 'text':'Here\'s a short video that may help'};
-  actvities_list['fear'] = {'video':'F9l61cXa6Gg', 'text':'Here\'s a short video that may help'};
-  actvities_list['joy'] = {'video':'F9l61cXa6Gg', 'text':'Here\'s a short video that may help'};
-  actvities_list['neutral'] = {'video':'F9l61cXa6Gg', 'text':'Here\'s a short video that may help'};
-  actvities_list['sadness'] = {'video':'F9l61cXa6Gg', 'text':'Here\'s a short video that may help'};
-  actvities_list['surprise'] = {'video':'F9l61cXa6Gg', 'text':'Here\'s a short video that may help'};
+  actvities_list['anger'] = {'video':'BsVq5R_F6RA', 'text':'Here\'s a short video that may help!'};
+  actvities_list['disgust'] = {'video':'F9l61cXa6Gg', 'text':'Here\'s a short video that may help!'};
+  actvities_list['fear'] = {'video':'F9l61cXa6Gg', 'text':'Here\'s a short video that may help!'};
+  actvities_list['joy'] = {'video':'3AlorVZcJgo', 'text':'Here\'s a short video that may help!'};
+  actvities_list['neutral'] = {'video':'F9l61cXa6Gg', 'text':'Here\'s a short video that may help!'};
+  actvities_list['sadness'] = {'video':'F9l61cXa6Gg', 'text':'Here\'s a short video that may help!'};
+  actvities_list['surprise'] = {'video':'F9l61cXa6Gg', 'text':'Here\'s a short video that may help!'};
 
   const { token, name, detail } = useContext(Info);
   const [stateToken, setStateToken] = token;
