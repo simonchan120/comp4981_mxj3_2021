@@ -49,7 +49,7 @@ const EnterEmail = ({navigation}) => {
     const { manifest } = Constants;
   
   
-    const uri = `https://f467-210-6-181-56.ap.ngrok.io/signup/forget-password`;
+    const uri = `https://7143-210-6-181-56.ap.ngrok.io/signup/forget-password`;
     const resetRequest = async () => {
       let formData = new FormData();
       formData.append('email', email);
@@ -151,7 +151,7 @@ const ResetPassword = ({route, navigation}) => {
   
 
 
-    const uri = `https://f467-210-6-181-56.ap.ngrok.io/signup/reset-password`;
+    const uri = `https://7143-210-6-181-56.ap.ngrok.io/signup/reset-password`;
     const resetRequest = async () => {
       var json_result;
       let formData = new FormData();

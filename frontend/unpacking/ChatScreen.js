@@ -426,7 +426,7 @@ const ChatScreen = ({ navigation }) => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const { manifest } = Constants;
-  const uri_message = `https://f467-210-6-181-56.ap.ngrok.io/`;
+  const uri_message = `https://7143-210-6-181-56.ap.ngrok.io/`;
   var send_text, replied_content = [], replied_type = [];
   const getReplies = async () => {
     replied_content = [];
@@ -517,7 +517,7 @@ const ChatScreen = ({ navigation }) => {
   /* End */
 
   /*For starting each chat session*/
-  const uri_view_profile = `https://f467-210-6-181-56.ap.ngrok.io/check-do-survey`;
+  const uri_view_profile = `https://7143-210-6-181-56.ap.ngrok.io/check-do-survey`;
   useEffect(() => {
     async function checkSurveyStatus() {
       try {
@@ -579,7 +579,7 @@ const ChatScreen = ({ navigation }) => {
   const QUESTION_NUMBER = 9;
   var num_survey_answered = 0;
   var survey_result = [];
-  const uri_submit_survey = `https://f467-210-6-181-56.ap.ngrok.io/add-survey-results`;
+  const uri_submit_survey = `https://7143-210-6-181-56.ap.ngrok.io/add-survey-results`;
   const onQuickReply = useCallback(async (quickReply) => { 
     let message = quickReply[0].title;
     let msg = {

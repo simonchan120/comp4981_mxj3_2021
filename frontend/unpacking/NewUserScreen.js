@@ -57,7 +57,7 @@ const EnterData = ({navigation}) => {
     const { manifest } = Constants;
   
   
-    const uri = `https://f467-210-6-181-56.ap.ngrok.io/signup`;
+    const uri = `https://7143-210-6-181-56.ap.ngrok.io/signup`;
     const regRequest = async () => {
       let formData = new FormData();
       formData.append('username', usr);
@@ -190,7 +190,7 @@ const VerifyPage = ({route, navigation}) => {
   
 
 
-    const uri = `https://f467-210-6-181-56.ap.ngrok.io/signup/verification`;
+    const uri = `https://7143-210-6-181-56.ap.ngrok.io/signup/verification`;
     const regRequest = async () => {
       var json_result;
       let formData = new FormData();

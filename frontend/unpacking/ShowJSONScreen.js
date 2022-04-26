@@ -11,7 +11,7 @@ export default ShowJSONScreen = ({ navigation }) => {
     const [stateName, setStateName] = name;
     const [stateDetail, setStateDetail] = detail;
     const { manifest } = Constants;
-    const uri_view_profile = `https://f467-210-6-181-56.ap.ngrok.io/show-profile`;
+    const uri_view_profile = `https://7143-210-6-181-56.ap.ngrok.io/show-profile`;
     useEffect(() => {
       const backAction = () => {
         navigation.navigate('Profile');

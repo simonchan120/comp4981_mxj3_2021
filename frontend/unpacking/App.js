@@ -155,7 +155,7 @@ export function Start() {
   const [stateDetail, setStateDetail] = detail;
   
   const { manifest } = Constants;
-  const uri_view_push = `https://f467-210-6-181-56.ap.ngrok.io/check-send-push-notification`;
+  const uri_view_push = `https://7143-210-6-181-56.ap.ngrok.io/check-send-push-notification`;
   useEffect(() => {
     // notification
     registerForPushNotificationsAsync().then((token) =>
@@ -289,7 +289,7 @@ export function Login() {
   const { manifest } = Constants;
 
 
-  const uri = `https://f467-210-6-181-56.ap.ngrok.io/login`;
+  const uri = `https://7143-210-6-181-56.ap.ngrok.io/login`;
   const loginAuth = async () => {
     let json_result;
     let formData = new FormData();

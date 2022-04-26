@@ -14,7 +14,7 @@ const DeletePopUp = ({ route, navigation }) => {
   const [stateName, setStateName] = name;
   const [stateDetail, setStateDetail] = detail;
   const { manifest } = Constants;
-  const uri_delete = `https://f467-210-6-181-56.ap.ngrok.io/delete-profile`;
+  const uri_delete = `https://7143-210-6-181-56.ap.ngrok.io/delete-profile`;
   async function deleteProfile() {
     
     try {
