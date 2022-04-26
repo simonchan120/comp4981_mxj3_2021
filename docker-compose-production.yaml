@@ -1,9 +1,19 @@
 version: "3.9"
 services:
   web:
-    build: .
+    build: ./backend
     ports:
       - "5000:8000"
+    # environment:
+    #   - FLASK_ENV=development
+    #   - MONGO_CONNECTION_STRING={MONGO_CONNECTION_STRING}
+    # volumes:
+    #   - ./backend:/backend
+    #command: ["gunicorn","--workers=3","-b","0.0.0.0:8000","backend:app"]
+    command: ["flask","run","--host=0.0.0.0","--port=8000"]
+    deploy:
+      restart_policy:
+        condition: on-failure
   rabbit:
     hostname: rabbit
     image: rabbitmq:3.9
@@ -14,23 +24,27 @@ services:
       - "5672:5672"
       - "15672:15672"
   worker_1:
-    build: .
+    build: ./backend
     hostname: worker_1
     command: sh -c "celery -A backend.celery_config.celery_app worker --loglevel=info"
     deploy:
       restart_policy:
         condition: on-failure
+    environment:
+      - FLASK_ENV=development
     links:
       - rabbit
     depends_on:
       - rabbit
-  worker_2:
-    build: .
-    hostname: worker_2
-    command: sh -c "celery -A backend.celery_config.celery_app worker --loglevel=info"
+  celery_beat:
+    build: ./backend
+    hostname: celery_beat
+    command: sh -c "celery -A backend.celery_config.celery_app beat --loglevel=info"
     deploy:
       restart_policy:
         condition: on-failure
+    environment:
+      - FLASK_ENV=development
     links:
       - rabbit
     depends_on:
@@ -39,4 +53,7 @@ services:
     build: ./backend/rasa
     ports:
       - 5005:5005
-    command: run -p 5005 --enable-api 
+    deploy:
+      restart_policy:
+        condition: on-failure
+    #command: run -p 5005 --enable-api 

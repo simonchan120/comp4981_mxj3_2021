@@ -3,10 +3,20 @@ import pandas
 import os
 import oyaml as yaml
 from bs4 import BeautifulSoup
+import nltk
+from nltk.tag import StanfordPOSTagger
+import sys
+import os
+dir_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.join(dir_path,'..'))
+from word_processing_tools import process_string_name,sanitize_unicode
+
 FILE_NAME_CSV=os.path.join(os.path.dirname(__file__),'Mental_Health_FAQ.csv')
 FILE_NAME_DATAFILE= os.path.join(os.path.dirname(__file__),'datafile_mental_health_faq.yaml')
-def sanitize_unicode(input_string):
-    return input_string.replace(u"\u2019","'").replace('\n','')
+
+def preprocess_data(text):
+    #return process_string_name(sanitize_unicode(text))
+    return sanitize_unicode(text)
 def process_data():
     with open(FILE_NAME_DATAFILE, 'w', encoding='utf-8') as yamlfile:
         df1 = pandas.read_csv(FILE_NAME_CSV)
@@ -16,7 +26,7 @@ def process_data():
             if row['Questions'].__len__() >= MAX_CONTENT_LENGTH or row['Answers'].__len__()>= MAX_CONTENT_LENGTH:
                 continue
                
-            steps=[{'user': sanitize_unicode(row['Questions'])},{'bot': sanitize_unicode(row['Answers'])}] 
+            steps=[{'user': preprocess_data(row['Questions'])},{'bot': preprocess_data(row['Answers'])}] 
             data_obj['stories'].append({'story': row['Question_ID'], 'steps':steps})
             
             pass

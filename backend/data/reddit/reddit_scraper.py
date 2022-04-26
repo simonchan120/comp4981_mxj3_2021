@@ -3,6 +3,11 @@ import pandas
 import os
 import oyaml as yaml
 from bs4 import BeautifulSoup
+import sys
+import os
+dir_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.join(dir_path,'..'))
+from word_processing_tools import process_string_name,sanitize_unicode
 
 reddit = praw.Reddit(
     client_id = '2faOhLfXc89V5LJV8rDhBg',
@@ -12,8 +17,8 @@ reddit = praw.Reddit(
 
 FILE_NAME_SCRAPED=os.path.join(os.path.dirname(__file__),'reddit_threapy.xlsx')
 FILE_NAME_DATAFILE = os.path.join(os.path.dirname(__file__),'datafile_reddit.yaml')
-def sanitize_unicode(input_string):
-    return input_string.replace(u"\u2019","'").replace('\n','')
+def process_string(input_string):
+    return process_string_name(sanitize_unicode(input_string))
 def scrape_data():
     print(reddit.read_only)
     datas=[]
@@ -49,8 +54,8 @@ def process_data():
             if row['submission_body'].__len__() >= MAX_CONTENT_LENGTH or row['top_comment'].__len__()>= MAX_CONTENT_LENGTH:
                 continue
                
-            steps=[{'user': sanitize_unicode(row['submission_body'])},{'bot': sanitize_unicode(row['top_comment'])}] 
-            data_obj['stories'].append({'story': sanitize_unicode(row['title']), 'steps':steps})
+            steps=[{'user': process_string(row['submission_body'])},{'bot': process_string(row['top_comment'])}] 
+            data_obj['stories'].append({'story': process_string(row['title']), 'steps':steps})
             pass
         yaml.dump(data_obj,yamlfile,allow_unicode=True)
 if __name__== '__main__':

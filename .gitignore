@@ -9,3 +9,4 @@ backend/rasa/.rasa/cache
 .keras
 whiteground
 *.log*
+.env

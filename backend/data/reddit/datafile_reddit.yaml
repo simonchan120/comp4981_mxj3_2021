@@ -603,7 +603,7 @@ stories:
   - bot: 'Just signed up.What a lovely idea. Thank you for sharing. I''m excited.Update:
       I got my match today! I was getting some serious cabin fever this weekend and
       it was such a day brightener to have this in my inbox.'
-- story: Hat Trick
+- story: you you
   steps:
   - user: Good grief. After today's zoom appointment had technical difficulties and
       was carried out via phone, I now know I can cry using all mediums; face-to-face,
@@ -625,11 +625,11 @@ stories:
       can be like a baseball bat and trauma can be like sandpaper.'
 - story: I am proud of myself
   steps:
-  - user: Today I started the conversation with my therapist on something Ive been
-      keeping secret for so so long. It was the hardest thing Ive ever had to say,
+  - user: Today I started the conversation with my therapist on something you been
+      keeping secret for so so long. It was the hardest thing you ever had to say,
       but I did it. No idea what Im gonna do next session, but we will figure that
       out next week. For now, Im just proud of myself.
-  - bot: I'm proud for you! You go Glen Coco!
+  - bot: I'm proud for you! You go you you!
 - story: When do you know you should see a therapist?
   steps:
   - user: Does it show up on your day-to-day life or mentally/physically? I feel like
@@ -788,8 +788,8 @@ stories:
 - story: Amid the Covid-19 crisis
   steps:
   - user: I'm a psychotherapist who recently started posting therapeutic memes on
-      my IG @jourdantraverslcsw to help us get through the Corona Crisis.If you're
-      in the mood for feel good posts and some laughter, feel free to check-it-out!
-      Wishing everyone the best amid the chaos.In solidarity ✊🏻
+      my IG @jourdantraverslcsw to help us get through the you you you're in the mood
+      for feel good posts and some laughter, feel free to check-it-out! Wishing everyone
+      the best amid the chaos.In solidarity ✊🏻
   - bot: I really like this but I'm not on Instagram, are you also posting them on
       any Reddit communities by chance?
