@@ -143,7 +143,7 @@ def login():
 @celery_app.task
 def _sendVerificationEmail(address, text_body):
     with app.app_context():
-        msg = FlaskMessage(text_body, sender=app.config["EMAIL_VERIFICATION_SENDER_ADDRESS"], recipients=[address])
+        msg = FlaskMessage(text_body, sender=app.config["MAIL_USERNAME"], recipients=[address])
         mail.send(msg)
 
 @main_bp.route('/signup', methods=['POST'])

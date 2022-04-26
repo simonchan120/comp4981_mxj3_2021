@@ -10,3 +10,4 @@ backend/rasa/.rasa/cache
 whiteground
 *.log*
 frontend/unpacking/.expo/packager-info.json
+.env

@@ -1,11 +1,11 @@
 from .. import tests
 import pytest
-from backend import giphyUtil
+from backend import giphyUtil,GIPHY_TAGS
 @pytest.fixture(autouse=True)
 def giphy_util(request):
     return giphyUtil.GiphyUtil(tests.GIPHY_API_KEY)
 
-valid_giphy_test_tags=tests.valid_giphy_test_tags
+valid_giphy_test_tags=GIPHY_TAGS
 assert len(valid_giphy_test_tags) >=1
 @pytest.mark.parametrize('query',valid_giphy_test_tags)
 def test__fetch_giphy(giphy_util: giphyUtil.GiphyUtil,query: str):

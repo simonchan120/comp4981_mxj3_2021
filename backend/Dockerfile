@@ -19,5 +19,5 @@ COPY ["__init__.py","requirements.txt","rasa.py","recommender.py","server.py","c
 COPY ["celery_config","/backend/celery_config"]
 EXPOSE 8000
 
-#CMD ["gunicorn","--workers=3","-b","0.0.0.0:8000","backend:app"]
-CMD ["flask","run","--host=0.0.0.0","--port=8000"]
+CMD ["gunicorn","--workers=3","-b","0.0.0.0:8000","backend:app"]
+#CMD ["flask","run","--host=0.0.0.0","--port=8000"]
