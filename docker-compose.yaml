@@ -8,10 +8,10 @@ services:
       - '.env'
     environment:
       - FLASK_ENV=development
-    volumes:
-      - ./backend:/backend
-    #command: ["gunicorn","--preload","--workers=3","-b","0.0.0.0:8000","backend:app","--timeout","30"]
-    command: ["flask","run","--host=0.0.0.0","--port=8000"]
+    # volumes:
+    #   - ./backend:/backend
+    command: ["gunicorn","--preload","--workers=3","--threads","2","-b","0.0.0.0:8000","backend:app","--timeout","30"]
+    #command: ["flask","run","--host=0.0.0.0","--port=8000"]
     deploy:
       restart_policy:
         condition: on-failure

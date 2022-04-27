@@ -24,12 +24,3 @@ goemotions = MultiLabelPipeline(
 )
 
 __all__=['goemotions','emotion_tags']
-
-# texts = [
-#     "Hey that's a thought! Maybe we need [NAME] to be the celebrity vaccine endorsement!",
-#     "it’s happened before?! love my hometown of beautiful new ken 😂😂",
-#     "I love you, brother.",
-#     "Troll, bro. They know they're saying stupid shit. The motherfucker does nothing but stink up libertarian subs talking shit",
-# ]
-
-# pprint(goemotions(texts))
