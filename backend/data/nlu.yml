@@ -1,0 +1,36 @@
+version: '3.0'
+nlu:
+- intent: bot_challenge
+  examples:
+  - Are you a bot?
+  - Are you human?
+  - Are you a machine?
+- intent: ask_who_made
+  examples:
+  - Who made you?
+  - Who created you
+- intent: ask_data_privacy
+  examples:
+  - data privacy
+  - are my data private
+  - Is my data secure or not?
+- intent: ask_collect_data
+  examples:
+  - Why are you collecting my data?
+  - Will you sell my data?
+- intent: ask_purpose
+  examples:
+  - Why are you created?
+  - what is the purpose of this bot?
+  - What is your use?
+- intent: ask_delete_data
+  examples:
+  - Can I remove my data?
+  - How do I opt-out from this program?
+  - How to unregister?
+  - Delete my data please
+- intent: user_suicide
+  examples:
+  - data privacy
+  - are my data private
+  - Is my data secure or not?

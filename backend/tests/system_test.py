@@ -60,28 +60,29 @@ class TestGroup:
             return None
 
     @pytest.fixture(scope="function")
-    def password(self,request):
+    def generated_password(self,request):
         value = request.param
         if value is True:
             return TestGroup.password
         elif value is False:
-            return TestGroup.password + 'a'
+            return TestGroup.password + 'abcdefghijk'
         elif value is None:
             return None
-    @pytest.mark.parametrize('username,password,status_code',
+    @pytest.mark.parametrize('username,generated_password,status_code',
     [(True,True,200),(True,True,200),(True,False,401),(False,True,401),(None,None,401),(True,None,401),(None,True,401)]
-    ,ids =['success_first','success_second','wrong_password','wrong_username','missing_both','missing_pass','missing_username'],indirect=['username','password'])
-    def test_new_user_login(self,client,username,password,status_code):
+    ,ids =['success_first','success_second','wrong_password','wrong_username','missing_both','missing_pass','missing_username'],indirect=['username','generated_password'])
+    def test_new_user_login(self,client,username,generated_password,status_code):
         data_package = {}
         if username is not None:
             data_package['username']=username
-        if password is not None:
-            data_package['password']=password
+        if generated_password is not None:
+            data_package['password']=generated_password
         r = client.post(f"{HOSTNAME_FLASK}/login",data=data_package)
+        print(username,generated_password,r.status_code)
         assert r.status_code == status_code
         if r.status_code == 200:
             TestGroup.name = username
-            TestGroup.password= password
+            TestGroup.password= generated_password
             TestGroup.rasa_access_token = r.json()[RASA_ACCESS_TOKEN_HEADER]
             TestGroup.auth = {RASA_ACCESS_TOKEN_HEADER:TestGroup.rasa_access_token}
     

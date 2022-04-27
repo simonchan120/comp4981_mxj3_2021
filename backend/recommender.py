@@ -169,7 +169,10 @@ class Recommender():
             current_user.pred_preferences = []
 
         # add random items if predicted preferences lack members
-        if remaining_items >0:            
+        if remaining_items >0:  
+            logger.debug("testing")    
+            pool_to_select_from=list(map(lambda x:x.content.name,current_user.pred_preferences))
+            logger.debug(f'{[x for x in pool_to_select_from]}')      
             remaining_multimediadata = MultiMediaData.objects(name__not__in=list(map(lambda x:x.content.name,current_user.pred_preferences))).all()
             current_user.pred_preferences += [Preference(content=x,score=-1) for x in sample(list(remaining_multimediadata),k=remaining_items)]
 

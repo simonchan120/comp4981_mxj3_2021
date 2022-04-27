@@ -53,6 +53,8 @@ class MultiMediaData(Document):
 class Preference(EmbeddedDocument):
     content = ReferenceField(MultiMediaData)
     score = FloatField()
+    def __str__(self):
+        return f'Content:{self.content.name}, score:{self.score}'
 class EmotionTag(EmbeddedDocument):
     tag= StringField(required=True)
     score = FloatField(default=0.5)
@@ -82,6 +84,7 @@ class User(Document):
     time_registered = DateTimeField(default=datetime.utcnow)
     gender = StringField()
     age = IntField()
+    salt = StringField()
     year_of_school_or_work = IntField()
     is_student = BooleanField()
     is_ust = BooleanField()
@@ -152,13 +155,15 @@ class Statistic(EmbeddedDocument):
     users_average_chat_score = FloatField()
     time_recorded = DateTimeField(default=datetime.utcnow, required=True)
 class GlobalStatistics(Document):
-    statistics: List[Statistic] = SortedListField(EmbeddedDocumentField(Statistic),ordering="time_recorded",reverse = True)
+    statistics = SortedListField(EmbeddedDocumentField(Statistic),ordering="time_recorded",reverse = True)
     def get_recent_statistic(self):
         if not self.statistics:
             return Statistic(users_average_full_score=0.5,users_average_chat_score=0.5)
         return self.statistics[0]
     @staticmethod
     def calculate_global_statistics(users: List[User]):
+        if not users:
+            return Statistic(users_average_full_score=0.5,users_average_chat_score=0.5)
         stat = Statistic()
         stat.users_average_full_score = statistics.fmean(map(lambda user:user.latest_emotion_profile.full_score,users))
         stat.users_average_chat_score = statistics.fmean(map(lambda user:user.latest_emotion_profile.chat_score,users))
