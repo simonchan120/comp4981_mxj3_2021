@@ -155,7 +155,9 @@ export function Start() {
   const [stateDetail, setStateDetail] = detail;
   
   const { manifest } = Constants;
-  const uri_view_push = `https://f467-210-6-181-56.ap.ngrok.io/check-send-push-notification`;
+  //const uri_view_push = `http://${manifest.debuggerHost.split(':').shift()}:5000/check-send-push-notification`;
+  //const uri_view_push = `https://f467-210-6-181-56.ap.ngrok.io/check-send-push-notification`;
+  const uri_view_push = `https://acba-210-6-181-56.ap.ngrok.io/check-send-push-notification`;
   useEffect(() => {
     // notification
     registerForPushNotificationsAsync().then((token) =>
@@ -288,8 +290,9 @@ export function Login() {
   const [stateDetail, setStateDetail] = detail;
   const { manifest } = Constants;
 
-
-  const uri = `https://f467-210-6-181-56.ap.ngrok.io/login`;
+  //const uri = `http://${manifest.debuggerHost.split(':').shift()}:5000/login`;
+  //const uri = `https://f467-210-6-181-56.ap.ngrok.io/login`;
+  const uri = `https://acba-210-6-181-56.ap.ngrok.io/login`
   const loginAuth = async () => {
     let json_result;
     let formData = new FormData();
