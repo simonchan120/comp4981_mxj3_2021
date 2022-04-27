@@ -1,5 +1,3 @@
-// React Native Bottom Navigation
-// https://aboutreact.com/react-native-bottom-navigation/
 import * as React from 'react';
 import {
   TouchableOpacity,

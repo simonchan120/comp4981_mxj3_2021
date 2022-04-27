@@ -39,7 +39,7 @@ import ShowJSONScreen from "./ShowJSONScreen";
 
 import * as Notifications from "expo-notifications";
 
-
+export const host_name = "https://7143-210-6-181-56.ap.ngrok.io";
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -156,7 +156,7 @@ export function Start() {
   
   const { manifest } = Constants;
 
-  const uri_view_push = `https://7143-210-6-181-56.ap.ngrok.io/check-send-push-notification`;
+  const uri_view_push = host_name + '/check-send-push-notification';
 
   useEffect(() => {
     // notification
@@ -290,7 +290,7 @@ export function Login() {
   const [stateDetail, setStateDetail] = detail;
   const { manifest } = Constants;
 
-  const uri = `https://7143-210-6-181-56.ap.ngrok.io/login`;
+  const uri = host_name + '/login';
 
   const loginAuth = async () => {
     let json_result;

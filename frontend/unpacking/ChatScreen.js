@@ -10,6 +10,7 @@ import CurrentActivitiesScreen from './_CurrentActivities';
 
 import Constants from "expo-constants";
 import {Info} from "./App"
+import { host_name } from './App';
 //import Agreement from './Agreement';
 
 //export const ActivityStatus = React.createContext(null);
@@ -401,7 +402,7 @@ const ChatScreen = ({ navigation }) => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const { manifest } = Constants;
-  const uri_message = `https://7143-210-6-181-56.ap.ngrok.io/`;
+  const uri_message = host_name + '/';
   var send_text, replied_content = [], replied_type = [];
   const getReplies = async () => {
     replied_content = [];
@@ -492,7 +493,7 @@ const ChatScreen = ({ navigation }) => {
   /* End */
 
   /*For starting each chat session*/
-  const uri_view_profile = `https://7143-210-6-181-56.ap.ngrok.io/check-do-survey`;
+  const uri_view_profile = host_name + '/check-do-survey';
 
   useEffect(() => {
     async function checkSurveyStatus() {
@@ -556,7 +557,7 @@ const ChatScreen = ({ navigation }) => {
   var num_survey_answered = 0;
   var survey_result = [];
 
-  const uri_submit_survey = `https://7143-210-6-181-56.ap.ngrok.io/add-survey-results`;
+  const uri_submit_survey = host_name + '/add-survey-results';
   const onQuickReply = useCallback(async (quickReply) => { 
     let message = quickReply[0].title;
     let msg = {
