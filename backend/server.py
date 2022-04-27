@@ -1,4 +1,5 @@
 import logging
+import string
 from unicodedata import name
 
 from flask import request, Response, Blueprint, current_app
@@ -11,7 +12,7 @@ from hashlib import sha256
 from mongoengine import *
 from .data.dialogue import Dialogue
 from .data.dataclass import Survey,Message,MultiMediaData,Preference,User,Conversation, EmotionProfile, EmotionProfileList, MessageTypes, GlobalStatistics, Statistic
-from random import randint, uniform
+from random import randint, random, uniform, choices
 import uuid
 from datetime import datetime,timezone,timedelta
 # main flask app object for configer dependencies only
@@ -22,6 +23,7 @@ internal_bp = Blueprint('internal', __name__)
 AUTH_TOKEN_HEADER_NAME = 'rasa-access-token'
 
 DEFAULT_DATE_DISPLAY_FORMAT="%d-%b-%Y (%H:%M:%S)"
+DEFAULT_UTC = timezone(timedelta(hours=8))
 logger = logging.getLogger(__name__)
 User._survey_period = app.config['SURVEY_INTERVAL_BASE']
 def _hash_password(pw):
@@ -72,7 +74,7 @@ def token_required(f):
         except jwt.exceptions.ExpiredSignatureError:
             return Response(json.dumps({'message': 'Token has expired'}),401, mimetype='application/json')
         except Exception:
-            return Response(json.dumps({'message':'Error processing jwt token'},400, mimetype='application/json'))
+            return Response(json.dumps({'message':'Error processing jwt token'}),400, mimetype='application/json')
         user = User.objects(username=data['username'])\
             .first()
         
@@ -125,7 +127,7 @@ def login():
     # generates auth token
     # logger.info(user.password)
     # logger.info(hash(auth.get('password')))
-    if user.password == _hash_password(auth.get('password')):
+    if user.password  == _hash_password(auth.get('password')+user.salt if user.salt else ''):
         # generates the JWT Token
         token = _encode_jwt({
             'username': user.username,
@@ -161,13 +163,14 @@ def signup():
         if not is_user_exist and not is_email_exist:
             # database ORM object
             otp = totp.now()
+            salt = ''.join(choices(string.ascii_letters + string.digits, k=16))
             user = User(
                 username=username,
                 email=email,
-                password=_hash_password(password),
-                otp=_hash_password(otp)
+                password=_hash_password(password+salt),
+                otp=_hash_password(otp),
+                salt = salt
             )
-
             _sendVerificationEmail.delay(email, f"Verification code for registration: {otp}")
             user.init_new_user()
             logger.debug(f"Creating user: {user.username}, conversation_list len: {len(user.conversations)}")
@@ -336,7 +339,8 @@ def _preprocess_user_profile(d,user_utc):
                 key = new_key_name
             
             if key=='date':
-                d[key] = datetime.fromtimestamp(d[key]/1000,user_utc).strftime(DEFAULT_DATE_DISPLAY_FORMAT)
+                new_date = datetime.fromtimestamp(d[key]/1000) +timedelta(hours=user_utc)
+                d[key] = new_date.strftime(DEFAULT_DATE_DISPLAY_FORMAT)
             elif key == '_id' or key == 'oid' or 'uuid' in key:
                 del d[key]
                 continue
@@ -363,8 +367,8 @@ def get_user_profile(user: User, token_body):
     user_json['pred_preferences'] = [({'content':json.loads(x.content.to_json()),'score':x.score}) for x in user.pred_preferences]
     user_json['latest_conversation'] = json.loads(user.latest_conversation.to_json())
     if not is_verbose:
-        user_timezone = timezone(timedelta(hours=user.utc_in_hours))
-        _preprocess_user_profile(user_json,user_timezone)
+        #user_timezone = timezone(timedelta(hours=user.utc_in_hours))
+        _preprocess_user_profile(user_json,user.utc_in_hours)
     return Response(json.dumps(user_json),200, mimetype='application/json')
 
 @main_bp.route("/signup/forget-password", methods=['POST'])
@@ -396,7 +400,8 @@ def reset_pw():
     
     if _hash_password(otp) == user.otp:
         user.is_verified=True
-        user.password=_hash_password(new_password)
+        user.salt=''.join(choices(string.ascii_letters + string.digits, k=16))
+        user.password=_hash_password(new_password+user.salt if user.salt else '')
         user.save()
         return Response(json.dumps({"message":"Resetted password"}), status=200, mimetype='application/json')
     else:
@@ -429,7 +434,7 @@ def add_survey_results(user: User,token_body):
 def check_do_survey(user:User,token_body):
     
     latest_survey_time = user.surveys[0].time_submitted  if len(list(user.surveys)) >= 1 else datetime(year = 1971,month=1,day=1)
-    seconds_since_last_survey = (datetime.now()-latest_survey_time).total_seconds()
+    seconds_since_last_survey = (datetime.utcnow()-latest_survey_time).total_seconds()
     base_interval = current_app.config['SURVEY_INTERVAL_BASE']
     change_interval = current_app.config['SURVEY_INTERVAL_CHANGE']
     threshold = base_interval
@@ -453,20 +458,56 @@ def check_do_survey(user:User,token_body):
 def check_send_push_notification(user: User,token_body):
     current_conversation=user.latest_conversation
     latest_message_time =  current_conversation.content[0].time_sent if len(list(current_conversation.content)) >= 1 else datetime(year = 1971,month=1,day=1)
-    seconds_since_last_message = (datetime.now()-latest_message_time).total_seconds()
+    seconds_since_last_message = (datetime.utcnow()-latest_message_time).total_seconds()
     base_interval = current_app.config['NOTIFICATION_INTERVAL']
     threshold = base_interval
     result = seconds_since_last_message >= threshold
     return Response(json.dumps({"result": result, "last_message":latest_message_time.strftime(DEFAULT_DATE_DISPLAY_FORMAT)}),status=200,mimetype='application/json')
 
 @main_bp.route("/get-global-statistics",methods=['GET'])
-@token_required
-def get_global_statistics(user, token_body):
+# @token_required
+# def get_global_statistics(user, token_body):
+def get_global_statistics():
+    data = request.args
+    start,end = data.get("start_time"), data.get("end_time")
+    if start:
+        try:
+            start = datetime.fromtimestamp(int(start))
+        except (ValueError, OverflowError, OSError):
+            return Response(json.dumps({"message": 'Invalid value for start_time'}),status=404,mimetype='application/json')
+    if end:
+        try:
+            end = datetime.fromtimestamp(int(end))
+        except (ValueError, OverflowError, OSError):
+            return Response(json.dumps({"message": 'Invalid value for end_time'}),status=404,mimetype='application/json')
+    if not end: 
+        end = datetime.utcnow()
+    if start and end and start>end:
+        return Response(json.dumps({"message": 'start_time has a large value then end_time'}),status=404,mimetype='application/json')
     global_statistics: GlobalStatistics = GlobalStatistics.objects.first()
-    recent_statistic=global_statistics.get_recent_statistic()
-    users_average_full_score = recent_statistic.users_average_full_score
-    users_average_chat_score = recent_statistic.users_average_chat_score
-    return Response(json.dumps({"users_average_full_score":users_average_full_score, "users_average_chat_score":users_average_chat_score}),status=200,mimetype='application/json')
+    statistics = []
+    if not start:
+        recent_statistic=global_statistics.get_recent_statistic()
+        statistics.append(recent_statistic)
+    else:
+        #start,end = datetime.fromtimestamp(int(start)), datetime.fromtimestamp(int(end))
+        #query_statistics = list(global_statistics.statistics((Q(time_recorded__gte=start) & Q(time_recorded__lte=end))))
+        query_statistics = list(filter(lambda x:start<= x.time_recorded and x.time_recorded <= end,
+                               global_statistics.statistics))
+
+        statistics.extend(query_statistics)
+    if statistics is None:
+        end = start
+        start = start + timedelta(hours = -1)
+        query_statistics = list(filter(lambda x:start<= x.time_recorded and x.time_recorded <= end,
+                               global_statistics.statistics))
+
+        statistics.extend(query_statistics)
+    users_average_chat_score = sum(x.users_average_chat_score for x in statistics)/ len(statistics)
+    users_average_full_score = sum(x.users_average_full_score for x in statistics)/ len(statistics)
+
+    return Response(json.dumps({'users_average_chat_score':users_average_chat_score,
+    'users_average_full_score':users_average_full_score}),status=200,mimetype='application/json')
 
 @internal_bp.route("/train", methods=['POST'])
 def train_data():

@@ -1,0 +1,34 @@
+version: '3.0'
+intents:
+- utter_bot_challenge
+- utter_ask_who_made
+- utter_ask_data_privacy
+- utter_ask_collect_data
+- utter_ask_purpose
+- utter_ask_delete_data
+- utter_user_suicide
+responses:
+  utter_bot_challenge:
+  - text: I am a bot
+  - text: I am not a human
+  - text: I am not a human. I am a bot
+  utter_ask_who_made:
+  - text: I am made by don, simon and stephanie, three university students.
+  utter_ask_data_privacy:
+  - text: The database is kept behind firewalls that prevent unwanted access. We do
+      our best to ensure your data is safe.
+  utter_ask_collect_data:
+  - text: Your data will only be used for analyzation purposes to evaluate the effectiveness
+      of the chatbot. After analyzation is done, your data will be forever removed.
+      You can also opt out of this program by deleting your profile.
+  utter_ask_purpose:
+  - text: I am created to test whether chatbots trained by large databases are effective
+      or not, contrary to training chatbots by listing out every possible dialogue
+      manually.
+  utter_ask_delete_data:
+  - text: You can always remove your data or opt out from this program by deleting
+      your own profile. Your data in the database will be immediately deleted.
+  utter_user_suicide:
+  - text: "Suicidal thoughts can be complex, frightening and confusing. Here are some\
+      \ resources that can help:\n https://suicidepreventionlifeline.org/\n https://www.opencounseling.com/blog/what-to-do-when-you-re-thinking-about-suicide\n\
+      \ https://findahelpline.com/\n"

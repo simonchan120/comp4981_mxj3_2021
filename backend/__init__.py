@@ -9,6 +9,8 @@ import pyotp
 import boto3
 from botocore.config import Config
 import os
+from flask_cors import CORS
+
 LOGGING_FOLDER = "backend/logs"
 Path(f"{LOGGING_FOLDER}").mkdir(parents=True, exist_ok=True)
 IS_DEV = 'FLASK_ENV' in os.environ and os.environ['FLASK_ENV']=='development'
@@ -35,6 +37,7 @@ dictConfig({
     }
 })
 app = Flask(__name__)
+CORS(app)
 app.config['FLASK_ENV'] = 'development' if IS_DEV else 'production'
 
 if app.config['FLASK_ENV'] == 'development':
@@ -111,7 +114,7 @@ from . import giphyUtil
 giphy_util = giphyUtil.GiphyUtil(app.config['GIPHY_API_KEY'])
 from . import recommender
 from . import rasa
-rasa_client = rasa.Rasa_Client(host_name=app.config['RASA_HOSTNAME'],port=app.config['RASA_HOSTNAME'])
+rasa_client = rasa.Rasa_Client(host_name=app.config['RASA_HOSTNAME'],port=app.config['RASA_PORT'])
 from .celery_config import celery_app
 celery_app = celery_app
 from . import server

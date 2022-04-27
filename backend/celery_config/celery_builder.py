@@ -4,6 +4,7 @@ from backend import app,dataclass
 from backend.data.dataclass import GlobalStatistics
 import logging
 from celery.utils.log import get_task_logger
+from datetime import datetime
 logger = get_task_logger(__name__)
 
 celery_app = Celery(
@@ -27,6 +28,10 @@ def setup_periodic_tasks(sender, **kwargs):
 @celery_app.task
 def run_calculate_global_statistics():
     users = dataclass.User.objects.all()
+    
+    datetimenow = datetime.utcnow()
+    target_threshold = app.config["RUN_CALCULATE_GLOBAL_STATISTICS_PERIOD"] *12
+    users = filter(lambda user: (datetimenow - user.latest_conversation[0].time_sent).total_seconds() <= target_threshold, users)
     new_statistic = dataclass.GlobalStatistics.calculate_global_statistics(users)
     global_stat_pobj: GlobalStatistics = dataclass.GlobalStatistics.objects.first()
     global_stat_pobj.statistics.append(new_statistic)
