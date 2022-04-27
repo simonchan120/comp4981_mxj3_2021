@@ -52,20 +52,16 @@ const ChatScreen = ({ navigation }) => {
       _id: 's3',
       text: 'Shall we start with a quick little test?\nWhat we are starting with is a questionaire for understanding your current status. It just composes of a few questions, and it\'s you and me who will know this!\nNow I will give a list of descriptions. From a scale of 1 (not true) to 4 (true), how much do they sound like describing you?',
       createdAt: new Date(),
-      /*quickReplies: {
+      quickReplies: {
         type: 'radio', // or 'checkbox',
         keepIt: false,
         values: [
           {
             title: '😛 Sure~',
-            value: 'Sure~',
-          },
-          {
-            title: '🤔 What is it about?',
-            value: 'What is it about?',
+            value: 'DO SURVEY',
           },
         ],
-      },*/
+      },
       user: {
         _id: 2,
         name: 'Unpacker',
@@ -75,27 +71,6 @@ const ChatScreen = ({ navigation }) => {
   ]
 
   var num_chat = 0;
-
-  const reply_message_list = [
-    {
-      _id: 'r1',
-      text: 'Great! Now I will a list of questions. From a scale of 1 to 4, how much do they sound like describing you? ',
-      createdAt: new Date(),
-      user: {
-        _id: 2,
-        name: 'Unpacker',
-      },
-    },
-    {
-      _id: 'r2',
-      text: 'What we are starting with is a questionaire for understanding your current status. It just composes of a few questions, and it\'s you and me who will know this!',
-      createdAt: new Date(),
-      user: {
-        _id: 2,
-        name: 'Unpacker',
-      },
-    }
-  ]
 
   const back_message_list = [
     {
@@ -392,7 +367,7 @@ const ChatScreen = ({ navigation }) => {
     },
     {
       _id: 'q_done',
-      text: 'That\'s all for the survey. Thank you~ You can see the resulting score of the survey at the Profile page in Settings.',
+      text: 'The survey is done!~',
       createdAt: new Date(),
       user: {
         _id: 2,
@@ -518,6 +493,7 @@ const ChatScreen = ({ navigation }) => {
 
   /*For starting each chat session*/
   const uri_view_profile = `https://7143-210-6-181-56.ap.ngrok.io/check-do-survey`;
+
   useEffect(() => {
     async function checkSurveyStatus() {
       try {
@@ -540,7 +516,7 @@ const ChatScreen = ({ navigation }) => {
            sendStart(i);
           }
           //num_chat = start_message_list.length;
-          setTimeout(function() {setMessages(previousMessages => GiftedChat.append(previousMessages, survey_question_list[0]))}, start_message_list.length*2500);
+          //setTimeout(function() {setMessages(previousMessages => GiftedChat.append(previousMessages, survey_question_list[0]))}, start_message_list.length*2500);
         }
         else {
           console.log("not survey now");
@@ -579,6 +555,7 @@ const ChatScreen = ({ navigation }) => {
   const QUESTION_NUMBER = 9;
   var num_survey_answered = 0;
   var survey_result = [];
+
   const uri_submit_survey = `https://7143-210-6-181-56.ap.ngrok.io/add-survey-results`;
   const onQuickReply = useCallback(async (quickReply) => { 
     let message = quickReply[0].title;
@@ -592,17 +569,22 @@ const ChatScreen = ({ navigation }) => {
     }
     setMessages(previousMessages => GiftedChat.append(previousMessages, msg));
     num_chat++;
-    survey_result.push(quickReply[0].value);
-    num_survey_answered++;
-    setMessages(previousMessages => GiftedChat.append(previousMessages, survey_question_list[num_survey_answered]));
+    if (quickReply[0].value != 'DO SURVEY') {
+      survey_result.push(quickReply[0].value);
+      num_survey_answered++;
+    }
+    setTimeout(function() { setMessages(previousMessages => GiftedChat.append(previousMessages, survey_question_list[num_survey_answered]));
+    }, 1000);
+    //setMessages(previousMessages => GiftedChat.append(previousMessages, survey_question_list[num_survey_answered]));
     num_chat++;
-    console.log(survey_result);
+    //console.log(survey_result);
     if (survey_result.length == QUESTION_NUMBER) {
       let formData = new FormData();
       for (let i=0; i<QUESTION_NUMBER; i++){
         let field_name = 'field_' + (i+1);
         formData.append(field_name, survey_result[i]);
       }
+      // First, submitting the form
       try {
         const response = await fetch(uri_submit_survey, {
           method: 'POST',
@@ -612,11 +594,47 @@ const ChatScreen = ({ navigation }) => {
           },
           body: formData
         });
+      // Then, get the score  
+        const json = await response.json();
+        console.log("Full score is:")
+        console.log(json.result)
+        var score_str = "Your survey score is " + parseFloat(json.result).toFixed(4) + " out of 1. "
+        var status_str = [
+          "It seems like you are facing some rough challenges...",
+          "It looks like you are facing some troubles...",
+          "Seemly you are doing okay :)",
+          "Seemly you are doing well!"
+        ]
+        var score_level = Math.ceil(parseFloat(json.result)*4);
+        if (score_level == 0) {
+          score_level = 1;
+        }
+        var score_content = score_str + status_str[score_level-1];
+        const score_message = [{
+          _id: num_chat + 1,
+          text: score_content,
+          createdAt: new Date(),
+          user: {
+            _id: 2,
+            name: 'Unpacker',
+          },
+        }]
+        setTimeout(function() { setMessages(previousMessages => GiftedChat.append(previousMessages, score_message));
+        }, 2000);
+        //setMessages(previousMessages => GiftedChat.append(previousMessages, score_message));
+        num_chat++;
       } catch (error) {
         console.error(error);
       } finally {
         setLoading(false);
       }
+      if (num_survey_answered == QUESTION_NUMBER){
+        setTimeout(function() { setMessages(previousMessages => GiftedChat.append(previousMessages, survey_question_list[num_survey_answered+1]));
+        }, 3000);
+        //setMessages(previousMessages => GiftedChat.append(previousMessages, survey_question_list[num_survey_answered+1]));
+        num_chat++;
+      }
+
     }
   }, [])
   function name_shown() {
