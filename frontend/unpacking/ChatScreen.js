@@ -4,16 +4,9 @@ import React, { useState, useCallback, useEffect, useContext } from 'react'
 import { GiftedChat, Bubble, messageIdGenerator } from 'react-native-gifted-chat'
 import YoutubePlayer from "react-native-youtube-iframe";
 import { Button } from 'react-native-paper' ;
-//import { SafeAreaView, withNavigation } from 'react-navigation';
-import ActivitiesScreen from "./ActivitiesScreen";
-import CurrentActivitiesScreen from './_CurrentActivities';
-
 import Constants from "expo-constants";
 import {Info} from "./App"
 import { host_name } from './App';
-//import Agreement from './Agreement';
-
-//export const ActivityStatus = React.createContext(null);
 
 const ChatScreen = ({ navigation }) => {
   const [messages, setMessages] = useState([]);

@@ -24,7 +24,6 @@ import ChatScreen from './ChatScreen';
 import ProfileScreen from './ProfileScreen';
 import ActivitiesScreen from "./ActivitiesScreen";
 import SettingsScreen from './SettingsScreen';
-//import API_test from './_API_test';
 import ForgetPassword from "./ResetPasswordScreen";
 import NewUser from "./NewUserScreen";
 import { schedulePushNotification, registerForPushNotificationsAsync } from "./Notification";
@@ -34,8 +33,6 @@ import DeleteScreen from "./DeleteBriefScreen";
 import DeletePopUp from "./DeletePopUp";
 import AboutScreen from "./AboutScreen";
 import ShowJSONScreen from "./ShowJSONScreen";
-//import ShowActivities from "./_ShowActivities";
-//import CurrentActivitiesScreen from "./_CurrentActivities";
 
 import * as Notifications from "expo-notifications";
 
