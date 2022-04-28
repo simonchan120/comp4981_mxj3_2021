@@ -165,8 +165,8 @@ class GlobalStatistics(Document):
         if not users:
             return Statistic(users_average_full_score=0.5,users_average_chat_score=0.5)
         stat = Statistic()
-        stat.users_average_full_score = statistics.fmean(map(lambda user:user.latest_emotion_profile.full_score,users))
-        stat.users_average_chat_score = statistics.fmean(map(lambda user:user.latest_emotion_profile.chat_score,users))
+        stat.users_average_full_score = statistics.fmean(list(map(lambda user:user.latest_emotion_profile.full_score,users)))
+        stat.users_average_chat_score = statistics.fmean(list(map(lambda user:user.latest_emotion_profile.chat_score,users)))
         return stat
 
 

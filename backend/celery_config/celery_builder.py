@@ -27,19 +27,23 @@ def setup_periodic_tasks(sender, **kwargs):
 
 @celery_app.task
 def run_calculate_global_statistics():
+    logger.info("Started calculating global statistics")
     users = dataclass.User.objects.all()
-    
     datetimenow = datetime.utcnow()
+    
     target_threshold = app.config["RUN_CALCULATE_GLOBAL_STATISTICS_PERIOD"] *12
-    users = filter(lambda user: (datetimenow - user.latest_conversation[0].time_sent).total_seconds() <= target_threshold, users)
+    logger.info(f"Global statistics: Length of users before filtered {len(users)}")
+    users = list(filter(lambda user: (datetimenow - user.latest_conversation.content[0].time_sent).total_seconds() <= target_threshold if user.latest_conversation.content else False, users))
+    logger.info(f"Global statistics: Length of users after filtered {len(users)}")
     new_statistic = dataclass.GlobalStatistics.calculate_global_statistics(users)
     global_stat_pobj: GlobalStatistics = dataclass.GlobalStatistics.objects.first()
     global_stat_pobj.statistics.append(new_statistic)
     global_stat_pobj.save()
-    logger.info(f"Calculatd global statistics with user group size: {len(users)}")
+    logger.info(f"Calculated global statistics with user group size: {len(users)}")
 
 @celery_app.task
 def save_copy_users_emotion_profile():
+    logger.info("Started saving users emotion profile")
     users: List[dataclass.User] = dataclass.User.objects.all()
     counter = 0
     for user in users:

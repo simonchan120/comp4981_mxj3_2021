@@ -42,16 +42,20 @@ app.config['FLASK_ENV'] = 'development' if IS_DEV else 'production'
 
 if app.config['FLASK_ENV'] == 'development':
 # TODO: change this secret key before deployment
-    app.config.from_file("config.json", load=json.load)
 
     app.config.update(SURVEY_INTERVAL_BASE=60)
     app.config.update(SURVEY_INTERVAL_CHANGE=60)
     app.config.update(NOTIFICATION_INTERVAL=60)
     app.config.update(RUN_CALCULATE_GLOBAL_STATISTICS_PERIOD=60*1)
     app.config.update(SAVE_COPY_USERS_EMOTION_PROFILE_PERIOD=60*1)
-    app.config.update(MAIL_USERNAME=app.config["EMAIL_VERIFICATION_SENDER_ADDRESS"])
-    app.config.update(MAIL_PASSWORD=app.config["EMAIL_PASSWORD"])
-    app.config.update(CELERY_RESULT_BACKEND=app.config['MONGO_CONNECTION_STRING'])
+    app.config.update(MAIL_USERNAME=os.environ['MAIL_USERNAME'])
+    app.config.update(MAIL_PASSWORD=os.environ['MAIL_PASSWORD'])
+    app.config.update(CELERY_RESULT_BACKEND=os.environ['MONGO_CONNECTION_STRING'])
+    app.config.update(SECRET_KEY=os.environ['SECRET_KEY'])
+    app.config.update(MONGO_CONNECTION_STRING=os.environ['MONGO_CONNECTION_STRING'])
+    app.config.update(OTP_SECRET_KEY=os.environ['OTP_SECRET_KEY'])
+    app.config.update(CELERY_BROKER_URL=os.environ['CELERY_BROKER_URL'])
+    app.config.update(GIPHY_API_KEY=os.environ['GIPHY_API_KEY'])
 else:
     my_config = Config(
         region_name = 'ap-east-1',
