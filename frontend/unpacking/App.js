@@ -24,7 +24,6 @@ import ChatScreen from './ChatScreen';
 import ProfileScreen from './ProfileScreen';
 import ActivitiesScreen from "./ActivitiesScreen";
 import SettingsScreen from './SettingsScreen';
-//import API_test from './_API_test';
 import ForgetPassword from "./ResetPasswordScreen";
 import NewUser from "./NewUserScreen";
 import { schedulePushNotification, registerForPushNotificationsAsync } from "./Notification";
@@ -34,12 +33,10 @@ import DeleteScreen from "./DeleteBriefScreen";
 import DeletePopUp from "./DeletePopUp";
 import AboutScreen from "./AboutScreen";
 import ShowJSONScreen from "./ShowJSONScreen";
-//import ShowActivities from "./_ShowActivities";
-//import CurrentActivitiesScreen from "./_CurrentActivities";
 
 import * as Notifications from "expo-notifications";
 
-
+export const host_name = "https://7143-210-6-181-56.ap.ngrok.io";
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -155,9 +152,9 @@ export function Start() {
   const [stateDetail, setStateDetail] = detail;
   
   const { manifest } = Constants;
-  //const uri_view_push = `http://${manifest.debuggerHost.split(':').shift()}:5000/check-send-push-notification`;
-  //const uri_view_push = `https://f467-210-6-181-56.ap.ngrok.io/check-send-push-notification`;
-  const uri_view_push = `https://acba-210-6-181-56.ap.ngrok.io/check-send-push-notification`;
+
+  const uri_view_push = host_name + '/check-send-push-notification';
+
   useEffect(() => {
     // notification
     registerForPushNotificationsAsync().then((token) =>
@@ -290,9 +287,8 @@ export function Login() {
   const [stateDetail, setStateDetail] = detail;
   const { manifest } = Constants;
 
-  //const uri = `http://${manifest.debuggerHost.split(':').shift()}:5000/login`;
-  //const uri = `https://f467-210-6-181-56.ap.ngrok.io/login`;
-  const uri = `https://acba-210-6-181-56.ap.ngrok.io/login`
+  const uri = host_name + '/login';
+
   const loginAuth = async () => {
     let json_result;
     let formData = new FormData();

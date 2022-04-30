@@ -1,5 +1,5 @@
 import logging
-from multiprocessing.sharedctypes import Value
+import string
 from unicodedata import name
 
 from flask import request, Response, Blueprint, current_app
@@ -11,8 +11,8 @@ from flask_mail import Message as FlaskMessage
 from hashlib import sha256
 from mongoengine import *
 from .data.dialogue import Dialogue
-from .data.dataclass import Survey,Message,MultiMediaData,Preference,User,Conversation, EmotionProfile, EmotionProfileList, MessageTypes
-from random import randint, uniform
+from .data.dataclass import Survey,Message,MultiMediaData,Preference,User,Conversation, EmotionProfile, EmotionProfileList, MessageTypes, GlobalStatistics, Statistic
+from random import randint, random, uniform, choices
 import uuid
 from datetime import datetime,timezone,timedelta
 # main flask app object for configer dependencies only
@@ -23,6 +23,7 @@ internal_bp = Blueprint('internal', __name__)
 AUTH_TOKEN_HEADER_NAME = 'rasa-access-token'
 
 DEFAULT_DATE_DISPLAY_FORMAT="%d-%b-%Y (%H:%M:%S)"
+DEFAULT_UTC = timezone(timedelta(hours=8))
 logger = logging.getLogger(__name__)
 User._survey_period = app.config['SURVEY_INTERVAL_BASE']
 def _hash_password(pw):
@@ -48,15 +49,6 @@ def _decode_jwt_without_verifying(token):
 def _verify_jwt(token, second_par):
     return jwt.decode(
         token, _get_jwt_encode_key(second_par), algorithms=["HS256"])
-def _create_new_conversation(user):
-    new_uuid = str(uuid.uuid4())
-    user.latest_conversation_uuid = new_uuid
-    new_conversation = Conversation(uuid=new_uuid, user=user)
-    new_conversation.save()
-    new_conversation_with_id = Conversation.objects(uuid=new_uuid).first()
-    user.conversations.append(new_conversation_with_id)
-    user.save()
-    return user,new_conversation_with_id
 @main_bp.errorhandler(Exception)
 def handle_exception(e):
     current_app.logger.exception('An error occured')
@@ -82,10 +74,10 @@ def token_required(f):
         except jwt.exceptions.ExpiredSignatureError:
             return Response(json.dumps({'message': 'Token has expired'}),401, mimetype='application/json')
         except Exception:
-            return Response(json.dumps({'message':'Error processing jwt token'},400, mimetype='application/json'))
+            return Response(json.dumps({'message':'Error processing jwt token'}),400, mimetype='application/json')
         user = User.objects(username=data['username'])\
             .first()
-            
+        
         if user is None:
             return Response(json.dumps({
                 'message': 'Token is invalid !!'
@@ -135,7 +127,7 @@ def login():
     # generates auth token
     # logger.info(user.password)
     # logger.info(hash(auth.get('password')))
-    if user.password == _hash_password(auth.get('password')):
+    if user.password  == _hash_password(auth.get('password')+user.salt if user.salt else ''):
         # generates the JWT Token
         token = _encode_jwt({
             'username': user.username,
@@ -153,7 +145,7 @@ def login():
 @celery_app.task
 def _sendVerificationEmail(address, text_body):
     with app.app_context():
-        msg = FlaskMessage(text_body, sender=app.config["EMAIL_VERIFICATION_SENDER_ADDRESS"], recipients=[address])
+        msg = FlaskMessage(text_body, sender=app.config["MAIL_USERNAME"], recipients=[address])
         mail.send(msg)
 
 @main_bp.route('/signup', methods=['POST'])
@@ -171,16 +163,17 @@ def signup():
         if not is_user_exist and not is_email_exist:
             # database ORM object
             otp = totp.now()
+            salt = ''.join(choices(string.ascii_letters + string.digits, k=16))
             user = User(
                 username=username,
                 email=email,
-                password=_hash_password(password),
-                otp=_hash_password(otp)
+                password=_hash_password(password+salt),
+                otp=_hash_password(otp),
+                salt = salt
             )
-
             _sendVerificationEmail.delay(email, f"Verification code for registration: {otp}")
-            user.save()
-            _create_new_conversation(user)
+            user.init_new_user()
+            logger.debug(f"Creating user: {user.username}, conversation_list len: {len(user.conversations)}")
             
             return Response(json.dumps({"message": 'Successfully registered. Please verify your email.'}), 201, mimetype='application/json')
         else:
@@ -250,7 +243,7 @@ def send_message(user, token_body):
     user_message= content.get('message')
     response_obj, status = rasa_client.send_message(user,
         str(user_message))
-    current_conversation =  Conversation.objects(uuid=user.latest_conversation_uuid).first()
+    current_conversation =  user.latest_conversation
     bot_reply = response_obj[0]['text']
     response_obj[0]['type']='text'
 
@@ -317,15 +310,16 @@ def add_preference_to_user(user, token_body):
 
 @main_bp.route("/new-chat-session", methods=['POST'])
 @token_required
-def new_chat_session(user, token_body):
+def new_chat_session(user: User, token_body):
+    current_app.logger.debug(f'len of conversations: {len(user.conversations)} for user: {user.username}')
     if user.conversations.__len__()==0:
-        _create_new_conversation(user)
+        user.create_new_conversation()
         current_app.logger.warn(f"User: {user.username} does not have an existing conversation, creating a new one")
         return Response(json.dumps({'message': 'New chat session created'}), status=200, mimetype='application/json')
     if user.conversations[0].content.__len__() ==0:
         current_app.logger.info(f"User: {user.username} attempted to start a new conversation without finishing the last one")
         return Response(json.dumps({'message': 'New chat session created'}), status=200, mimetype='application/json')
-    _create_new_conversation(user)
+    user.create_new_conversation()
     return Response(json.dumps({'message': 'New chat session created'}), status=200, mimetype='application/json')
 
 @main_bp.route("/delete-profile", methods=['DELETE'])
@@ -345,7 +339,8 @@ def _preprocess_user_profile(d,user_utc):
                 key = new_key_name
             
             if key=='date':
-                d[key] = datetime.fromtimestamp(d[key]/1000,user_utc).strftime(DEFAULT_DATE_DISPLAY_FORMAT)
+                new_date = datetime.fromtimestamp(d[key]/1000) +timedelta(hours=user_utc)
+                d[key] = new_date.strftime(DEFAULT_DATE_DISPLAY_FORMAT)
             elif key == '_id' or key == 'oid' or 'uuid' in key:
                 del d[key]
                 continue
@@ -356,7 +351,7 @@ def _preprocess_user_profile(d,user_utc):
 
 @main_bp.route("/show-profile", methods=['GET'])
 @token_required
-def get_user_profile(user, token_body):
+def get_user_profile(user: User, token_body):
     is_verbose = False
 
     data = request.form
@@ -370,9 +365,10 @@ def get_user_profile(user, token_body):
     user_json['conversations']= [json.loads(x.to_json()) for x in user.conversations]
     user_json['preferences'] = [({'content':json.loads(x.content.to_json()),'score':x.score}) for x in user.preferences]
     user_json['pred_preferences'] = [({'content':json.loads(x.content.to_json()),'score':x.score}) for x in user.pred_preferences]
+    user_json['latest_conversation'] = json.loads(user.latest_conversation.to_json())
     if not is_verbose:
-        user_timezone = timezone(timedelta(hours=user.utc_in_hours))
-        _preprocess_user_profile(user_json,user_timezone)
+        #user_timezone = timezone(timedelta(hours=user.utc_in_hours))
+        _preprocess_user_profile(user_json,user.utc_in_hours)
     return Response(json.dumps(user_json),200, mimetype='application/json')
 
 @main_bp.route("/signup/forget-password", methods=['POST'])
@@ -404,7 +400,8 @@ def reset_pw():
     
     if _hash_password(otp) == user.otp:
         user.is_verified=True
-        user.password=_hash_password(new_password)
+        user.salt=''.join(choices(string.ascii_letters + string.digits, k=16))
+        user.password=_hash_password(new_password+user.salt if user.salt else '')
         user.save()
         return Response(json.dumps({"message":"Resetted password"}), status=200, mimetype='application/json')
     else:
@@ -412,7 +409,7 @@ def reset_pw():
     
 @main_bp.route("/add-survey-results",methods=['POST'])
 @token_required
-def add_survey_results(user,token_body):
+def add_survey_results(user: User,token_body):
     data=request.form
     d1,d2,d3,d4,d5,d6,d7,d8,d9=data.get('field_1'),data.get('field_2'),data.get('field_3'),data.get('field_4'),data.get('field_5'),data.get('field_6'),data.get('field_7'),data.get('field_8'),data.get('field_9')
     if not d1 or not d2 or not d3 or not d4 or not d5 or not d6 or not d7 or not d8 or not d9:
@@ -422,39 +419,35 @@ def add_survey_results(user,token_body):
     except ValueError:
     #if not d1.isnumeric() or not d2.isnumeric() or not d3.isnumeric() or not d4.isnumeric() or not d5.isnumeric() or not d6.isnumeric() or not d7.isnumeric()or not d8.isnumeric()or not d9.isnumeric():
         return Response(json.dumps({"message": "invalid survey values, expected integers"}),status=404, mimetype='application/json')
-    survey_result = round(sum((x-1)/4 for x in [d1,d2,d3,d4,d5,d6,d7,d8,d9])/9,4)
-    user.surveys.append(Survey(survey_entry_1=d1,survey_entry_2=d2,survey_entry_3=d3,survey_entry_4=d4,survey_entry_5=d5,survey_entry_6=d6,survey_entry_7=d7, survey_entry_8=d8,survey_entry_9=d9,result=survey_result))
-    user.previous_emotion_profile_lists.append(EmotionProfileList())
+    #survey = Survey(survey_entry_1=d1,survey_entry_2=d2,survey_entry_3=d3,survey_entry_4=d4,survey_entry_5=d5,survey_entry_6=d6,survey_entry_7=d7,survey_entry_8=d8,survey_entry_9=d9)
+    
+    survey = Survey.create_survey(d1,d2,d3,d4,d5,d6,d7,d8,d9)
+    if not survey:
+        return Response(json.dumps({f"message": "invalid survey values"}),status=404, mimetype='application/json')
+    user.add_new_survey(survey)
     user.save()
 
-    return Response(json.dumps({"message": "Survey result saved", "result": survey_result}),status=200,mimetype='application/json')
+    return Response(json.dumps({"message": "Survey result saved", "result": survey.result}),status=200,mimetype='application/json')
 
 @main_bp.route("/check-do-survey",methods=['GET'])
 @token_required
 def check_do_survey(user:User,token_body):
     
     latest_survey_time = user.surveys[0].time_submitted  if len(list(user.surveys)) >= 1 else datetime(year = 1971,month=1,day=1)
-    seconds_since_last_survey = (datetime.now()-latest_survey_time).total_seconds()
+    seconds_since_last_survey = (datetime.utcnow()-latest_survey_time).total_seconds()
     base_interval = current_app.config['SURVEY_INTERVAL_BASE']
     change_interval = current_app.config['SURVEY_INTERVAL_CHANGE']
     threshold = base_interval
 
-    MAX_SUM_OF_EMOTION_SCORE_DIFFERENCE = 2
-    if not user.previous_emotion_profile_lists:
-        user.previous_emotion_profile_lists.append(EmotionProfileList())
+    MAX_SUM_OF_EMOTION_SCORE_DIFFERENCE = 100
     
-    #relies on sortedlistfield function of mongoengine, from latest to newest
-    current_emotion_profile_list = user.previous_emotion_profile_lists[0].profile_list
-
     result_change = False
-    if current_emotion_profile_list:
+    if user.previous_emotion_profile_lists and user.previous_emotion_profile_lists[0].profile_list:
+        current_emotion_profile_list = user.previous_emotion_profile_lists[0].profile_list
         sum_of_emotion_score_difference = sum([abs(current_emotion_profile_list[i+1].chat_score-current_emotion_profile_list[i].chat_score) for i in range(0, len(current_emotion_profile_list)-1)])
 
         if sum_of_emotion_score_difference >= MAX_SUM_OF_EMOTION_SCORE_DIFFERENCE:
             result_change = seconds_since_last_survey >= change_interval
-
-    current_emotion_profile_list.append(user.get_emotion_profile_copy())
-    user.save()
 
     result_base = seconds_since_last_survey >= threshold
     result = result_base or result_change
@@ -462,14 +455,59 @@ def check_do_survey(user:User,token_body):
 
 @main_bp.route("/check-send-push-notification",methods=['GET'])
 @token_required
-def check_send_push_notification(user,token_body):
-    current_conversation=next(convo for convo in user.conversations if convo.uuid==user.latest_conversation_uuid)
+def check_send_push_notification(user: User,token_body):
+    current_conversation=user.latest_conversation
     latest_message_time =  current_conversation.content[0].time_sent if len(list(current_conversation.content)) >= 1 else datetime(year = 1971,month=1,day=1)
-    seconds_since_last_message = (datetime.now()-latest_message_time).total_seconds()
+    seconds_since_last_message = (datetime.utcnow()-latest_message_time).total_seconds()
     base_interval = current_app.config['NOTIFICATION_INTERVAL']
     threshold = base_interval
     result = seconds_since_last_message >= threshold
     return Response(json.dumps({"result": result, "last_message":latest_message_time.strftime(DEFAULT_DATE_DISPLAY_FORMAT)}),status=200,mimetype='application/json')
+
+@main_bp.route("/get-global-statistics",methods=['GET'])
+# @token_required
+# def get_global_statistics(user, token_body):
+def get_global_statistics():
+    data = request.args
+    start,end = data.get("start_time"), data.get("end_time")
+    if start:
+        try:
+            start = datetime.fromtimestamp(int(start))
+        except (ValueError, OverflowError, OSError):
+            return Response(json.dumps({"message": 'Invalid value for start_time'}),status=404,mimetype='application/json')
+    if end:
+        try:
+            end = datetime.fromtimestamp(int(end))
+        except (ValueError, OverflowError, OSError):
+            return Response(json.dumps({"message": 'Invalid value for end_time'}),status=404,mimetype='application/json')
+    if not end: 
+        end = datetime.utcnow()
+    if start and end and start>end:
+        return Response(json.dumps({"message": 'start_time has a large value then end_time'}),status=404,mimetype='application/json')
+    global_statistics: GlobalStatistics = GlobalStatistics.objects.first()
+    statistics = []
+    if not start:
+        recent_statistic=global_statistics.get_recent_statistic()
+        statistics.append(recent_statistic)
+    else:
+        #start,end = datetime.fromtimestamp(int(start)), datetime.fromtimestamp(int(end))
+        #query_statistics = list(global_statistics.statistics((Q(time_recorded__gte=start) & Q(time_recorded__lte=end))))
+        query_statistics = list(filter(lambda x:start<= x.time_recorded and x.time_recorded <= end,
+                               global_statistics.statistics))
+
+        statistics.extend(query_statistics)
+    if statistics is None:
+        end = start
+        start = start + timedelta(hours = -1)
+        query_statistics = list(filter(lambda x:start<= x.time_recorded and x.time_recorded <= end,
+                               global_statistics.statistics))
+
+        statistics.extend(query_statistics)
+    users_average_chat_score = sum(x.users_average_chat_score for x in statistics)/ len(statistics)
+    users_average_full_score = sum(x.users_average_full_score for x in statistics)/ len(statistics)
+
+    return Response(json.dumps({'users_average_chat_score':users_average_chat_score,
+    'users_average_full_score':users_average_full_score}),status=200,mimetype='application/json')
 
 @internal_bp.route("/train", methods=['POST'])
 def train_data():

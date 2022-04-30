@@ -3,6 +3,7 @@ import { ActivityIndicator, FlatList, Text, View, BackHandler, ScrollView } from
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Info } from './App';
 import Constants from "expo-constants";
+import { host_name } from './App';
 
 export default ShowJSONScreen = ({ navigation }) => {
     const [json_result, setJSON_result] = useState(null);
@@ -11,7 +12,7 @@ export default ShowJSONScreen = ({ navigation }) => {
     const [stateName, setStateName] = name;
     const [stateDetail, setStateDetail] = detail;
     const { manifest } = Constants;
-    const uri_view_profile = `https://f467-210-6-181-56.ap.ngrok.io/show-profile`;
+    const uri_view_profile = host_name + '/show-profile';
     useEffect(() => {
       const backAction = () => {
         navigation.navigate('Profile');

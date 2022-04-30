@@ -11,10 +11,11 @@ COPY requirements.txt .
 RUN pip install --no-dependencies -r requirements.txt
 #RUN pip install rasa~=3.0.0
 #RUN pip install --upgrade pymongo~=3.12.0
+# COPY ["config.yml","config.yml"]
+# COPY ["endpoints.yml","endpoints.yml"]
 COPY ["/models","/models"]
-COPY ["config.yml","config.yml"]
-COPY ["endpoints.yml","endpoints.yml"]
-
+COPY ["init.py","config.yml","endpoints.yml","/"]
+COPY start.sh /
 EXPOSE 5005
 
-CMD ["python3","-m","rasa","run","-p","5005","-m","/models","--enable-api","--cors","*","--endpoints","endpoints.yml"]
+CMD ["/start.sh"]

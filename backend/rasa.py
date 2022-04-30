@@ -9,13 +9,14 @@ except:
 import logging
 logger = logging.getLogger(__name__)
 class Rasa_Client():
-    def __init__(self, host_name = None):
+    def __init__(self, host_name = None, port = None):
         self.RASA_HOST_NAME=host_name or 'rasa'
+        self.RASA_PORT = port or 5005
 
         pass
-    def send_message(self,user,msg):
-            session_uuid = user.latest_conversation_uuid
-            r = requests.post(f'http://{self.RASA_HOST_NAME}:5005/webhooks/rest/webhook',json.dumps({'sender':session_uuid,'message':msg}))
+    def send_message(self,user: User,msg):
+            session_uuid = user.latest_conversation.uuid
+            r = requests.post(f'http://{self.RASA_HOST_NAME}:{self.RASA_PORT}/webhooks/rest/webhook',json.dumps({'sender':session_uuid,'message':msg}))
             data=  r.json()
             return data,r.status_code
 

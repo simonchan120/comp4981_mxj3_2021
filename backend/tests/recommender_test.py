@@ -25,7 +25,12 @@ def existing_multimedia():
 def create_user(base_create_user,existing_multimedia):
     def _create_user(*args,**kwargs):
         _user = base_create_user(*args,**kwargs)
-        _user.preferences = [dataclass.Preference(content= multimedia,score=uniform(0,1))for multimedia in existing_multimedia]
+        #_user.preferences = [dataclass.Preference(content= multimedia,score=uniform(0,1))for multimedia in existing_multimedia]
+        _user.preferences = [dataclass.Preference(content= multimedia,score=uniform(0,1)) for multimedia in existing_multimedia]
+        _user.preferences = list(filter(lambda _: uniform(0,1) <=0.5, _user.preferences))
+        if len(_user.preferences) == 0:
+            _user.preferences = [dataclass.Preference(content= multimedia,score=uniform(0,1)) for multimedia in existing_multimedia[0:1]]
+        assert len(_user.preferences) >=1
         _user.latest_emotion_profile= recommender.Recommender.calculate_new_emotion_profile(_user,"test")
         return _user
     return _create_user
@@ -41,17 +46,20 @@ def test__knn_sim(create_user, existing_multimedia):
     user1,user2 = create_user('test_user_1'),create_user('test_user_2')
     print(user1.preferences)
     mse = recommender.Recommender._knn_sim(user1,user2)
-    assert mse <= len(existing_multimedia)
+    assert mse <= 1
 
 def test__predict_scores(user:dataclass.User,create_user):
     top_k_neighbors = [create_user(f'test_user_{idx}') for idx in range(0,5)]
+    top_k_neighbors = [(recommender.Recommender._knn_sim(user,neighbor),user) for neighbor in top_k_neighbors]
     preference_list = recommender.Recommender._predict_scores(user,top_k_neighbors)
     existing_preferences_names = map(lambda x: x.content.name , user.preferences)
     predicted_preferences_names = map(lambda x: x.content.name , preference_list)
+    print(existing_preferences_names)
+    print(predicted_preferences_names)
     assert all(x not in predicted_preferences_names for x in existing_preferences_names)
 
 def test_recommend_multimedia(user:dataclass.User, existing_multimedia):
-    (content,pred_preferences)=recommender.Recommender.recommend_multimedia(user)
+    (content,pred_preferences)=recommender.Recommender.recommend_multimedia(user,save_user=False)
     assert len(user.pred_preferences) >= len(user.preferences)
     assert content in existing_multimedia
 

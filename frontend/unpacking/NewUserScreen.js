@@ -12,6 +12,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Restart } from 'fiction-expo-restart';
 import NewUserPrivacy from './NewUserPrivacy';
+import { host_name } from './App';
 
 const Stack = createStackNavigator();
 
@@ -57,7 +58,7 @@ const EnterData = ({navigation}) => {
     const { manifest } = Constants;
   
   
-    const uri = `https://f467-210-6-181-56.ap.ngrok.io/signup`;
+    const uri = host_name + '/signup';
     const regRequest = async () => {
       let formData = new FormData();
       formData.append('username', usr);
@@ -190,7 +191,7 @@ const VerifyPage = ({route, navigation}) => {
   
 
 
-    const uri = `https://f467-210-6-181-56.ap.ngrok.io/signup/verification`;
+    const uri = host_name + '/signup/verification';
     const regRequest = async () => {
       var json_result;
       let formData = new FormData();

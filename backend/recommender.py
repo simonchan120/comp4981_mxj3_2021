@@ -34,7 +34,7 @@ class Recommender():
         normalized_time_since_last_survey=0
         if user.surveys:
             latest_survey_score = user.surveys[0].result 
-            normalized_time_since_last_survey = max((datetime.utcnow() - user.surveys[0].time_submitted).total_seconds()/User._survey_period,1)
+            normalized_time_since_last_survey = min((datetime.utcnow() - user.surveys[0].time_submitted).total_seconds()/User._survey_period,1)
         survey_factor = LOWEST_SURVEY_FACTOR + (HIGHEST_SURVEY_FACTOR-LOWEST_SURVEY_FACTOR) * (1-normalized_time_since_last_survey) if normalized_time_since_last_survey else 0
         new_emotion_full_score = survey_factor * latest_survey_score + (1-survey_factor)* new_emotion_chat_score
         
@@ -46,18 +46,20 @@ class Recommender():
     @staticmethod
     def check_if_recommend_multimedia(user: User,message):
 
-        MAX_FREQ= 10
-        MIN_FREQ= 5
+        MAX_FREQ= 1/5
+        MIN_FREQ= 1/10
         
         full_emotion_score = user.latest_emotion_profile.full_score
-        threshold=  (1/MIN_FREQ - 1/MAX_FREQ )*full_emotion_score + 1/MAX_FREQ
+        threshold=  (MAX_FREQ - MIN_FREQ)*full_emotion_score + MIN_FREQ
 
         return random.uniform(0,1) < threshold
     @staticmethod
     def check_if_recommend_activities(user: User,message, save_user=True):
-        POS_THRESHOLD_LOWEST=NEG_THRESHOLD_LOWEST=0.3
-        POS_THRESHOLD_HIGHEST=NEG_THRESHOLD_HIGHEST = 1.0
-        STEP_FACTOR=0.3
+        NEG_THRESHOLD_LOWER_BOUNDARY=0.3
+        NEG_THRESHOLD_UPPER_BOUNDARY = 1.0
+        POS_THRESHOLD_LOWER_BOUNDARY=0.0
+        POS_THRESHOLD_UPPER_BOUNDARY= 0.7
+        STEP_SIZE=0.3
         # NEUTRAL_SKIP_THRESHOLD =0.5
         polarity_scores=_sentiment_intensity_analyzer.polarity_scores(message)
 
@@ -66,30 +68,34 @@ class Recommender():
         logger.debug(f"{message=}:{polarity_scores=}")
         negativity_score = polarity_scores['neg']
         positivity_score = polarity_scores['pos']
-        if negativity_score <= POS_THRESHOLD_LOWEST and positivity_score <=POS_THRESHOLD_HIGHEST:
-            return False
-        assert NEG_THRESHOLD_LOWEST <= user.activities_change_negative_threshold and user.activities_change_negative_threshold <= NEG_THRESHOLD_HIGHEST 
-        assert POS_THRESHOLD_LOWEST <= user.activities_change_positive_threshold and user.activities_change_positive_threshold <= POS_THRESHOLD_HIGHEST 
+        # if negativity_score <= NEG_THRESHOLD_LOWEST and positivity_score <=POS_THRESHOLD_HIGHEST:
+        #     return False
+        #assert NEG_THRESHOLD_LOWER_BOUNDARY <= user.activities_change_negative_threshold and user.activities_change_negative_threshold <= NEG_THRESHOLD_UPPER_BOUNDARY 
+        #assert POS_THRESHOLD_LOWER_BOUNDARY <= user.activities_change_positive_threshold and user.activities_change_positive_threshold <= POS_THRESHOLD_UPPER_BOUNDARY 
         is_neg = negativity_score > positivity_score and negativity_score >= user.activities_change_negative_threshold
         is_pos = positivity_score > negativity_score and positivity_score <= user.activities_change_positive_threshold
         is_recommend = is_neg or is_pos 
 
-        logger.debug(f"For user : {user.username=},{negativity_score=},{positivity_score=},{POS_THRESHOLD_LOWEST=},{POS_THRESHOLD_HIGHEST=},{NEG_THRESHOLD_LOWEST=},{NEG_THRESHOLD_HIGHEST=},{is_neg=},{is_pos=}")
+        logger.debug(f"For user : {user.username=},{negativity_score=},{positivity_score=},{POS_THRESHOLD_LOWER_BOUNDARY=},{POS_THRESHOLD_UPPER_BOUNDARY=},{NEG_THRESHOLD_LOWER_BOUNDARY=},{NEG_THRESHOLD_UPPER_BOUNDARY=},{is_neg=},{is_pos=}")
         logger.debug(f"Before: {user.activities_change_negative_threshold=},{user.activities_change_positive_threshold=}")
         if is_recommend:
             if negativity_score > positivity_score:
-                diff = NEG_THRESHOLD_HIGHEST - user.activities_change_negative_threshold
-                user.activities_change_negative_threshold += diff*STEP_FACTOR
+                user.activities_change_negative_threshold = negativity_score
+                step = NEG_THRESHOLD_UPPER_BOUNDARY - min(user.activities_change_negative_threshold,NEG_THRESHOLD_UPPER_BOUNDARY)
+                user.activities_change_negative_threshold += step*STEP_SIZE
             else:
-                diff =  user.activities_change_positive_threshold -POS_THRESHOLD_LOWEST 
-                user.activities_change_positive_threshold -= diff*STEP_FACTOR
+                user.activities_change_positive_threshold = positivity_score
+                step =  max(POS_THRESHOLD_LOWER_BOUNDARY,user.activities_change_positive_threshold) -POS_THRESHOLD_LOWER_BOUNDARY 
+                user.activities_change_positive_threshold -= step*STEP_SIZE
         else:
             if negativity_score > positivity_score:
-                diff = user.activities_change_negative_threshold - NEG_THRESHOLD_LOWEST
-                user.activities_change_negative_threshold -= diff*STEP_FACTOR
+                user.activities_change_negative_threshold = negativity_score
+                step = max(NEG_THRESHOLD_LOWER_BOUNDARY,user.activities_change_negative_threshold) - NEG_THRESHOLD_LOWER_BOUNDARY
+                user.activities_change_negative_threshold -= step*STEP_SIZE
             else:
-                diff = POS_THRESHOLD_HIGHEST-user.activities_change_positive_threshold
-                user.activities_change_positive_threshold += diff*STEP_FACTOR
+                user.activities_change_positive_threshold = positivity_score
+                step = POS_THRESHOLD_UPPER_BOUNDARY-min(user.activities_change_positive_threshold, POS_THRESHOLD_UPPER_BOUNDARY)
+                user.activities_change_positive_threshold += step*STEP_SIZE
         logger.debug(f"After: {user.activities_change_negative_threshold=},{user.activities_change_positive_threshold=}")
         if save_user:
             user.save()
@@ -157,8 +163,16 @@ class Recommender():
         
         remaining_items = num_of_top_items - len(current_user.pred_preferences)
 
+        # 5% chance for recommending all random items
+        if random.uniform(0,1) <= 0.05:
+            remaining_items = num_of_top_items
+            current_user.pred_preferences = []
+
         # add random items if predicted preferences lack members
-        if remaining_items >0:            
+        if remaining_items >0:  
+            logger.debug("testing")    
+            pool_to_select_from=list(map(lambda x:x.content.name,current_user.pred_preferences))
+            logger.debug(f'{[x for x in pool_to_select_from]}')      
             remaining_multimediadata = MultiMediaData.objects(name__not__in=list(map(lambda x:x.content.name,current_user.pred_preferences))).all()
             current_user.pred_preferences += [Preference(content=x,score=-1) for x in sample(list(remaining_multimediadata),k=remaining_items)]
 

@@ -9,3 +9,5 @@ backend/rasa/.rasa/cache
 .keras
 whiteground
 *.log*
+frontend/unpacking/.expo/packager-info.json
+.env

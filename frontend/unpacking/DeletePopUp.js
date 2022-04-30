@@ -4,6 +4,7 @@ import { Button, Paragraph, Dialog, Portal, Provider, Snackbar } from 'react-nat
 import { Restart } from 'fiction-expo-restart';
 import Constants from "expo-constants";
 import {Info} from "./App"
+import { host_name } from './App';
 
 const DeletePopUp = ({ route, navigation }) => {
   const [visible, setVisible] = React.useState(true);
@@ -14,7 +15,7 @@ const DeletePopUp = ({ route, navigation }) => {
   const [stateName, setStateName] = name;
   const [stateDetail, setStateDetail] = detail;
   const { manifest } = Constants;
-  const uri_delete = `https://f467-210-6-181-56.ap.ngrok.io/delete-profile`;
+  const uri_delete = host_name + '/delete-profile';
   async function deleteProfile() {
     
     try {

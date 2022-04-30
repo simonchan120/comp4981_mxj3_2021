@@ -4,23 +4,32 @@ services:
     build: ./backend
     ports:
       - "5000:8000"
+    env_file:
+      - '.env'
     environment:
       - FLASK_ENV=development
     volumes:
       - ./backend:/backend
+    #command: ["gunicorn","--preload","--workers=3","-b","0.0.0.0:8000","backend:app","--timeout","30"]
+    command: ["flask","run","--host=0.0.0.0","--port=8000"]
+    deploy:
+      restart_policy:
+        condition: on-failure
   rabbit:
     hostname: rabbit
     image: rabbitmq:3.9
     environment:
       - RABBITMQ_DEFAULT_USER=rabbitmq
       - RABBITMQ_DEFAULT_PASS=rabbitmq
-    ports:
-      - "5672:5672"
-      - "15672:15672"
+    # ports:
+    #   - "5672:5672"
+    #   - "15672:15672"
   worker_1:
     build: ./backend
     hostname: worker_1
-    command: sh -c "celery -A backend.celery_config.celery_app worker --loglevel=info"
+    command: celery -A backend.celery_config.celery_app worker --loglevel=info
+    env_file:
+      - '.env'
     deploy:
       restart_policy:
         condition: on-failure
@@ -30,8 +39,27 @@ services:
       - rabbit
     depends_on:
       - rabbit
+  celery_beat:
+    build: ./backend
+    hostname: celery_beat
+    command: celery -A backend.celery_config.celery_app beat --loglevel=info
+    deploy:
+      restart_policy:
+        condition: on-failure
+    environment:
+      - FLASK_ENV=development
+    env_file:
+      - '.env'
+    links:
+      - rabbit
+    depends_on:
+      - rabbit
   rasa:
     build: ./backend/rasa
     ports:
       - 5005:5005
-    #command: run -p 5005 --enable-api 
+    env_file:
+      - '.env'
+    deploy:
+      restart_policy:
+        condition: on-failure

@@ -11,6 +11,7 @@ import Constants from "expo-constants";
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Restart }  from 'fiction-expo-restart';
+import { host_name } from './App';
 
 const Stack = createStackNavigator();
 
@@ -49,7 +50,7 @@ const EnterEmail = ({navigation}) => {
     const { manifest } = Constants;
   
   
-    const uri = `https://f467-210-6-181-56.ap.ngrok.io/signup/forget-password`;
+    const uri = host_name + '/signup/forget-password';
     const resetRequest = async () => {
       let formData = new FormData();
       formData.append('email', email);
@@ -151,7 +152,7 @@ const ResetPassword = ({route, navigation}) => {
   
 
 
-    const uri = `https://f467-210-6-181-56.ap.ngrok.io/signup/reset-password`;
+    const uri = host_name + '/signup/reset-password';
     const resetRequest = async () => {
       var json_result;
       let formData = new FormData();

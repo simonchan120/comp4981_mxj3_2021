@@ -170,7 +170,7 @@ const App = () => {
     useComponentWillMount(() => {
       //console.log(token)
       
-      const uri = `https://7143-210-6-181-56.ap.ngrok.io/get-global-statistics`;
+      const uri = `http://18.166.228.145:5000/get-global-statistics`;
       async function getScore() {
         var target_uri;
         const dateTime = Date.now();
@@ -178,7 +178,7 @@ const App = () => {
         for (let i=0; i<5; i++) {
           let formData = new FormData();
           if (i != 0 ){
-            target_uri = 'https://7143-210-6-181-56.ap.ngrok.io/get-global-statistics?start_time=' + (timestamp-86400) + '&end_time=' + timestamp
+            target_uri = 'http://18.166.228.145:5000/get-global-statistics?start_time=' + (timestamp-86400) + '&end_time=' + timestamp
             timestamp-=86400;
           } else {
             target_uri = uri
@@ -199,34 +199,42 @@ const App = () => {
             //console.log(json);
             //console.log("JSON?", Array.isArray(json));
             //console.log(json.surveys.length);
+            var users_average_full_score = json.users_average_full_score;
             console.log("Full score is:")
             console.log(json.users_average_full_score)
+            if (!json.users_average_full_score) {
+              users_average_full_score = 0.5
+            }
             if (i == 0) {
-              setFull(json.users_average_full_score)
+              setFull(users_average_full_score)
             } else if (i == 1) {
-              setFull1(json.users_average_full_score)
+              setFull1(users_average_full_score)
             } else if (i == 2) {
-              setFull2(json.users_average_full_score)
+              setFull2(users_average_full_score)
             } else if (i == 3) {
-              setFull3(json.users_average_full_score)
+              setFull3(users_average_full_score)
             } else if (i == 4) {
-              setFull4(json.users_average_full_score)
+              setFull4(users_average_full_score)
             }
             //full.push(parseFloat(json.users_average_full_score))
             //setCurrentFull(parseFloat(json.users_average_full_score))
             //console.log(full[0])
+            var users_average_chat_score = json.users_average_chat_score;
             console.log("Chat score is:")
             console.log(json.users_average_chat_score)
+            if (!json.users_average_chat_score) {
+              users_average_chat_score = 0.5
+            }
             if (i == 0) {
-              setChat(json.users_average_chat_score)
+              setChat(users_average_chat_score)
             } else if (i == 1) {
-              setChat1(json.users_average_chat_score)
+              setChat1(users_average_chat_score)
             } else if (i == 2) {
-              setChat2(json.users_average_chat_score)
+              setChat2(users_average_chat_score)
             } else if (i == 3) {
-              setChat3(json.users_average_chat_score)
+              setChat3(users_average_chat_score)
             } else if (i == 4) {
-              setChat4(json.users_average_chat_score)
+              setChat4(users_average_chat_score)
             }
             //chat.push(json.users_average_chat_score)
             //setCurrentChat(parseFloat(json.users_average_chat_score))

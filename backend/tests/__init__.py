@@ -6,6 +6,7 @@ import pytest
 from random import uniform,random, choices
 import string
 GIPHY_API_KEY = os.environ['GIPHY_API_KEY']
+os.environ['FLASK_ENV']='development'
 HOSTNAME_FLASK='http://localhost:5000'
 TEST_EMAIL='ccysimon476@gmail.com'
 RASA_ACCESS_TOKEN_HEADER='rasa-access-token'
@@ -27,6 +28,7 @@ def base_create_user():
             else:
                 break
         user = dataclass.User(username=name)
+        user.init_new_user(save_documents=False)
         return user
     return _make_user
 @pytest.fixture(scope="session")

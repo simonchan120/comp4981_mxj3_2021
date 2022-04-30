@@ -6,7 +6,7 @@ from backend.server import new_chat_session
 from .. import tests
 import pytest
 import random
-from backend import app
+from backend import app, dataclass
 import string
 import requests
 import numbers
@@ -22,8 +22,11 @@ def id_simple_strings(val):
     if isinstance(val, (string, numbers.Number, bool)):
         return str(val)
 class TestGroup:
-    def get_user_profile(self,client):
-        return client.get(f"{HOSTNAME_FLASK}/show-profile",headers=TestGroup.auth)
+    
+    def user_json_after_login(self):
+        return requests.session().get(f"{HOSTNAME_FLASK}/show-profile",headers=TestGroup.auth)
+    def get_user(self):
+        return dataclass.User.objects(username=self.name).first()
 
     def test_connection(self,client):
         r = client.get(f"{HOSTNAME_FLASK}/")
@@ -57,28 +60,29 @@ class TestGroup:
             return None
 
     @pytest.fixture(scope="function")
-    def password(self,request):
+    def generated_password(self,request):
         value = request.param
         if value is True:
             return TestGroup.password
         elif value is False:
-            return TestGroup.password + 'a'
+            return TestGroup.password + 'abcdefghijk'
         elif value is None:
             return None
-    @pytest.mark.parametrize('username,password,status_code',
+    @pytest.mark.parametrize('username,generated_password,status_code',
     [(True,True,200),(True,True,200),(True,False,401),(False,True,401),(None,None,401),(True,None,401),(None,True,401)]
-    ,ids =['success_first','success_second','wrong_password','wrong_username','missing_both','missing_pass','missing_username'],indirect=['username','password'])
-    def test_new_user_login(self,client,username,password,status_code):
+    ,ids =['success_first','success_second','wrong_password','wrong_username','missing_both','missing_pass','missing_username'],indirect=['username','generated_password'])
+    def test_new_user_login(self,client,username,generated_password,status_code):
         data_package = {}
         if username is not None:
             data_package['username']=username
-        if password is not None:
-            data_package['password']=password
+        if generated_password is not None:
+            data_package['password']=generated_password
         r = client.post(f"{HOSTNAME_FLASK}/login",data=data_package)
+        print(username,generated_password,r.status_code)
         assert r.status_code == status_code
         if r.status_code == 200:
             TestGroup.name = username
-            TestGroup.password= password
+            TestGroup.password= generated_password
             TestGroup.rasa_access_token = r.json()[RASA_ACCESS_TOKEN_HEADER]
             TestGroup.auth = {RASA_ACCESS_TOKEN_HEADER:TestGroup.rasa_access_token}
     
@@ -91,10 +95,6 @@ class TestGroup:
         r = client.get(f"{HOSTNAME_FLASK}/check-send-push-notification",headers=TestGroup.auth)
         assert r.status_code == 200
         assert r.json()['result'] == False
-
-    def test_start_new_chat_session(self,client):
-        r = client.post(f"{HOSTNAME_FLASK}/new-chat-session",headers=TestGroup.auth)
-        assert r.status_code == 200
         
     def test_get_user_profile(self,client):
         r = client.get(f"{HOSTNAME_FLASK}/show-profile",headers=TestGroup.auth)
@@ -115,7 +115,6 @@ class TestGroup:
         assert r.status_code == status_code
         if r.status_code == 200:
             r = client.get(f"{HOSTNAME_FLASK}/show-profile",headers=TestGroup.auth)
-            assert r.status_code == 200
             preference_object_json = next(x for x in r.json()['preferences'] if x['content']['name'] == name)
             assert preference_object_json['score'] == score
 
@@ -125,14 +124,21 @@ class TestGroup:
         database_preferences = Counter(map(lambda x: x['content']['name'],r.json()['preferences'])).keys()
         assert database_preferences==unique_preferences
 
-    @pytest.mark.parametrize('survey_value_list,status_code',[([1,2,3,4,5,4,3,2,1],200),([1,2,3,'4',5,4,3,'2',1],200),([None,2,3,None,5,4,3,2,1],404),([1,2,3,'aweg',5,4,3,2,1],404)],ids=['normal values1','normal values2','Missing fields','non-integer values'])
-    def test_add_survey_data(self,client,survey_value_list,status_code):
+    @pytest.mark.parametrize('survey_value_list,status_code',[([1,2,3,4,4,4,3,2,1],200),([1,2,3,'4',4,4,3,'2',1],200),([None,2,3,None,4,4,3,2,1],404),([1,2,3,'aweg',5,4,3,2,1],404)],ids=[1,2,'fail1','fail2'])
+    def test_add_survey_data(self,client,survey_value_list,status_code,request):
         data_package={}
         for idx,val in enumerate(survey_value_list):
             if val is not None:
                 data_package[f'field_{idx+1}']=val
         r = client.post(f"{HOSTNAME_FLASK}/add-survey-results",headers=TestGroup.auth,data=data_package)
         assert r.status_code == status_code 
+    
+        if status_code == 200:
+            print(request.node.callspec.id)
+            r = self.user_json_after_login()
+            res = r.json()
+            assert len(res['surveys']) == int(request.node.callspec.id)
+            assert len(res['previous_emotion_profile_lists']) == int(request.node.callspec.id)+1
     def test_check_do_survey(self,client):
         r = client.get(f"{HOSTNAME_FLASK}/check-do-survey",headers=TestGroup.auth)
         assert r.status_code == 200
@@ -141,14 +147,17 @@ class TestGroup:
    
 
     new_chat_session_test_data=[200,200,200]
-    @pytest.mark.parametrize('status_code',new_chat_session_test_data,ids = ['newchat1','newchat2','newchat3'])
-    def test_new_chat_session(self,client,status_code):
+    @pytest.mark.parametrize('status_code',new_chat_session_test_data,ids = [1,2,3])
+    def test_new_chat_session(self,client,status_code,request):
         r = client.post(f"{HOSTNAME_FLASK}/new-chat-session",headers=TestGroup.auth)
         assert r.status_code == status_code
 
-    def count_new_chats(self,client):
-        r = self.get_user_profile()
-        assert len(r.json['conversations']) - 1 == len(new_chat_session)
+        if r.status_code == 200:
+            r = self.user_json_after_login()
+            res = r.json()
+            assert len(res['conversations']) == int(request.node.callspec.id)+1
+            user_obj = self.get_user()
+            assert user_obj.latest_conversation in user_obj.conversations
 
     def test_resend_verification_email(self,client):
         r = client.post(f"{HOSTNAME_FLASK}/signup/resend-verification-email",data = {'email':TEST_EMAIL})
@@ -172,6 +181,12 @@ class TestGroup:
         r = client.post(f"{HOSTNAME_FLASK}/",data={'message':message},headers=TestGroup.auth)
         assert r.status_code ==200
 
+    def test_get_global_statistics(self,client):
+        r = client.get(f"{HOSTNAME_FLASK}/get-global-statistics",headers=TestGroup.auth)
+        assert r.status_code == 200
+        res = r.json()
+        assert 0 <= res['users_average_full_score'] and res['users_average_full_score']<=1
+        assert 0 <= res['users_average_chat_score'] and res['users_average_chat_score']<=1
     def test_cleanup(self,client):
         if TestGroup.auth is not None:
             r = client.delete(f"{HOSTNAME_FLASK}/delete-profile",headers=TestGroup.auth)

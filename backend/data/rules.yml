@@ -1,0 +1,59 @@
+version: '3.0'
+rules:
+- rule: Handle bot_challenge
+  steps:
+  - intent: bot_challenge
+  - action: utter_bot_challenge
+- rule: Handle ask_who_made
+  steps:
+  - intent: ask_who_made
+  - action: utter_ask_who_made
+- rule: Handle ask_data_privacy
+  steps:
+  - intent: ask_data_privacy
+  - action: utter_ask_data_privacy
+- rule: Handle ask_collect_data
+  steps:
+  - intent: ask_collect_data
+  - action: utter_ask_collect_data
+- rule: Handle ask_purpose
+  steps:
+  - intent: ask_purpose
+  - action: utter_ask_purpose
+- rule: Handle ask_delete_data
+  steps:
+  - intent: ask_delete_data
+  - action: utter_ask_delete_data
+- rule: Handle user_suicide
+  steps:
+  - intent: user_suicide
+  - action: utter_user_suicide
+stories:
+- story: Handle bot_challenge
+  steps:
+  - intent: bot_challenge
+  - action: utter_bot_challenge
+- story: Handle ask_who_made
+  steps:
+  - intent: ask_who_made
+  - action: utter_ask_who_made
+- story: Handle ask_data_privacy
+  steps:
+  - intent: ask_data_privacy
+  - action: utter_ask_data_privacy
+- story: Handle ask_collect_data
+  steps:
+  - intent: ask_collect_data
+  - action: utter_ask_collect_data
+- story: Handle ask_purpose
+  steps:
+  - intent: ask_purpose
+  - action: utter_ask_purpose
+- story: Handle ask_delete_data
+  steps:
+  - intent: ask_delete_data
+  - action: utter_ask_delete_data
+- story: Handle user_suicide
+  steps:
+  - intent: user_suicide
+  - action: utter_user_suicide

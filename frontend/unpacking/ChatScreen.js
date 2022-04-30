@@ -4,15 +4,9 @@ import React, { useState, useCallback, useEffect, useContext } from 'react'
 import { GiftedChat, Bubble, messageIdGenerator } from 'react-native-gifted-chat'
 import YoutubePlayer from "react-native-youtube-iframe";
 import { Button } from 'react-native-paper' ;
-//import { SafeAreaView, withNavigation } from 'react-navigation';
-import ActivitiesScreen from "./ActivitiesScreen";
-import CurrentActivitiesScreen from './_CurrentActivities';
-
 import Constants from "expo-constants";
 import {Info} from "./App"
-//import Agreement from './Agreement';
-
-//export const ActivityStatus = React.createContext(null);
+import { host_name } from './App';
 
 const ChatScreen = ({ navigation }) => {
   const [messages, setMessages] = useState([]);
@@ -401,9 +395,7 @@ const ChatScreen = ({ navigation }) => {
   const [isLoading, setLoading] = useState(true);
   const [data, setData] = useState([]);
   const { manifest } = Constants;
-  //const uri_message = `http://${manifest.debuggerHost.split(':').shift()}:5000/`;
-  const uri_message = `https://acba-210-6-181-56.ap.ngrok.io/`
-  //const uri_message = `https://f467-210-6-181-56.ap.ngrok.io/`;
+  const uri_message = host_name + '/';
   var send_text, replied_content = [], replied_type = [];
   const getReplies = async () => {
     replied_content = [];
@@ -494,9 +486,8 @@ const ChatScreen = ({ navigation }) => {
   /* End */
 
   /*For starting each chat session*/
-  //const uri_view_profile = `http://${manifest.debuggerHost.split(':').shift()}:5000/check-do-survey`;
-  //const uri_view_profile = `https://f467-210-6-181-56.ap.ngrok.io/check-do-survey`;
-  const uri_view_profile = `https://acba-210-6-181-56.ap.ngrok.io/check-do-survey`;
+  const uri_view_profile = host_name + '/check-do-survey';
+
   useEffect(() => {
     async function checkSurveyStatus() {
       try {
@@ -559,11 +550,7 @@ const ChatScreen = ({ navigation }) => {
   var num_survey_answered = 0;
   var survey_result = [];
 
-  //const uri_submit_survey = `http://${manifest.debuggerHost.split(':').shift()}:5000/add-survey-results`;
-  //const uri_get_score = `http://${manifest.debuggerHost.split(':').shift()}:5000/show-profile`;
-  const uri_submit_survey = `https://acba-210-6-181-56.ap.ngrok.io/add-survey-results`;
-  //const uri_get_score = 'https://f467-210-6-181-56.ap.ngrok.io/show-profile'*/
-  // Here, QuickReply will only occur in handling survey
+  const uri_submit_survey = host_name + '/add-survey-results';
   const onQuickReply = useCallback(async (quickReply) => { 
     let message = quickReply[0].title;
     let msg = {
