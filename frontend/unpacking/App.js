@@ -36,7 +36,7 @@ import ShowJSONScreen from "./ShowJSONScreen";
 
 import * as Notifications from "expo-notifications";
 
-export const host_name = "https://7143-210-6-181-56.ap.ngrok.io";
+export const host_name = "http://18.166.228.145:5000";
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
